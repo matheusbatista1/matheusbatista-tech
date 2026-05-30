@@ -14,7 +14,7 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
       <header className="admin-topbar">
         <div className="admin-brand">
           <span className="dot" aria-hidden="true" />
-          <span>Admin · matheusbatista.tech</span>
+          <span>Admin · matheusbatistadev.com</span>
         </div>
 
         <div className="admin-topbar-right">

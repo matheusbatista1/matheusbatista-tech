@@ -217,7 +217,7 @@ Rotas: `/`, `/pt`, `/es`. O `en` é o segmento implícito ou explícito conforme
 - **Por que não middleware:** usamos `session: { strategy: "database" }` (mais seguro que JWT). Prisma adapter não é edge-compatível, então o gate fica no Server Component do layout.
 - **Setup do Google OAuth:**
   1. https://console.cloud.google.com/apis/credentials → criar OAuth client (Web)
-  2. Authorized redirect URI: `http://localhost:3000/api/auth/callback/google` (dev) + `https://matheusbatista.tech/api/auth/callback/google` (prod)
+  2. Authorized redirect URI: `http://localhost:3000/api/auth/callback/google` (dev) + `https://matheusbatistadev.com/api/auth/callback/google` (prod)
   3. Copiar Client ID e Secret pra `.env.local`
 
 ## 11. TODOs pendentes
