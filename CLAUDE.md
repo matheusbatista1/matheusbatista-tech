@@ -205,11 +205,26 @@ Rotas: `/`, `/pt`, `/es`. O `en` é o segmento implícito ou explícito conforme
 
 ---
 
-## 10. TODOs e decisões pendentes
+## 10. Auth (decidido)
 
-- **Auth:** ainda não decidida. Tag `TODO(auth):` no código marca onde aplicar. Bloqueia: `/admin`, `/api/ai/admin/*`, persist de mensagens admin.
-- **Upload de assets:** Vercel Blob será integrado quando o admin entrar em produção.
-- **Email:** Resend para contact form + draft reply automático.
+- **Provider:** NextAuth v5 (Auth.js) com Google OAuth + email allowlist
+- **Configuração:** [src/infrastructure/auth/auth.ts](src/infrastructure/auth/auth.ts) — exporta `handlers`, `auth`, `signIn`, `signOut`
+- **Vars necessárias:** `AUTH_SECRET`, `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET`, `AUTH_ALLOWED_EMAILS` (vide `.env.example`)
+- **Estrutura do /admin:**
+  - `[locale]/admin/signin/page.tsx` — login com Google (não-protegido)
+  - `[locale]/admin/(protected)/layout.tsx` — server component que faz `await auth()` e `redirect("/admin/signin")` se não autorizado
+  - `[locale]/admin/(protected)/page.tsx` — dashboard (mensagens hoje, editors no futuro)
+- **Por que não middleware:** usamos `session: { strategy: "database" }` (mais seguro que JWT). Prisma adapter não é edge-compatível, então o gate fica no Server Component do layout.
+- **Setup do Google OAuth:**
+  1. https://console.cloud.google.com/apis/credentials → criar OAuth client (Web)
+  2. Authorized redirect URI: `http://localhost:3000/api/auth/callback/google` (dev) + `https://matheusbatistadev.com/api/auth/callback/google` (prod)
+  3. Copiar Client ID e Secret pra `.env.local`
+
+## 11. TODOs pendentes
+
+- **Editors admin:** Hero, About, Projects, Skills, Social, Settings (vão em PRs separados)
+- **Upload de assets:** Vercel Blob para imagens de projeto + CVs
+- **Email:** Resend pro contact form + draft reply automático
 
 ---
 

@@ -1,9 +1,19 @@
 import type { Skill, SkillCategory } from "@/domain/entities/Skill";
-import type { ISkillRepository } from "@/domain/repositories/ISkillRepository";
+import type { ISkillRepository, SkillInput } from "@/domain/repositories/ISkillRepository";
 import { prisma } from "../db/prisma";
 import { toSkill } from "../db/mappers/skillMapper";
 
 const CATEGORIES: readonly SkillCategory[] = ["frontend", "backend", "database", "devops", "tools"];
+
+function toPrismaData(input: SkillInput) {
+  return {
+    name: input.name,
+    key: input.key,
+    category: input.category,
+    color: input.color,
+    order: input.order,
+  };
+}
 
 export class PrismaSkillRepository implements ISkillRepository {
   async list(): Promise<Skill[]> {
@@ -26,5 +36,24 @@ export class PrismaSkillRepository implements ISkillRepository {
       grouped[skill.category].push(skill);
     }
     return grouped;
+  }
+
+  async findById(id: string): Promise<Skill | null> {
+    const row = await prisma.skill.findUnique({ where: { id } });
+    return row ? toSkill(row) : null;
+  }
+
+  async create(input: SkillInput): Promise<Skill> {
+    const row = await prisma.skill.create({ data: toPrismaData(input) });
+    return toSkill(row);
+  }
+
+  async update(id: string, input: SkillInput): Promise<Skill> {
+    const row = await prisma.skill.update({ where: { id }, data: toPrismaData(input) });
+    return toSkill(row);
+  }
+
+  async delete(id: string): Promise<void> {
+    await prisma.skill.delete({ where: { id } });
   }
 }

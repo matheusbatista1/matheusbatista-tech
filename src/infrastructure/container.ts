@@ -15,9 +15,32 @@ import { GeminiProvider } from "./ai/GeminiProvider";
 import { UpstashRateLimiter } from "./ratelimit/UpstashRateLimiter";
 
 import { ListProjects } from "@/application/use-cases/projects/ListProjects";
+import { GetProjectById } from "@/application/use-cases/projects/GetProjectById";
+import { CreateProject } from "@/application/use-cases/projects/CreateProject";
+import { UpdateProject } from "@/application/use-cases/projects/UpdateProject";
+import { DeleteProject } from "@/application/use-cases/projects/DeleteProject";
+import { ListSkills } from "@/application/use-cases/skills/ListSkills";
+import { GetSkillById } from "@/application/use-cases/skills/GetSkillById";
+import { CreateSkill } from "@/application/use-cases/skills/CreateSkill";
+import { UpdateSkill } from "@/application/use-cases/skills/UpdateSkill";
+import { DeleteSkill } from "@/application/use-cases/skills/DeleteSkill";
+import { GroupSkillsByCategory } from "@/application/use-cases/skills/GroupSkillsByCategory";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
+import { ListMessages } from "@/application/use-cases/messages/ListMessages";
+import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
+import { UpdateHeroContent } from "@/application/use-cases/content/UpdateHeroContent";
+import { UpdateAboutContent } from "@/application/use-cases/content/UpdateAboutContent";
+import { UpdateSiteSettings } from "@/application/use-cases/content/UpdateSiteSettings";
+import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
+import { ListAllSocialLinks } from "@/application/use-cases/social/ListAllSocialLinks";
+import { GetSocialLinkById } from "@/application/use-cases/social/GetSocialLinkById";
+import { CreateSocialLink } from "@/application/use-cases/social/CreateSocialLink";
+import { UpdateSocialLink } from "@/application/use-cases/social/UpdateSocialLink";
+import { DeleteSocialLink } from "@/application/use-cases/social/DeleteSocialLink";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
+import { AdaptPersonaCopy } from "@/application/use-cases/ai/AdaptPersonaCopy";
+import { SemanticSearchProjects } from "@/application/use-cases/ai/SemanticSearchProjects";
 
 // ─── Repositories ────────────────────────────────────────────────────────────
 const projectRepo = new PrismaProjectRepository();
@@ -66,9 +89,32 @@ export const container = {
   // Use cases
   useCases: {
     listProjects: new ListProjects(projectRepo),
+    getProjectById: new GetProjectById(projectRepo),
+    createProject: new CreateProject(projectRepo),
+    updateProject: new UpdateProject(projectRepo),
+    deleteProject: new DeleteProject(projectRepo),
+    listSkills: new ListSkills(skillRepo),
+    getSkillById: new GetSkillById(skillRepo),
+    createSkill: new CreateSkill(skillRepo),
+    updateSkill: new UpdateSkill(skillRepo),
+    deleteSkill: new DeleteSkill(skillRepo),
+    groupSkillsByCategory: new GroupSkillsByCategory(skillRepo),
     sendContactMessage: new SendContactMessage(messageRepo),
+    listMessages: new ListMessages(messageRepo),
+    getSiteContent: new GetSiteContent(contentRepo),
+    updateHeroContent: new UpdateHeroContent(contentRepo),
+    updateAboutContent: new UpdateAboutContent(contentRepo),
+    updateSiteSettings: new UpdateSiteSettings(contentRepo),
+    listSocialLinks: new ListSocialLinks(socialRepo),
+    listAllSocialLinks: new ListAllSocialLinks(socialRepo),
+    getSocialLinkById: new GetSocialLinkById(socialRepo),
+    createSocialLink: new CreateSocialLink(socialRepo),
+    updateSocialLink: new UpdateSocialLink(socialRepo),
+    deleteSocialLink: new DeleteSocialLink(socialRepo),
     buildPromptContext,
-    chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext),
+    chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
+    adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),
+    semanticSearchProjects: new SemanticSearchProjects(aiProvider, buildPromptContext, aiCacheRepo),
   },
 };
 

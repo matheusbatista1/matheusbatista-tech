@@ -9,14 +9,7 @@ import { isPersonaId, DEFAULT_PERSONA } from "@/domain/entities/ai/Persona";
 export const runtime = "nodejs";
 
 const chatSchema = z.object({
-  messages: z
-    .array(
-      z.object({
-        role: z.enum(["user", "assistant", "system"]),
-        content: z.string().min(1).max(2000),
-      }),
-    )
-    .min(1),
+  question: z.string().min(1).max(2000),
   persona: z.string().optional(),
   locale: z.string().optional(),
 });
@@ -30,8 +23,6 @@ export async function POST(request: Request) {
   }
 
   const ip = getHashedIp(request);
-
-  // Rate limit duplo: por minuto + diario
   const [perMinute, perDay] = await Promise.all([
     container.ai.rateLimits.chat.limit(ip),
     container.ai.rateLimits.daily.limit(ip),
@@ -44,14 +35,14 @@ export async function POST(request: Request) {
     );
   }
 
-  let json: unknown;
+  let body: unknown;
   try {
-    json = await request.json();
+    body = await request.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const parsed = chatSchema.safeParse(json);
+  const parsed = chatSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.flatten() },
@@ -64,11 +55,14 @@ export async function POST(request: Request) {
 
   try {
     const result = await container.useCases.chatWithAssistant.execute({
-      messages: parsed.data.messages,
+      question: parsed.data.question,
       persona,
       locale,
     });
-    return result.toDataStreamResponse();
+    return NextResponse.json(
+      { reply: result.response.reply, blocks: result.response.blocks, cached: result.cached },
+      { headers: { "X-AI-Cached": String(result.cached) } },
+    );
   } catch (error) {
     console.error("ai/chat route error", error);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });

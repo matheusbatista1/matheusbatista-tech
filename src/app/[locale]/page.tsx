@@ -1,28 +1,68 @@
-import { setRequestLocale, getTranslations } from "next-intl/server";
+import { setRequestLocale } from "next-intl/server";
+import { notFound } from "next/navigation";
+import { isLocale } from "@/domain/value-objects/Locale";
+import { container } from "@/infrastructure/container";
+import { Ambient } from "@/presentation/components/interactions/Ambient";
+import { CustomCursor } from "@/presentation/components/interactions/CustomCursor";
+import { ScrollProgress } from "@/presentation/components/interactions/ScrollProgress";
+import { Header } from "@/presentation/components/layout/Header";
+import { Footer } from "@/presentation/components/layout/Footer";
+import { FullscreenMenu } from "@/presentation/components/layout/FullscreenMenu";
+import { Hero } from "@/presentation/components/sections/Hero";
+import { About } from "@/presentation/components/sections/About";
+import { Projects } from "@/presentation/components/sections/Projects";
+import { Skills } from "@/presentation/components/sections/Skills";
+import { Contact } from "@/presentation/components/sections/Contact";
+import { AIAssistant } from "@/presentation/components/ai/AIAssistant";
+import { PersonaBar } from "@/presentation/components/ai/PersonaBar";
+import { PersonaGate } from "@/presentation/components/ai/PersonaGate";
+import { PersonaLoader } from "@/presentation/components/ai/PersonaLoader";
+import { isAIEnabled } from "@/infrastructure/config/env";
+
+const COMPANIES_COUNT = 4;
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const tHero = await getTranslations("hero");
+  const [siteContent, socials, projects, skills] = await Promise.all([
+    container.useCases.getSiteContent.execute(),
+    container.useCases.listSocialLinks.execute(),
+    container.useCases.listProjects.execute(),
+    container.useCases.listSkills.execute(),
+  ]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <div className="space-y-4 px-6 text-center">
-        <p className="text-text-mute font-mono text-xs tracking-wider uppercase">
-          {tHero("currentFocus")}
-        </p>
-        <h1 className="text-5xl font-bold tracking-tight md:text-7xl">
-          MATHEUS <span className="text-text-mute">BATISTA</span>
-        </h1>
-        <p className="text-text-mute mx-auto max-w-xl">
-          {/* TODO(fase 2): portar Hero completo de sections.jsx com 3D tilt */}
-          Bootstrap concluido. Proxima fase: portar Header + Hero + sections do design original.
-        </p>
-        <div className="text-text-dim pt-8 font-mono text-xs">
-          locale: <span className="text-text">{locale}</span>
-        </div>
-      </div>
-    </main>
+    <>
+      <Ambient />
+      <CustomCursor />
+      <ScrollProgress />
+      <Header />
+      <main>
+        <Hero hero={siteContent.hero} socials={socials} locale={locale} />
+        <About
+          about={siteContent.about}
+          socials={socials}
+          locale={locale}
+          projectsCount={projects.length}
+          companiesCount={COMPANIES_COUNT}
+          technologiesCount={skills.length}
+        />
+        <Projects projects={projects} locale={locale} aiEnabled={isAIEnabled} />
+        <Skills skills={skills} />
+        <Contact socials={socials} />
+      </main>
+      <Footer hero={siteContent.hero} socials={socials} locale={locale} />
+      <FullscreenMenu socials={socials} />
+      {isAIEnabled && (
+        <>
+          <PersonaBar />
+          <PersonaGate />
+          <PersonaLoader />
+          <AIAssistant projects={projects} skills={skills} socials={socials} />
+        </>
+      )}
+    </>
   );
 }
