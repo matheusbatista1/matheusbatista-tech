@@ -224,10 +224,13 @@ async function main() {
     },
   ];
 
-  // SocialLink nao tem unique. Limpar e recriar.
-  await prisma.socialLink.deleteMany();
-  for (const s of socials) {
-    await prisma.socialLink.create({ data: s });
+  // SocialLink nao tem campo unique, entao so seed se nao houver nenhum
+  // registro ainda (evita sobrescrever edicoes do admin em re-deploys).
+  const existingSocials = await prisma.socialLink.count();
+  if (existingSocials === 0) {
+    for (const s of socials) {
+      await prisma.socialLink.create({ data: s });
+    }
   }
 
   console.log("Seed completed successfully.");
