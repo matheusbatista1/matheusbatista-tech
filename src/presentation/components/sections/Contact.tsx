@@ -56,7 +56,7 @@ export function Contact({ socials }: ContactProps) {
 
   const subjectValue = watch("subject");
   const emailEntry = socials.find((s) => s.name === "Email");
-  const emailAddress = emailEntry?.handle ?? "matheusbatista.tech@gmail.com";
+  const emailAddress = emailEntry?.handle ?? "matheus.sbatista@outlook.com";
   const otherSocials = socials.filter((s) => s.name !== "Email");
 
   const onSubmit = async (values: ContactFormValues) => {
