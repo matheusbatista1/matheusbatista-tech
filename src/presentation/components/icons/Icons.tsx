@@ -135,7 +135,7 @@ export function AIMark({
       width={size}
       height={size}
       fill="none"
-      className={`ai-mark${animated ? "spin" : ""}`}
+      className={["ai-mark", animated ? "spin" : ""].filter(Boolean).join(" ")}
       aria-hidden="true"
       {...props}
     >
