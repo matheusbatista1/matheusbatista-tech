@@ -21,6 +21,7 @@ import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
 import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
+import { AdaptPersonaCopy } from "@/application/use-cases/ai/AdaptPersonaCopy";
 
 // ─── Repositories ────────────────────────────────────────────────────────────
 const projectRepo = new PrismaProjectRepository();
@@ -75,6 +76,7 @@ export const container = {
     listSocialLinks: new ListSocialLinks(socialRepo),
     buildPromptContext,
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
+    adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),
   },
 };
 
