@@ -6,10 +6,13 @@ import { Ambient } from "@/presentation/components/interactions/Ambient";
 import { CustomCursor } from "@/presentation/components/interactions/CustomCursor";
 import { ScrollProgress } from "@/presentation/components/interactions/ScrollProgress";
 import { Header } from "@/presentation/components/layout/Header";
+import { Footer } from "@/presentation/components/layout/Footer";
+import { FullscreenMenu } from "@/presentation/components/layout/FullscreenMenu";
 import { Hero } from "@/presentation/components/sections/Hero";
 import { About } from "@/presentation/components/sections/About";
 import { Projects } from "@/presentation/components/sections/Projects";
 import { Skills } from "@/presentation/components/sections/Skills";
+import { Contact } from "@/presentation/components/sections/Contact";
 
 const COMPANIES_COUNT = 4;
 
@@ -43,8 +46,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         />
         <Projects projects={projects} locale={locale} />
         <Skills skills={skills} />
-        {/* TODO(fase 2): portar Contact, Footer */}
+        <Contact socials={socials} />
       </main>
+      <Footer hero={siteContent.hero} socials={socials} locale={locale} />
+      <FullscreenMenu socials={socials} />
     </>
   );
 }

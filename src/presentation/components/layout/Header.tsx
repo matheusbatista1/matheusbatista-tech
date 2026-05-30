@@ -6,20 +6,18 @@ import { useTransition } from "react";
 import type { Route } from "next";
 import { useScrolled } from "@/presentation/hooks/useScrolled";
 import { useTheme } from "@/presentation/providers/ThemeProvider";
+import { useMenu } from "@/presentation/providers/MenuProvider";
 import { BrandMark } from "@/presentation/components/icons/Icons";
 import { LOCALES } from "@/domain/value-objects/Locale";
 import type { Locale } from "@/domain/value-objects/Locale";
 
-interface HeaderProps {
-  onMenuClick?: () => void;
-}
-
 const LANG_ORDER: readonly Locale[] = ["pt", "en", "es"];
 const DEFAULT_LOCALE: Locale = "en";
 
-export function Header({ onMenuClick }: HeaderProps) {
+export function Header() {
   const scrolled = useScrolled(40);
   const { theme, toggle } = useTheme();
+  const { open: openMenu } = useMenu();
   const currentLocale = useLocale() as Locale;
   const router = useRouter();
   const pathname = usePathname();
@@ -72,7 +70,7 @@ export function Header({ onMenuClick }: HeaderProps) {
         >
           <span className="k" aria-hidden="true" />
         </button>
-        <button type="button" className="menu-btn" onClick={onMenuClick} aria-label="Open menu">
+        <button type="button" className="menu-btn" onClick={openMenu} aria-label="Open menu">
           <span>Menu</span>
           <span className="ml" aria-hidden="true">
             <span />
