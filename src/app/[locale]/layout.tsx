@@ -8,6 +8,7 @@ import { isLocale } from "@/domain/value-objects/Locale";
 import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
 import { PersonaProvider } from "@/presentation/providers/PersonaProvider";
 import { MenuProvider } from "@/presentation/providers/MenuProvider";
+import { LoadingScreen } from "@/presentation/components/interactions/LoadingScreen";
 import { isAIEnabled } from "@/infrastructure/config/env";
 
 const inter = Inter({
@@ -66,6 +67,7 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} ${caveat.variable} ${instrumentSerif.variable}`}
     >
       <body>
+        <LoadingScreen />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <PersonaProvider aiEnabled={isAIEnabled}>
