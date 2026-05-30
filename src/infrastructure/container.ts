@@ -30,6 +30,7 @@ import { ListMessages } from "@/application/use-cases/messages/ListMessages";
 import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
 import { UpdateHeroContent } from "@/application/use-cases/content/UpdateHeroContent";
 import { UpdateAboutContent } from "@/application/use-cases/content/UpdateAboutContent";
+import { UpdateSiteSettings } from "@/application/use-cases/content/UpdateSiteSettings";
 import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
 import { ListAllSocialLinks } from "@/application/use-cases/social/ListAllSocialLinks";
 import { GetSocialLinkById } from "@/application/use-cases/social/GetSocialLinkById";
@@ -103,6 +104,7 @@ export const container = {
     getSiteContent: new GetSiteContent(contentRepo),
     updateHeroContent: new UpdateHeroContent(contentRepo),
     updateAboutContent: new UpdateAboutContent(contentRepo),
+    updateSiteSettings: new UpdateSiteSettings(contentRepo),
     listSocialLinks: new ListSocialLinks(socialRepo),
     listAllSocialLinks: new ListAllSocialLinks(socialRepo),
     getSocialLinkById: new GetSocialLinkById(socialRepo),

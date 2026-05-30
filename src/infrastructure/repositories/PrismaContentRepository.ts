@@ -31,4 +31,11 @@ export class PrismaContentRepository implements IContentRepository {
       data: { about: about as unknown as object },
     });
   }
+
+  async updateSettings(settings: SiteSettings): Promise<void> {
+    await prisma.siteContent.update({
+      where: { id: "singleton" },
+      data: { settings: settings as unknown as object },
+    });
+  }
 }
