@@ -74,7 +74,7 @@ export const container = {
     getSiteContent: new GetSiteContent(contentRepo),
     listSocialLinks: new ListSocialLinks(socialRepo),
     buildPromptContext,
-    chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext),
+    chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
   },
 };
 
