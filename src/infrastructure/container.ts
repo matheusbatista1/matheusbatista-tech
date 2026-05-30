@@ -31,6 +31,11 @@ import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
 import { UpdateHeroContent } from "@/application/use-cases/content/UpdateHeroContent";
 import { UpdateAboutContent } from "@/application/use-cases/content/UpdateAboutContent";
 import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
+import { ListAllSocialLinks } from "@/application/use-cases/social/ListAllSocialLinks";
+import { GetSocialLinkById } from "@/application/use-cases/social/GetSocialLinkById";
+import { CreateSocialLink } from "@/application/use-cases/social/CreateSocialLink";
+import { UpdateSocialLink } from "@/application/use-cases/social/UpdateSocialLink";
+import { DeleteSocialLink } from "@/application/use-cases/social/DeleteSocialLink";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
 import { AdaptPersonaCopy } from "@/application/use-cases/ai/AdaptPersonaCopy";
@@ -99,6 +104,11 @@ export const container = {
     updateHeroContent: new UpdateHeroContent(contentRepo),
     updateAboutContent: new UpdateAboutContent(contentRepo),
     listSocialLinks: new ListSocialLinks(socialRepo),
+    listAllSocialLinks: new ListAllSocialLinks(socialRepo),
+    getSocialLinkById: new GetSocialLinkById(socialRepo),
+    createSocialLink: new CreateSocialLink(socialRepo),
+    updateSocialLink: new UpdateSocialLink(socialRepo),
+    deleteSocialLink: new DeleteSocialLink(socialRepo),
     buildPromptContext,
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
     adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),
