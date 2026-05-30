@@ -3152,6 +3152,155 @@ a {
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
+ * Semantic search (in Projects section)
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.sem-search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+  padding: 6px 6px 6px 18px;
+  margin-bottom: 28px;
+  transition:
+    border-color 220ms,
+    box-shadow 220ms;
+}
+.sem-search:focus-within {
+  border-color: var(--line-strong);
+  box-shadow: 0 0 0 4px var(--surface);
+}
+.sem-search.active {
+  border-color: var(--line-strong);
+}
+
+.sem-ico {
+  display: grid;
+  place-items: center;
+  color: var(--color-text-dim);
+  flex-shrink: 0;
+}
+.sem-ico svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sem-spin {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: 1.6px solid var(--line-strong);
+  border-top-color: var(--color-text);
+  animation: ai-spin 700ms linear infinite;
+}
+
+.sem-search input {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--color-text);
+  font-size: 14px;
+  padding: 8px 0;
+  font-family: inherit;
+}
+.sem-search input::placeholder {
+  color: var(--color-text-dim);
+}
+.sem-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.sem-clear {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: transparent;
+  border: 0;
+  color: var(--color-text-dim);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: color 180ms;
+}
+.sem-clear:hover {
+  color: var(--color-text);
+}
+.sem-clear svg {
+  width: 13px;
+  height: 13px;
+}
+
+.sem-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  border: 0;
+  padding: 9px 16px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  font-weight: 500;
+  flex-shrink: 0;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    opacity 180ms,
+    transform 180ms;
+}
+.sem-go:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.sem-go:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+.sem-spark {
+  display: inline-grid;
+  place-items: center;
+}
+.sem-spark svg {
+  width: 13px;
+  height: 13px;
+}
+
+.sem-result-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12.5px;
+  color: var(--color-text-mute);
+  margin-bottom: 24px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.02em;
+}
+.sem-result-bar b {
+  color: var(--color-text);
+}
+.sem-result-bar button {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--color-text-mute);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition:
+    border-color 180ms,
+    color 180ms;
+}
+.sem-result-bar button:hover {
+  border-color: var(--line-strong);
+  color: var(--color-text);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
  * Mobile tweaks
  * ─────────────────────────────────────────────────────────────────────────── */
 

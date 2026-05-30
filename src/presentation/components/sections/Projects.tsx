@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Project } from "@/domain/entities/Project";
 import type { Locale } from "@/domain/value-objects/Locale";
+import { SemanticSearch } from "@/presentation/components/ai/SemanticSearch";
 import { ProjectStage } from "./projects/ProjectStage";
 import { ProjectMeta } from "./projects/ProjectMeta";
 import { ProjectSwitcher } from "./projects/ProjectSwitcher";
@@ -11,6 +12,7 @@ import { ProjectSwitcher } from "./projects/ProjectSwitcher";
 interface ProjectsProps {
   projects: Project[];
   locale: Locale;
+  aiEnabled?: boolean;
 }
 
 export interface RankedProject {
@@ -21,7 +23,7 @@ export interface RankedProject {
 const IN_VIEW_UPPER = 0.5;
 const IN_VIEW_LOWER = 0.3;
 
-export function Projects({ projects: allProjects, locale }: ProjectsProps) {
+export function Projects({ projects: allProjects, locale, aiEnabled = false }: ProjectsProps) {
   const t = useTranslations("projects");
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -106,6 +108,8 @@ export function Projects({ projects: allProjects, locale }: ProjectsProps) {
             <span>{String(projects.length).padStart(2, "0")}</span>
           </span>
         </div>
+
+        {aiEnabled && <SemanticSearch onResults={setRanked} />}
 
         {ranked && (
           <div className="sem-result-bar" role="status">
