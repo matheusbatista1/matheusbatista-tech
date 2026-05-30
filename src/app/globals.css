@@ -3992,6 +3992,102 @@ a {
   border-color: var(--color-danger);
 }
 
+/* Admin color input */
+
+.admin-color-input {
+  width: 80px !important;
+  height: 40px;
+  padding: 4px !important;
+  cursor: pointer;
+}
+
+/* Admin skills (grouped list) */
+
+.admin-empty-sm {
+  padding: 14px !important;
+  font-size: 12.5px !important;
+}
+
+.admin-skill-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.admin-skill-group h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-mute);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.admin-skill-count {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--color-text-dim);
+  padding: 2px 8px;
+  border: 1px solid var(--line);
+  border-radius: 9999px;
+}
+
+.admin-skill-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 6px;
+}
+.admin-skill-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  transition:
+    border-color 180ms,
+    background 180ms;
+}
+.admin-skill-row:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+.admin-skill-sw {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+.admin-skill-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.admin-skill-name {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--color-text);
+  letter-spacing: -0.005em;
+}
+.admin-skill-key {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--color-text-dim);
+}
+
 /* ─────────────────────────────────────────────────────────────────────────────
  * Mobile tweaks
  * ─────────────────────────────────────────────────────────────────────────── */
