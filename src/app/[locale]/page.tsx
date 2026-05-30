@@ -8,6 +8,7 @@ import { ScrollProgress } from "@/presentation/components/interactions/ScrollPro
 import { Header } from "@/presentation/components/layout/Header";
 import { Hero } from "@/presentation/components/sections/Hero";
 import { About } from "@/presentation/components/sections/About";
+import { Projects } from "@/presentation/components/sections/Projects";
 import { Skills } from "@/presentation/components/sections/Skills";
 
 const COMPANIES_COUNT = 4;
@@ -40,8 +41,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           companiesCount={COMPANIES_COUNT}
           technologiesCount={skills.length}
         />
+        <Projects projects={projects} locale={locale} />
         <Skills skills={skills} />
-        {/* TODO(fase 2): portar Projects, Contact, Footer */}
+        {/* TODO(fase 2): portar Contact, Footer */}
       </main>
     </>
   );
