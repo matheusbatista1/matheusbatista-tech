@@ -5,7 +5,7 @@ import type { ChatResponse } from "@/domain/entities/ai/AIBlock";
 import type { IAIProvider } from "@/application/ports/IAIProvider";
 import type { IAICacheRepository } from "@/domain/repositories/IAICacheRepository";
 import { BuildPromptContext } from "./BuildPromptContext";
-import { hashCacheKey } from "./cache-key";
+import { computeContentFingerprint, hashCacheKey } from "./cache-key";
 
 const KIND = "chat";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -80,10 +80,24 @@ export class ChatWithAssistant {
     locale,
   }: ChatWithAssistantInput): Promise<ChatWithAssistantResult> {
     const normalizedQuestion = question.trim();
+    const context = await this.buildContext.execute(locale);
+    const fingerprint = await computeContentFingerprint({
+      tagline: context.tagline,
+      about: context.about,
+      currently: context.currently,
+      projects: context.projects.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        tags: p.tags,
+      })),
+      skills: context.skills,
+    });
     const hash = await hashCacheKey(KIND, {
       persona,
       locale,
       query: normalizedQuestion,
+      content: fingerprint,
     });
 
     const cached = await this.cacheRepo.findByHash(hash);
@@ -92,7 +106,6 @@ export class ChatWithAssistant {
       return { response: cached.response as ChatResponse, cached: true };
     }
 
-    const context = await this.buildContext.execute(locale);
     const personaHint = PERSONA_HINT[persona];
     const langName = LANG_LABEL[locale];
 

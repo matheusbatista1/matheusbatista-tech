@@ -8,6 +8,7 @@ import { isLocale } from "@/domain/value-objects/Locale";
 import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
 import { PersonaProvider } from "@/presentation/providers/PersonaProvider";
 import { MenuProvider } from "@/presentation/providers/MenuProvider";
+import { isAIEnabled } from "@/infrastructure/config/env";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -67,7 +68,7 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
-            <PersonaProvider>
+            <PersonaProvider aiEnabled={isAIEnabled}>
               <MenuProvider>{children}</MenuProvider>
             </PersonaProvider>
           </ThemeProvider>

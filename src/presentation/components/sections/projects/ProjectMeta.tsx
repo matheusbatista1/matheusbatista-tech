@@ -4,13 +4,13 @@ import { useTranslations } from "next-intl";
 import type { Project, ProjectPill } from "@/domain/entities/Project";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
-import { ArrowUpRightIcon } from "@/presentation/components/icons/Icons";
+import { AIMark, ArrowUpRightIcon } from "@/presentation/components/icons/Icons";
+import { usePersona } from "@/presentation/providers/PersonaProvider";
 
 interface ProjectMetaProps {
   project: Project;
   locale: Locale;
   matchReason?: string;
-  personaDescription?: string;
 }
 
 const PILL_LABELS: Record<ProjectPill, string> = {
@@ -21,18 +21,14 @@ const PILL_LABELS: Record<ProjectPill, string> = {
   AI: "AI",
 };
 
-export function ProjectMeta({
-  project,
-  locale,
-  matchReason,
-  personaDescription,
-}: ProjectMetaProps) {
+export function ProjectMeta({ project, locale, matchReason }: ProjectMetaProps) {
   const t = useTranslations("projects");
   const description = pickLocalized(project.description, locale);
-  const showPersona =
-    personaDescription !== undefined &&
-    personaDescription !== description &&
-    personaDescription.length > 0;
+  const { copy, busy } = usePersona();
+  const personaDescription = copy?.projects.find((p) => p.id === project.id)?.description;
+  const showPersona = Boolean(
+    personaDescription && personaDescription !== description && personaDescription.length > 0,
+  );
   const externalUrl = project.deployed ? (project.liveUrl ?? project.url) : null;
   const pillLabel = project.pill ? PILL_LABELS[project.pill] : "PROJECT";
 
@@ -46,12 +42,17 @@ export function ProjectMeta({
       <h3 className="meta-name">{project.name}</h3>
 
       {showPersona ? (
-        <p className="meta-desc">
-          <span className="meta-persona-tag">· {t("tailored")}</span>
+        <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
+          <span className="meta-persona-tag">
+            <AIMark size={11} />
+            {t("tailored")}
+          </span>
           {personaDescription}
         </p>
       ) : (
-        <p className="meta-desc">{description}</p>
+        <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
+          {description}
+        </p>
       )}
 
       <div className="meta-tags">

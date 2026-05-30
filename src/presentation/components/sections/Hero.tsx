@@ -7,6 +7,7 @@ import type { SocialLink } from "@/domain/entities/SocialLink";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
 import { SocialIcon } from "@/presentation/components/icons/Icons";
+import { usePersona } from "@/presentation/providers/PersonaProvider";
 
 interface HeroProps {
   hero: HeroContent;
@@ -58,7 +59,10 @@ export function Hero({ hero, socials, locale }: HeroProps) {
   }, []);
 
   const subtitle = pickLocalized(hero.subtitle, locale);
-  const tagline = pickLocalized(hero.tagline, locale);
+  const baseTagline = pickLocalized(hero.tagline, locale);
+  const { copy, busy } = usePersona();
+  const tagline = copy?.tagline ?? baseTagline;
+  const leadClassName = ["lead", busy ? "persona-loading" : ""].filter(Boolean).join(" ");
 
   return (
     <section className="hero" id="top">
@@ -80,7 +84,7 @@ export function Hero({ hero, socials, locale }: HeroProps) {
         </div>
 
         <div className="hero-meta">
-          <p className="lead">
+          <p className={leadClassName}>
             <em>{subtitle}.</em> {tagline}
           </p>
         </div>

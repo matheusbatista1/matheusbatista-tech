@@ -5,6 +5,7 @@ import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
 import { MailIcon } from "@/presentation/components/icons/Icons";
 import { AboutStats } from "./AboutStats";
+import { AboutBody } from "./AboutBody";
 
 interface AboutProps {
   about: AboutContent;
@@ -84,10 +85,7 @@ export async function About({
           </aside>
 
           <div className="about-body">
-            <p>{body}</p>
-            <p className="mute">
-              <span className="hl">{currently}</span>
-            </p>
+            <AboutBody body={body} currently={currently} />
 
             <AboutStats
               projectsCount={projectsCount}
