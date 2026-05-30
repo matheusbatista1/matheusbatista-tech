@@ -49,7 +49,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           companiesCount={COMPANIES_COUNT}
           technologiesCount={skills.length}
         />
-        <Projects projects={projects} locale={locale} />
+        <Projects projects={projects} locale={locale} aiEnabled={isAIEnabled} />
         <Skills skills={skills} />
         <Contact socials={socials} />
       </main>
