@@ -15,6 +15,10 @@ import { GeminiProvider } from "./ai/GeminiProvider";
 import { UpstashRateLimiter } from "./ratelimit/UpstashRateLimiter";
 
 import { ListProjects } from "@/application/use-cases/projects/ListProjects";
+import { GetProjectById } from "@/application/use-cases/projects/GetProjectById";
+import { CreateProject } from "@/application/use-cases/projects/CreateProject";
+import { UpdateProject } from "@/application/use-cases/projects/UpdateProject";
+import { DeleteProject } from "@/application/use-cases/projects/DeleteProject";
 import { ListSkills } from "@/application/use-cases/skills/ListSkills";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
 import { ListMessages } from "@/application/use-cases/messages/ListMessages";
@@ -74,6 +78,10 @@ export const container = {
   // Use cases
   useCases: {
     listProjects: new ListProjects(projectRepo),
+    getProjectById: new GetProjectById(projectRepo),
+    createProject: new CreateProject(projectRepo),
+    updateProject: new UpdateProject(projectRepo),
+    deleteProject: new DeleteProject(projectRepo),
     listSkills: new ListSkills(skillRepo),
     sendContactMessage: new SendContactMessage(messageRepo),
     listMessages: new ListMessages(messageRepo),

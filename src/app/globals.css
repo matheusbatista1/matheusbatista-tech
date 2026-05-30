@@ -3822,6 +3822,175 @@ a {
   font-size: 12.5px;
   color: var(--color-success);
 }
+.admin-form-grid select {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  font-size: 13.5px;
+  font-family: inherit;
+  color: var(--color-text);
+}
+.admin-form-grid select:focus {
+  outline: none;
+  border-color: var(--line-strong);
+}
+
+/* Admin toolbar */
+
+.admin-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.admin-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-text);
+  color: var(--color-bg);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 500;
+  transition:
+    transform 180ms,
+    opacity 180ms;
+}
+.admin-primary:hover {
+  transform: translateY(-1px);
+}
+.admin-link {
+  font-size: 12.5px;
+  color: var(--color-text-mute);
+  transition: color 180ms;
+}
+.admin-link:hover {
+  color: var(--color-text);
+}
+
+/* Admin projects list */
+
+.admin-proj-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.admin-proj-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  transition:
+    border-color 180ms,
+    background 180ms;
+}
+.admin-proj-row:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-2);
+}
+.admin-proj-order {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+}
+.admin-proj-main {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.admin-proj-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text);
+  letter-spacing: -0.01em;
+}
+.admin-proj-slug {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--color-text-dim);
+}
+.admin-proj-flags {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.admin-proj-pill {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid var(--line);
+  color: var(--color-text);
+  background: var(--color-bg-elev);
+}
+.admin-proj-flag {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px dashed var(--line);
+  color: var(--color-text-dim);
+}
+.admin-proj-flag.deployed {
+  border-style: solid;
+  border-color: rgba(48, 209, 88, 0.4);
+  color: var(--color-success);
+}
+.admin-proj-flag.draft {
+  border-color: rgba(255, 159, 10, 0.4);
+  color: var(--color-warning);
+}
+
+/* Danger zone */
+
+.admin-danger-zone {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid rgba(255, 69, 58, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(255, 69, 58, 0.04);
+}
+.admin-danger-zone h3 {
+  margin: 0 0 6px;
+  font-size: 14px;
+  color: var(--color-danger);
+  font-weight: 600;
+}
+.admin-danger-zone p {
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  color: var(--color-text-mute);
+}
+.admin-danger-btn {
+  background: transparent;
+  color: var(--color-danger);
+  border: 1px solid rgba(255, 69, 58, 0.4);
+  padding: 8px 16px;
+  border-radius: 9999px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 180ms,
+    border-color 180ms;
+}
+.admin-danger-btn:hover {
+  background: rgba(255, 69, 58, 0.08);
+  border-color: var(--color-danger);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * Mobile tweaks
