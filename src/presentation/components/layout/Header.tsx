@@ -39,7 +39,10 @@ export function Header({ onMenuClick }: HeaderProps) {
   };
 
   return (
-    <header className={`header${scrolled ? "scrolled" : ""}`} data-pending={isPending || undefined}>
+    <header
+      className={["header", scrolled ? "scrolled" : ""].filter(Boolean).join(" ")}
+      data-pending={isPending || undefined}
+    >
       <div className="lang">
         {LANG_ORDER.map((code, i) => (
           <span key={code} className="inline-flex items-center">
