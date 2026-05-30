@@ -2,13 +2,11 @@
 
 import { useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
-import type { Route } from "next";
 import type { SocialLink } from "@/domain/entities/SocialLink";
-import { LOCALES } from "@/domain/value-objects/Locale";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { useMenu } from "@/presentation/providers/MenuProvider";
 import { ArrowUpRightIcon, CloseIcon, DownloadIcon } from "@/presentation/components/icons/Icons";
+import { usePathname, useRouter } from "@/presentation/lib/i18n/routing";
 
 interface FullscreenMenuProps {
   socials: SocialLink[];
@@ -23,7 +21,6 @@ const NAV_ITEMS = [
 ] as const;
 
 const LANG_ORDER: readonly Locale[] = ["pt", "en", "es"];
-const DEFAULT_LOCALE: Locale = "en";
 
 export function FullscreenMenu({ socials }: FullscreenMenuProps) {
   const { isOpen, close } = useMenu();
@@ -66,15 +63,7 @@ export function FullscreenMenu({ socials }: FullscreenMenuProps) {
 
   const switchLocale = (next: Locale) => {
     if (next === currentLocale) return;
-    const segments = pathname.split("/").filter(Boolean);
-    const first = segments[0];
-    if (first && (LOCALES as readonly string[]).includes(first)) {
-      segments.shift();
-    }
-    const tail = segments.join("/");
-    const path = next === DEFAULT_LOCALE ? `/${tail}` : `/${next}${tail ? `/${tail}` : ""}`;
-    const normalized = (path === "" ? "/" : path) as Route;
-    router.replace(normalized);
+    router.replace(pathname, { locale: next });
   };
 
   return (

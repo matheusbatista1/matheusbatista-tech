@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Inter, JetBrains_Mono, Caveat, Instrument_Serif } from "next/font/google";
 import { locales } from "@/presentation/lib/i18n/config";
 import { isLocale } from "@/domain/value-objects/Locale";
@@ -9,7 +10,90 @@ import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
 import { PersonaProvider } from "@/presentation/providers/PersonaProvider";
 import { MenuProvider } from "@/presentation/providers/MenuProvider";
 import { LoadingScreen } from "@/presentation/components/interactions/LoadingScreen";
-import { isAIEnabled } from "@/infrastructure/config/env";
+import { env, isAIEnabled } from "@/infrastructure/config/env";
+
+const siteName = "Matheus Batista";
+
+const OG_LOCALE_MAP: Record<string, string> = {
+  en: "en_US",
+  pt: "pt_BR",
+  es: "es_ES",
+};
+
+function localeToOgFormat(locale: string): string {
+  return OG_LOCALE_MAP[locale] ?? "en_US";
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const safeLocale = isLocale(locale) ? locale : "en";
+
+  const t = await getTranslations({ locale: safeLocale, namespace: "seo" });
+  const title = t("title");
+  const description = t("description");
+
+  const siteUrl = env.NEXT_PUBLIC_SITE_URL;
+  const canonical = safeLocale === "en" ? siteUrl : `${siteUrl}/${safeLocale}`;
+  const ogLocale = localeToOgFormat(safeLocale);
+  const alternateOgLocales = Object.entries(OG_LOCALE_MAP)
+    .filter(([key]) => key !== safeLocale)
+    .map(([, value]) => value);
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title,
+    description,
+    keywords: [
+      "Matheus Batista",
+      "Software Engineer",
+      "Backend Developer",
+      ".NET",
+      "Node.js",
+      "TypeScript",
+      "Next.js",
+      "Portfolio",
+    ],
+    authors: [{ name: siteName }],
+    creator: siteName,
+    category: "technology",
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
+    },
+    alternates: {
+      canonical,
+      languages: {
+        en: siteUrl,
+        pt: `${siteUrl}/pt`,
+        es: `${siteUrl}/es`,
+      },
+    },
+    openGraph: {
+      type: "website",
+      locale: ogLocale,
+      alternateLocale: alternateOgLocales,
+      url: canonical,
+      siteName,
+      title,
+      description,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 const inter = Inter({
   subsets: ["latin"],
@@ -67,10 +151,10 @@ export default async function LocaleLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} ${caveat.variable} ${instrumentSerif.variable}`}
     >
       <body>
-        <LoadingScreen />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <ThemeProvider>
             <PersonaProvider aiEnabled={isAIEnabled}>
+              <LoadingScreen />
               <MenuProvider>{children}</MenuProvider>
             </PersonaProvider>
           </ThemeProvider>
