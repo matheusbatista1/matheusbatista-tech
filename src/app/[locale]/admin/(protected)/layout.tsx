@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { redirect } from "next/navigation";
 import { auth, signOut } from "@/infrastructure/auth/auth";
+import { AdminNav } from "@/presentation/components/admin/AdminNav";
 
 export default async function AdminProtectedLayout({ children }: { children: ReactNode }) {
   const session = await auth();
@@ -32,6 +33,8 @@ export default async function AdminProtectedLayout({ children }: { children: Rea
           </form>
         </div>
       </header>
+
+      <AdminNav />
 
       <div className="admin-body">{children}</div>
     </div>
