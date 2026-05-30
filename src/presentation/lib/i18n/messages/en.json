@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "home": "Home",
+    "projects": "Projects",
+    "skills": "Skills",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "hero": {
+    "hello": "hello",
+    "im": "I'm",
+    "availPre": "Available for",
+    "roles": "roles",
+    "and": "&",
+    "projects": "projects",
+    "scroll": "SCROLL",
+    "explore": "EXPLORE",
+    "currentFocus": "CURRENT FOCUS"
+  },
+  "projects": {
+    "label": "SELECTED WORK",
+    "open": "Open project",
+    "notDeployed": "Not deployed yet",
+    "tailored": "tailored",
+    "navHint": "↑↓→← to navigate",
+    "ranked": "AI ranked",
+    "byRelevance": "by relevance",
+    "noMatch": "No strong matches — showing all",
+    "reset": "Reset",
+    "searchPh": "Describe what you're looking for — e.g. \"complex integrations or high traffic\"",
+    "search": "Search"
+  },
+  "about": {
+    "label": "ABOUT",
+    "send": "Send me a message",
+    "tailoredForYou": "tailored for you",
+    "role": "Role",
+    "basedIn": "Based in",
+    "experience": "Experience",
+    "openTo": "Open to",
+    "languages": "Languages",
+    "rolesProjects": "Roles & Projects",
+    "shipped": "Shipped projects",
+    "companies": "Companies",
+    "technologies": "Technologies"
+  },
+  "skills": {
+    "label": "TECH STACK",
+    "all": "ALL",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "database": "Database",
+    "devops": "DevOps",
+    "tools": "Tools"
+  },
+  "contact": {
+    "heading": "Let's build something memorable together.",
+    "lead": "Open to senior backend & fullstack roles, freelance work, and collaborations. Drop a line and I'll get back within 24 hours.",
+    "email": "email",
+    "name": "name",
+    "subject": "subject",
+    "emailPh": "your@email.com",
+    "namePh": "Your name",
+    "subjectPh": "What's it about?",
+    "messagePh": "Write your message…",
+    "hint": "Press ⏎ to send",
+    "send": "Send message",
+    "resume": "Résumé",
+    "downloadCv": "Download CV",
+    "okTitle": "Message sent",
+    "okBody": "Thanks for reaching out. I'll reply within 24 hours, usually sooner.",
+    "again": "Send another",
+    "errTitle": "Couldn't send",
+    "errBody": "Please add a valid email and subject, then try again. Or reach me at",
+    "tryAgain": "Try again"
+  },
+  "footer": {
+    "tag": "Reach out for roles, collaborations, or just to say hello.",
+    "navigate": "Navigate",
+    "elsewhere": "Elsewhere",
+    "cv": "Download CV",
+    "rights": "CRAFTED WITH CARE IN BR",
+    "updated": "LAST UPDATED MAY 2026"
+  },
+  "menu": {
+    "touch": "Get in touch",
+    "email": "Email",
+    "download": "Download CV",
+    "notUploaded": "CV — not uploaded",
+    "location": "Jandira · São Paulo · BR",
+    "open": "Open for work · 2026",
+    "language": "LANGUAGE"
+  },
+  "ai": {
+    "ask": "Ask AI",
+    "title": "Portfolio Assistant",
+    "viewingAs": "Ask anything · viewing as",
+    "empty": "Ask me about Matheus's skills, projects, or experience. I'll show you the most relevant pieces.",
+    "placeholder": "Ask about skills, projects, experience…",
+    "unavailable": "The AI is unavailable right now — but you can explore the sections directly, or reach out via the contact form.",
+    "parseError": "Hmm, I couldn't parse that. Try rephrasing?",
+    "tailored": "tailored",
+    "suggestion1": "What are his strongest skills?",
+    "suggestion2": "Show me a project with complex integrations",
+    "suggestion3": "Is he a good fit for a backend role?",
+    "suggestion4": "How can I reach him?"
+  },
+  "persona": {
+    "gateTitle": "Who's visiting?",
+    "gateSub": "I'll tailor the portfolio to what matters most to you. You can change this anytime.",
+    "skip": "Just browsing — show me everything",
+    "viewingAs": "Viewing as",
+    "apply": "Personalizing…",
+    "default.label": "Just exploring",
+    "default.hint": "A balanced overview of everything.",
+    "recruiter.label": "Recruiter",
+    "recruiter.hint": "Impact, soft skills & availability.",
+    "techlead.label": "Tech Lead",
+    "techlead.hint": "Architecture, stack & delivery.",
+    "cto.label": "CTO / Founder",
+    "cto.hint": "Business value, scale & ownership.",
+    "designer.label": "Designer",
+    "designer.hint": "Craft, UX sensibility & collaboration."
+  },
+  "notfound": {
+    "btn": "GO BACK HOME",
+    "sub": "NOTHING IS HERE"
+  }
+}

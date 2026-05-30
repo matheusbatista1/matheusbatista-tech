@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Content
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Project {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  name        String
+  url         String?
+  liveUrl     String?
+  description Json     // LocalizedText { en, pt, es }
+  pill        String?  // FLAGSHIP | PRODUCTION | INTEGRATION | CASE_STUDY | AI
+  tags        String[]
+  images      Json     // { src, alt }[]
+  order       Int      @default(0)
+  deployed    Boolean  @default(false)
+  visible     Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([order])
+  @@index([visible])
+}
+
+model Skill {
+  id       String @id @default(cuid())
+  name     String
+  key      String @unique
+  category String // frontend | backend | database | devops | tools
+  color    String?
+  order    Int    @default(0)
+
+  @@index([category, order])
+}
+
+model SocialLink {
+  id      String  @id @default(cuid())
+  name    String
+  url     String
+  handle  String?
+  visible Boolean @default(true)
+  order   Int     @default(0)
+
+  @@index([order])
+}
+
+model SiteContent {
+  id        String   @id @default("singleton")
+  hero      Json     // HeroContent localized
+  about     Json     // AboutContent localized
+  settings  Json     // { defaultTheme, defaultLang }
+  updatedAt DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  from      String
+  email     String
+  subject   String?
+  body      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read, createdAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AICache {
+  id        String    @id @default(cuid())
+  hash      String    @unique // sha256(kind + locale + persona + queryNormalized)
+  kind      String // 'chat' | 'persona-adapt' | 'semantic-search' | 'admin-improve' | ...
+  locale    String
+  persona   String?
+  prompt    String // prompt original (debug)
+  response  Json // resposta parseada
+  tokensIn  Int?
+  tokensOut Int?
+  hits      Int       @default(0)
+  createdAt DateTime  @default(now())
+  expiresAt DateTime?
+
+  @@index([kind, locale, persona])
+  @@index([expiresAt])
+}
+
+model AIUsageLog {
+  id         String   @id @default(cuid())
+  kind       String
+  locale     String
+  persona    String?
+  ipHash     String // hash do IP (sha256), nunca raw
+  tokensIn   Int?
+  tokensOut  Int?
+  cached     Boolean  @default(false)
+  durationMs Int?
+  status     String // 'ok' | 'rate_limited' | 'error'
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([kind, createdAt])
+}
+
+// TODO(auth): User/Account/Session quando auth for definida

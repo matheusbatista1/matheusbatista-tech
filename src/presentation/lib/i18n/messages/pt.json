@@ -1,0 +1,129 @@
+{
+  "nav": {
+    "home": "Início",
+    "projects": "Projetos",
+    "skills": "Habilidades",
+    "about": "Sobre",
+    "contact": "Contato"
+  },
+  "hero": {
+    "hello": "olá",
+    "im": "eu sou",
+    "availPre": "Disponível para",
+    "roles": "vagas",
+    "and": "e",
+    "projects": "projetos",
+    "scroll": "ROLAR",
+    "explore": "EXPLORE",
+    "currentFocus": "FOCO ATUAL"
+  },
+  "projects": {
+    "label": "TRABALHOS SELECIONADOS",
+    "open": "Abrir projeto",
+    "notDeployed": "Ainda não publicado",
+    "tailored": "personalizado",
+    "navHint": "↑↓→← para navegar",
+    "ranked": "IA ranqueou",
+    "byRelevance": "por relevância",
+    "noMatch": "Sem correspondências fortes — mostrando todos",
+    "reset": "Limpar",
+    "searchPh": "Descreva o que procura — ex.: \"integrações complexas ou alto tráfego\"",
+    "search": "Buscar"
+  },
+  "about": {
+    "label": "SOBRE",
+    "send": "Envie uma mensagem",
+    "tailoredForYou": "personalizado para você",
+    "role": "Cargo",
+    "basedIn": "Localização",
+    "experience": "Experiência",
+    "openTo": "Aberto a",
+    "languages": "Idiomas",
+    "rolesProjects": "Vagas e Projetos",
+    "shipped": "Projetos entregues",
+    "companies": "Empresas",
+    "technologies": "Tecnologias"
+  },
+  "skills": {
+    "label": "STACK TÉCNICA",
+    "all": "TODAS",
+    "frontend": "Frontend",
+    "backend": "Backend",
+    "database": "Banco de dados",
+    "devops": "DevOps",
+    "tools": "Ferramentas"
+  },
+  "contact": {
+    "heading": "Vamos construir algo memorável juntos.",
+    "lead": "Aberto a vagas sênior de backend & fullstack, freelances e colaborações. Mande uma mensagem e respondo em até 24 horas.",
+    "email": "email",
+    "name": "nome",
+    "subject": "assunto",
+    "emailPh": "seu@email.com",
+    "namePh": "Seu nome",
+    "subjectPh": "Sobre o que é?",
+    "messagePh": "Escreva sua mensagem…",
+    "hint": "Pressione ⏎ para enviar",
+    "send": "Enviar mensagem",
+    "resume": "Currículo",
+    "downloadCv": "Baixar CV",
+    "okTitle": "Mensagem enviada",
+    "okBody": "Obrigado pelo contato. Respondo em até 24 horas, geralmente antes.",
+    "again": "Enviar outra",
+    "errTitle": "Não foi possível enviar",
+    "errBody": "Adicione um email e assunto válidos e tente novamente. Ou me contate em",
+    "tryAgain": "Tentar de novo"
+  },
+  "footer": {
+    "tag": "Entre em contato para vagas, colaborações ou só pra dar um oi.",
+    "navigate": "Navegar",
+    "elsewhere": "Outros lugares",
+    "cv": "Baixar CV",
+    "rights": "FEITO COM CUIDADO NO BRASIL",
+    "updated": "ATUALIZADO EM MAIO 2026"
+  },
+  "menu": {
+    "touch": "Entre em contato",
+    "email": "Email",
+    "download": "Baixar CV",
+    "notUploaded": "CV — não enviado",
+    "location": "Jandira · São Paulo · BR",
+    "open": "Disponível para trabalho · 2026",
+    "language": "IDIOMA"
+  },
+  "ai": {
+    "ask": "Pergunte à IA",
+    "title": "Assistente do Portfólio",
+    "viewingAs": "Pergunte qualquer coisa · vendo como",
+    "empty": "Pergunte sobre as habilidades, projetos ou experiência do Matheus. Vou mostrar o que for mais relevante.",
+    "placeholder": "Pergunte sobre habilidades, projetos, experiência…",
+    "unavailable": "A IA está indisponível agora — mas você pode explorar as seções diretamente, ou usar o formulário de contato.",
+    "parseError": "Hmm, não consegui entender. Pode reformular?",
+    "tailored": "personalizado",
+    "suggestion1": "Quais são as habilidades mais fortes dele?",
+    "suggestion2": "Me mostre um projeto com integrações complexas",
+    "suggestion3": "Ele serve para uma vaga de backend?",
+    "suggestion4": "Como posso falar com ele?"
+  },
+  "persona": {
+    "gateTitle": "Quem está visitando?",
+    "gateSub": "Vou adaptar o portfólio ao que mais importa para você. Pode mudar quando quiser.",
+    "skip": "Só dando uma olhada — mostre tudo",
+    "viewingAs": "Vendo como",
+    "apply": "Personalizando…",
+    "default.label": "Só explorando",
+    "default.hint": "Uma visão equilibrada de tudo.",
+    "recruiter.label": "Recrutador(a)",
+    "recruiter.hint": "Impacto, soft skills e disponibilidade.",
+    "techlead.label": "Tech Lead",
+    "techlead.hint": "Arquitetura, stack e entrega.",
+    "cto.label": "CTO / Fundador(a)",
+    "cto.hint": "Valor de negócio, escala e ownership.",
+    "designer.label": "Designer",
+    "designer.hint": "Acabamento, senso de UX e colaboração."
+  },
+  "notfound": {
+    "btn": "VOLTAR AO INÍCIO",
+    "sub": "NADA AQUI"
+  }
+}

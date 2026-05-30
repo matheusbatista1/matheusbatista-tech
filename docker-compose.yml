@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: matheusbatista-tech-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: matheusbatista_tech
+    ports:
+      - "5432:5432"
+    volumes:
+      - matheusbatista_tech_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d matheusbatista_tech"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  matheusbatista_tech_pgdata:
+    name: matheusbatista_tech_pgdata
