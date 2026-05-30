@@ -16,4 +16,5 @@ export interface IContentRepository {
   get(): Promise<SiteContent | null>;
   updateHero(hero: HeroContent): Promise<void>;
   updateAbout(about: AboutContent): Promise<void>;
+  updateSettings(settings: SiteSettings): Promise<void>;
 }
