@@ -124,6 +124,46 @@ export function CloseIcon(props: IconProps) {
   );
 }
 
+export function AIMark({
+  size = 18,
+  animated = false,
+  ...props
+}: IconProps & { size?: number; animated?: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width={size}
+      height={size}
+      fill="none"
+      className={["ai-mark", animated ? "spin" : ""].filter(Boolean).join(" ")}
+      aria-hidden="true"
+      {...props}
+    >
+      <rect
+        x="6.2"
+        y="6.2"
+        width="11.6"
+        height="11.6"
+        rx="3.4"
+        transform="rotate(45 12 12)"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        opacity="0.55"
+      />
+      <rect
+        x="9.1"
+        y="9.1"
+        width="5.8"
+        height="5.8"
+        rx="1.9"
+        transform="rotate(45 12 12)"
+        fill="currentColor"
+      />
+      <circle cx="19.4" cy="4.6" r="1.7" fill="currentColor" />
+    </svg>
+  );
+}
+
 export function CheckIcon(props: IconProps) {
   return (
     <svg

@@ -13,6 +13,8 @@ import { About } from "@/presentation/components/sections/About";
 import { Projects } from "@/presentation/components/sections/Projects";
 import { Skills } from "@/presentation/components/sections/Skills";
 import { Contact } from "@/presentation/components/sections/Contact";
+import { AIAssistant } from "@/presentation/components/ai/AIAssistant";
+import { isAIEnabled } from "@/infrastructure/config/env";
 
 const COMPANIES_COUNT = 4;
 
@@ -50,6 +52,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       </main>
       <Footer hero={siteContent.hero} socials={socials} locale={locale} />
       <FullscreenMenu socials={socials} />
+      {isAIEnabled && <AIAssistant projects={projects} skills={skills} socials={socials} />}
     </>
   );
 }
