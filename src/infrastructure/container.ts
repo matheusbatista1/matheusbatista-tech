@@ -20,6 +20,11 @@ import { CreateProject } from "@/application/use-cases/projects/CreateProject";
 import { UpdateProject } from "@/application/use-cases/projects/UpdateProject";
 import { DeleteProject } from "@/application/use-cases/projects/DeleteProject";
 import { ListSkills } from "@/application/use-cases/skills/ListSkills";
+import { GetSkillById } from "@/application/use-cases/skills/GetSkillById";
+import { CreateSkill } from "@/application/use-cases/skills/CreateSkill";
+import { UpdateSkill } from "@/application/use-cases/skills/UpdateSkill";
+import { DeleteSkill } from "@/application/use-cases/skills/DeleteSkill";
+import { GroupSkillsByCategory } from "@/application/use-cases/skills/GroupSkillsByCategory";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
 import { ListMessages } from "@/application/use-cases/messages/ListMessages";
 import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
@@ -83,6 +88,11 @@ export const container = {
     updateProject: new UpdateProject(projectRepo),
     deleteProject: new DeleteProject(projectRepo),
     listSkills: new ListSkills(skillRepo),
+    getSkillById: new GetSkillById(skillRepo),
+    createSkill: new CreateSkill(skillRepo),
+    updateSkill: new UpdateSkill(skillRepo),
+    deleteSkill: new DeleteSkill(skillRepo),
+    groupSkillsByCategory: new GroupSkillsByCategory(skillRepo),
     sendContactMessage: new SendContactMessage(messageRepo),
     listMessages: new ListMessages(messageRepo),
     getSiteContent: new GetSiteContent(contentRepo),
