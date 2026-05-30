@@ -17,6 +17,7 @@ import { UpstashRateLimiter } from "./ratelimit/UpstashRateLimiter";
 import { ListProjects } from "@/application/use-cases/projects/ListProjects";
 import { ListSkills } from "@/application/use-cases/skills/ListSkills";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
+import { ListMessages } from "@/application/use-cases/messages/ListMessages";
 import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
 import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
@@ -73,6 +74,7 @@ export const container = {
     listProjects: new ListProjects(projectRepo),
     listSkills: new ListSkills(skillRepo),
     sendContactMessage: new SendContactMessage(messageRepo),
+    listMessages: new ListMessages(messageRepo),
     getSiteContent: new GetSiteContent(contentRepo),
     listSocialLinks: new ListSocialLinks(socialRepo),
     buildPromptContext,
