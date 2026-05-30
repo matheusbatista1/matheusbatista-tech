@@ -16,6 +16,8 @@ import { UpstashRateLimiter } from "./ratelimit/UpstashRateLimiter";
 
 import { ListProjects } from "@/application/use-cases/projects/ListProjects";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
+import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
+import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
 
@@ -67,6 +69,8 @@ export const container = {
   useCases: {
     listProjects: new ListProjects(projectRepo),
     sendContactMessage: new SendContactMessage(messageRepo),
+    getSiteContent: new GetSiteContent(contentRepo),
+    listSocialLinks: new ListSocialLinks(socialRepo),
     buildPromptContext,
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext),
   },

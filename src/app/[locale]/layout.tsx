@@ -1,10 +1,12 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
+import { getMessages, setRequestLocale } from "next-intl/server";
 import { Inter, JetBrains_Mono, Caveat, Instrument_Serif } from "next/font/google";
 import { locales } from "@/presentation/lib/i18n/config";
 import { isLocale } from "@/domain/value-objects/Locale";
+import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
+import { PersonaProvider } from "@/presentation/providers/PersonaProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,15 +54,21 @@ export default async function LocaleLayout({
   }
 
   setRequestLocale(locale);
+  const messages = await getMessages();
 
   return (
     <html
       lang={locale}
       data-theme="dark"
+      suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} ${caveat.variable} ${instrumentSerif.variable}`}
     >
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <ThemeProvider>
+            <PersonaProvider>{children}</PersonaProvider>
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );
