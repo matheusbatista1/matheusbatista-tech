@@ -19,6 +19,8 @@ import { ListSkills } from "@/application/use-cases/skills/ListSkills";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
 import { ListMessages } from "@/application/use-cases/messages/ListMessages";
 import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
+import { UpdateHeroContent } from "@/application/use-cases/content/UpdateHeroContent";
+import { UpdateAboutContent } from "@/application/use-cases/content/UpdateAboutContent";
 import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
@@ -76,6 +78,8 @@ export const container = {
     sendContactMessage: new SendContactMessage(messageRepo),
     listMessages: new ListMessages(messageRepo),
     getSiteContent: new GetSiteContent(contentRepo),
+    updateHeroContent: new UpdateHeroContent(contentRepo),
+    updateAboutContent: new UpdateAboutContent(contentRepo),
     listSocialLinks: new ListSocialLinks(socialRepo),
     buildPromptContext,
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
