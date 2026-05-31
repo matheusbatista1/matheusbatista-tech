@@ -5,6 +5,7 @@ export interface GenerateJSONOptions<T> {
   prompt: string;
   schema: z.ZodSchema<T>;
   model?: string;
+  maxTokens?: number;
 }
 
 export interface StreamTextOptions {

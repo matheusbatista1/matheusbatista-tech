@@ -1,10 +1,23 @@
 "use client";
 
-import { Archive, ArchiveRestore, Copy, Mail, Mailbox, MailOpen, Trash2 } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  Copy,
+  Mail,
+  Mailbox,
+  MailOpen,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
+import { AIButton } from "@/presentation/components/admin/ai/AIButton";
 import { Button } from "@/presentation/components/admin/ui/Button";
+import { Input } from "@/presentation/components/admin/ui/Input";
+import { Modal } from "@/presentation/components/admin/ui/Modal";
+import { Textarea } from "@/presentation/components/admin/ui/Textarea";
 import { useConfirm } from "@/presentation/components/admin/providers/ConfirmProvider";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 
@@ -23,13 +36,7 @@ interface MessageActionsProps {
   from: string;
   email: string;
   subject: string | null;
-  body: string;
   actions: InboxServerActions;
-}
-
-function buildDraft(from: string, subject: string | null, body: string): string {
-  const subj = subject?.trim() || body.split("\n")[0]?.slice(0, 80) || "your message";
-  return `Hi ${from.split(" ")[0] ?? from},\n\nThanks for reaching out about "${subj}".\n\n— Matheus`;
 }
 
 export function MessageActions({
@@ -40,13 +47,15 @@ export function MessageActions({
   from,
   email,
   subject,
-  body,
   actions,
 }: MessageActionsProps) {
   const t = useTranslations("admin.inbox");
   const { confirm } = useConfirm();
   const { toast } = useToast();
   const [pending, startTransition] = useTransition();
+  const [draftOpen, setDraftOpen] = useState(false);
+  const [draftSubject, setDraftSubject] = useState("");
+  const [draftBody, setDraftBody] = useState("");
 
   function fd(extra: Record<string, string> = {}): FormData {
     const data = new FormData();
@@ -78,9 +87,37 @@ export function MessageActions({
     }
   }
 
-  const mailtoHref = `mailto:${email}?subject=${encodeURIComponent(
+  async function runDraftReply() {
+    const response = await fetch("/api/ai/draft-reply", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ messageId: id, locale }),
+    });
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new Error(data.error ?? `Request failed (${response.status})`);
+    }
+
+    const data = (await response.json()) as { subject: string; body: string };
+    setDraftSubject(data.subject);
+    setDraftBody(data.body);
+    setDraftOpen(true);
+    toast({ title: "Draft ready", kind: "success" });
+  }
+
+  async function copyDraft() {
+    const composed = `Subject: ${draftSubject}\n\n${draftBody}`;
+    await copy(composed, t("copyDraft"));
+  }
+
+  const draftMailtoHref = `mailto:${email}?subject=${encodeURIComponent(
+    draftSubject,
+  )}&body=${encodeURIComponent(draftBody)}`;
+
+  const fallbackMailtoHref = `mailto:${email}?subject=${encodeURIComponent(
     `Re: ${subject ?? ""}`.trim(),
-  )}&body=${encodeURIComponent(buildDraft(from, subject, body))}`;
+  )}`;
 
   return (
     <div className="admin-msg-actions" role="toolbar" aria-label={t("title")}>
@@ -151,17 +188,15 @@ export function MessageActions({
         {t("copyEmail")}
       </Button>
 
-      <Button
-        variant="ghost"
-        size="sm"
-        icon={<Copy size={14} />}
-        onClick={() => copy(buildDraft(from, subject, body), t("copyDraft"))}
-      >
-        {t("copyDraft")}
-      </Button>
+      <AIButton
+        onRun={runDraftReply}
+        label={t("draftReply")}
+        icon={<Sparkles size={14} />}
+        title={t("draftReply")}
+      />
 
       <a
-        href={mailtoHref}
+        href={fallbackMailtoHref}
         className="admin-btn admin-btn-ghost admin-btn-sm"
         aria-label={t("mailto")}
       >
@@ -170,6 +205,59 @@ export function MessageActions({
         </span>
         <span className="admin-btn-label">{t("mailto")}</span>
       </a>
+
+      <Modal
+        open={draftOpen}
+        onClose={() => setDraftOpen(false)}
+        title={t("draftReply")}
+        size="lg"
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              size="sm"
+              icon={<Copy size={14} />}
+              onClick={() => void copyDraft()}
+            >
+              {t("copyDraft")}
+            </Button>
+            <a
+              href={draftMailtoHref}
+              className="admin-btn admin-btn-primary admin-btn-sm"
+              aria-label={t("mailto")}
+            >
+              <span className="admin-btn-icon-slot">
+                <Mail size={14} />
+              </span>
+              <span className="admin-btn-label">{t("mailto")}</span>
+            </a>
+            <Button variant="default" size="sm" onClick={() => setDraftOpen(false)}>
+              Close
+            </Button>
+          </>
+        }
+      >
+        <div className="admin-form-row">
+          <span className="admin-form-row-label">Subject</span>
+          <Input
+            value={draftSubject}
+            onChange={(e) => setDraftSubject(e.target.value)}
+            placeholder="Re: ..."
+          />
+        </div>
+        <div className="admin-form-row">
+          <span className="admin-form-row-label">Body</span>
+          <Textarea
+            rows={10}
+            value={draftBody}
+            onChange={(e) => setDraftBody(e.target.value)}
+            placeholder="Draft body…"
+          />
+        </div>
+        <p className="admin-field-hint">
+          Drafted for {from} &lt;{email}&gt;
+        </p>
+      </Modal>
     </div>
   );
 }

@@ -13,11 +13,11 @@ import { Sparkles, Wand2 } from "lucide-react";
 
 import type { Project, ProjectPill } from "@/domain/entities/Project";
 import type { ProjectImage } from "@/domain/entities/ProjectImage";
+import { AIButton } from "@/presentation/components/admin/ai/AIButton";
 import { Input } from "@/presentation/components/admin/ui/Input";
 import { Textarea } from "@/presentation/components/admin/ui/Textarea";
 import { Select } from "@/presentation/components/admin/ui/Select";
 import { Toggle } from "@/presentation/components/admin/ui/Toggle";
-import { Button } from "@/presentation/components/admin/ui/Button";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 
 import { GalleryEditor } from "./GalleryEditor";
@@ -101,6 +101,7 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
     handleSubmit,
     control,
     setValue,
+    getValues,
     formState: { errors },
   } = useForm<ProjectFormValues>({ defaultValues: defaults });
 
@@ -160,8 +161,83 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
     });
   }
 
-  const aiNotice = () =>
-    toast({ title: "AI coming soon", message: "Description + tag suggestions are on the way." });
+  function parseTagsCsv(value: string): string[] {
+    return value
+      .split(",")
+      .map((t) => t.trim())
+      .filter(Boolean);
+  }
+
+  async function runGenerateDescription() {
+    const values = getValues();
+    const name = values.name.trim();
+    if (!name) {
+      toast({ title: "Name required", message: "Add a project name first.", kind: "info" });
+      return;
+    }
+
+    const url = values.url.trim() || values.liveUrl.trim();
+    const payload: Record<string, unknown> = {
+      name,
+      tags: parseTagsCsv(values.tagsCsv),
+      hint: "",
+    };
+    if (url) payload.url = url;
+
+    const response = await fetch("/api/ai/project-description", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new Error(data.error ?? `Request failed (${response.status})`);
+    }
+
+    const data = (await response.json()) as {
+      description: { en: string; pt: string; es: string };
+    };
+    setValue("description.en", data.description.en, { shouldDirty: true });
+    setValue("description.pt", data.description.pt, { shouldDirty: true });
+    setValue("description.es", data.description.es, { shouldDirty: true });
+    toast({ title: "Description generated", kind: "success" });
+  }
+
+  async function runSuggestTags() {
+    const values = getValues();
+    const name = values.name.trim();
+    if (!name) {
+      toast({ title: "Name required", message: "Add a project name first.", kind: "info" });
+      return;
+    }
+
+    const description =
+      values.description.en.trim() || values.description.pt.trim() || values.description.es.trim();
+    if (!description) {
+      toast({
+        title: "Description required",
+        message: "Write a short description first.",
+        kind: "info",
+      });
+      return;
+    }
+
+    const response = await fetch("/api/ai/suggest-tags", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ name, description }),
+    });
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new Error(data.error ?? `Request failed (${response.status})`);
+    }
+
+    const data = (await response.json()) as { tags: string[] };
+    setValue("tagsCsv", data.tags.join(", "), { shouldDirty: true });
+    toast({ title: "Tags suggested", kind: "success" });
+  }
 
   return (
     <form onSubmit={handleSubmit(onValid)} className="admin-project-form" noValidate>
@@ -273,26 +349,20 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
 
       <div className="full">
         <div className="admin-project-form-row">
-          <Button
-            type="button"
-            variant="ai"
+          <AIButton
+            onRun={runGenerateDescription}
+            label="Generate description"
             icon={<Sparkles size={14} />}
-            disabled
-            onClick={aiNotice}
-            title="AI coming soon"
-          >
-            Generate description
-          </Button>
-          <Button
-            type="button"
-            variant="ai"
+            title="Generate descriptions in EN/PT/ES"
+            size="md"
+          />
+          <AIButton
+            onRun={runSuggestTags}
+            label="Suggest tags"
             icon={<Wand2 size={14} />}
-            disabled
-            onClick={aiNotice}
-            title="AI coming soon"
-          >
-            Suggest tags
-          </Button>
+            title="Suggest tags from the description"
+            size="md"
+          />
         </div>
       </div>
 

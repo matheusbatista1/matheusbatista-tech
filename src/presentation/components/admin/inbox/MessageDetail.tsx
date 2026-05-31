@@ -63,7 +63,6 @@ export async function MessageDetail({ locale, message, actions }: MessageDetailP
             from={message.from}
             email={message.email}
             subject={message.subject}
-            body={message.body}
             actions={actions}
           />
         </div>

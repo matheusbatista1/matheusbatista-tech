@@ -65,6 +65,12 @@ import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContex
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
 import { AdaptPersonaCopy } from "@/application/use-cases/ai/AdaptPersonaCopy";
 import { SemanticSearchProjects } from "@/application/use-cases/ai/SemanticSearchProjects";
+import { SummarizeText } from "@/application/use-cases/ai/SummarizeText";
+import { ImproveCopy } from "@/application/use-cases/ai/ImproveCopy";
+import { GenerateProjectDescription } from "@/application/use-cases/ai/GenerateProjectDescription";
+import { SuggestProjectTags } from "@/application/use-cases/ai/SuggestProjectTags";
+import { TranslateText } from "@/application/use-cases/ai/TranslateText";
+import { DraftReplyToMessage } from "@/application/use-cases/ai/DraftReplyToMessage";
 import { LogActivity } from "@/application/use-cases/activity/LogActivity";
 import { ListRecentActivity } from "@/application/use-cases/activity/ListRecentActivity";
 import { UploadAsset } from "@/application/use-cases/assets/UploadAsset";
@@ -198,6 +204,31 @@ export const container = {
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
     adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),
     semanticSearchProjects: new SemanticSearchProjects(aiProvider, buildPromptContext, aiCacheRepo),
+    summarizeText: new SummarizeText(aiProvider, aiCacheRepo, chatLimiter, logActivity),
+    improveCopy: new ImproveCopy(aiProvider, aiCacheRepo, chatLimiter, logActivity),
+    generateProjectDescription: new GenerateProjectDescription(
+      aiProvider,
+      aiCacheRepo,
+      chatLimiter,
+      logActivity,
+      buildPromptContext,
+    ),
+    suggestProjectTags: new SuggestProjectTags(
+      aiProvider,
+      aiCacheRepo,
+      chatLimiter,
+      logActivity,
+      buildPromptContext,
+    ),
+    translateText: new TranslateText(aiProvider, aiCacheRepo, chatLimiter, logActivity),
+    draftReplyToMessage: new DraftReplyToMessage(
+      aiProvider,
+      aiCacheRepo,
+      chatLimiter,
+      logActivity,
+      buildPromptContext,
+      messageRepo,
+    ),
     logActivity,
     listRecentActivity,
     uploadAsset,

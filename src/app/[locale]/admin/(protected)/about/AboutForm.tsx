@@ -5,7 +5,8 @@ import { useCallback, useMemo, useState, useTransition } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 
 import type { AboutContent } from "@/domain/entities/AboutContent";
-import type { Locale } from "@/domain/value-objects/Locale";
+import { LOCALES, type Locale } from "@/domain/value-objects/Locale";
+import { AIButton } from "@/presentation/components/admin/ai/AIButton";
 import { Button } from "@/presentation/components/admin/ui/Button";
 import { Card } from "@/presentation/components/admin/ui/Card";
 import { Input } from "@/presentation/components/admin/ui/Input";
@@ -50,6 +51,8 @@ export function AboutForm({ about }: AboutFormProps) {
     register,
     handleSubmit,
     reset,
+    getValues,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<AboutFormValues>({
     defaultValues: defaults,
@@ -85,13 +88,65 @@ export function AboutForm({ about }: AboutFormProps) {
     [reset, toast],
   );
 
-  const onAiDisabled = useCallback(() => {
-    toast({
-      title: "AI is coming soon",
-      message: "This action will be available in the next phase.",
-      kind: "info",
+  const runImproveCopy = useCallback(async () => {
+    const current = getValues(`body.${activeLocale}` as const);
+    if (!current || current.trim().length === 0) {
+      toast({ title: "Nothing to improve", message: "Write some copy first.", kind: "info" });
+      return;
+    }
+
+    const response = await fetch("/api/ai/improve", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text: current, locale: activeLocale }),
     });
-  }, [toast]);
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new Error(data.error ?? `Request failed (${response.status})`);
+    }
+
+    const data = (await response.json()) as { improved: string };
+    setValue(`body.${activeLocale}` as const, data.improved, { shouldDirty: true });
+    toast({ title: "Copy improved", kind: "success" });
+  }, [activeLocale, getValues, setValue, toast]);
+
+  const runTranslateAll = useCallback(async () => {
+    const current = getValues(`body.${activeLocale}` as const);
+    if (!current || current.trim().length === 0) {
+      toast({ title: "Nothing to translate", message: "Write some copy first.", kind: "info" });
+      return;
+    }
+
+    const targets = LOCALES.filter((l) => l !== activeLocale);
+
+    const response = await fetch("/api/ai/translate", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ text: current, from: activeLocale, targets }),
+    });
+
+    if (!response.ok) {
+      const data = (await response.json().catch(() => ({}))) as { error?: string };
+      throw new Error(data.error ?? `Request failed (${response.status})`);
+    }
+
+    const data = (await response.json()) as { translated: Record<string, string> };
+    let count = 0;
+    for (const target of targets) {
+      const value = data.translated?.[target];
+      if (typeof value === "string" && value.length > 0) {
+        setValue(`body.${target}` as const, value, { shouldDirty: true });
+        count += 1;
+      }
+    }
+
+    toast({
+      title: "Translation ready",
+      message: `${count} locale${count === 1 ? "" : "s"} translated.`,
+      kind: "success",
+    });
+  }, [activeLocale, getValues, setValue, toast]);
 
   const localeUpper = activeLocale.toUpperCase();
 
@@ -126,26 +181,18 @@ export function AboutForm({ about }: AboutFormProps) {
           <div className="admin-form-row-head">
             <span className="admin-form-row-label">Body · {localeUpper}</span>
             <div className="admin-form-row-actions">
-              <Button
-                variant="ai"
-                size="sm"
+              <AIButton
+                onRun={runImproveCopy}
+                label="Improve copy"
                 icon={<Sparkles size={14} />}
-                disabled
-                title="AI feature coming in next phase"
-                onClick={onAiDisabled}
-              >
-                Improve
-              </Button>
-              <Button
-                variant="ai"
-                size="sm"
+                title="Rewrite this copy for clarity and tone"
+              />
+              <AIButton
+                onRun={runTranslateAll}
+                label="Translate to all langs"
                 icon={<Languages size={14} />}
-                disabled
-                title="AI feature coming in next phase"
-                onClick={onAiDisabled}
-              >
-                Translate to all langs
-              </Button>
+                title="Translate the current text to the other locales"
+              />
             </div>
           </div>
           <Textarea
