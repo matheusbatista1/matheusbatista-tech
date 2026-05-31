@@ -47,7 +47,6 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  min-height: 100dvh;
 }
 
 @media (max-width: 980px) {
@@ -469,8 +468,10 @@
   color: var(--admin-text-mute);
   max-width: 540px;
 }
-.admin-pagehead .actions {
+.admin-pagehead .actions,
+.admin-pagehead .page-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 @media (max-width: 980px) {

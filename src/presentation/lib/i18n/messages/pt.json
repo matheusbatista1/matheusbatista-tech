@@ -12,7 +12,7 @@
       "configuration": "Configuração",
       "dashboard": "Painel",
       "inbox": "Mensagens",
-      "logs": "Registros",
+      "logs": "Logs",
       "hero": "Hero",
       "about": "Sobre",
       "projects": "Projetos",
@@ -70,13 +70,24 @@
       }
     },
     "logs": {
-      "title": "Registros",
-      "lead": "Registro de atividades de todas as operações do admin e da API.",
-      "liveTail": "Tempo real",
+      "title": "Logs",
+      "lead": "Observabilidade em tempo real de eventos de API, banco, auth, sistema, IA e e-mail.",
+      "live": "Ao vivo",
       "paused": "Pausado",
       "playing": "Transmitindo",
-      "search": "Buscar registros...",
+      "streaming": "transmitindo",
+      "export": "Exportar",
       "clear": "Limpar",
+      "exportFilename": "portfolio-logs.json",
+      "exportToast": "Exportado — {n} entradas",
+      "clearedToast": "Logs limpos",
+      "clearConfirmTitle": "Limpar todos os logs?",
+      "clearConfirmMessage": "Isso remove todas as entradas da visão atual. Novos eventos continuarão chegando se o modo ao vivo estiver ativo.",
+      "clearConfirmConfirm": "Limpar",
+      "loading": "Carregando…",
+      "filterAll": "Todos",
+      "liveTail": "Tempo real",
+      "search": "Buscar mensagens, IDs de requisição, payloads…",
       "noResults": "Nenhum registro corresponde aos filtros atuais.",
       "copyJson": "Copiar JSON",
       "copied": "Copiado!",
@@ -90,11 +101,11 @@
       "sources": {
         "all": "Todas as fontes",
         "api": "API",
-        "database": "Banco de dados",
-        "auth": "Autenticação",
+        "database": "Banco",
+        "auth": "Auth",
         "system": "Sistema",
         "ai": "IA",
-        "email": "Email"
+        "email": "E-mail"
       }
     },
     "inbox": {
