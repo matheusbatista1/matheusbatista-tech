@@ -224,6 +224,14 @@ export function PersonaProvider({ aiEnabled, children }: PersonaProviderProps) {
 
   useEffect(() => {
     if (typeof document === "undefined") return;
+    // Only lock body scroll on the public portfolio. The admin shell handles its
+    // own layout and does not need the gate lock — leaving it set would block
+    // scroll across every /admin/* route.
+    const isAdmin = window.location.pathname.includes("/admin");
+    if (isAdmin) {
+      document.body.dataset.gate = "";
+      return;
+    }
     document.body.dataset.gate = phase === "ready" ? "" : "locked";
     return () => {
       document.body.dataset.gate = "";

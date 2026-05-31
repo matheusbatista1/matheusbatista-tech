@@ -6,11 +6,6 @@
   align-items: flex-start;
 }
 
-/* Variant of admin-content that goes full-width (matches design ref) */
-.admin-content.wide {
-  max-width: 100%;
-}
-
 .log-stats {
   display: flex;
   gap: 10px;

@@ -187,7 +187,7 @@ export function LogsPage() {
   const showInitialLoading = loading && entries.length === 0;
 
   return (
-    <div className="admin-content wide admin-logs">
+    <div className="admin-logs-page">
       <PageHead
         title={t("title")}
         lead={t("lead")}
