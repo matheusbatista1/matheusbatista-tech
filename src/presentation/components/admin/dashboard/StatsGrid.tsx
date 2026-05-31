@@ -1,11 +1,16 @@
-import type { DashboardStats } from "@/application/use-cases/dashboard/GetDashboardStats";
+import type {
+  DashboardStats,
+  TrendKind,
+} from "@/application/use-cases/dashboard/GetDashboardStats";
 import { Card } from "@/presentation/components/admin/ui/Card";
+import { CountUp } from "@/presentation/components/admin/dashboard/CountUp";
+import { Sparkline } from "@/presentation/components/admin/dashboard/Sparkline";
 
 export interface StatsGridLabels {
-  messagesToday: string;
-  unread: string;
-  visibleProjects: string;
-  aiCalls: string;
+  visits: string;
+  messages: string;
+  projects: string;
+  cvDownloads: string;
 }
 
 interface StatsGridProps {
@@ -13,36 +18,70 @@ interface StatsGridProps {
   labels: StatsGridLabels;
 }
 
+function EyeIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
+}
+
 function MailIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path d="m3 7 9 6 9-6" />
     </svg>
   );
 }
 
-function InboxIcon() {
+function FolderIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <path d="M22 12h-6l-2 3h-4l-2-3H2" />
-      <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
     </svg>
   );
 }
 
-function ProjectsIcon() {
+function DownloadIcon() {
   return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <path d="M3 7h18M3 12h18M3 17h12" />
-    </svg>
-  );
-}
-
-function SparkIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1" />
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
     </svg>
   );
 }
@@ -51,9 +90,12 @@ interface StatCardProps {
   label: string;
   value: number;
   icon: React.ReactNode;
+  spark: number[];
+  trend: string;
+  trendKind: TrendKind;
 }
 
-function StatCard({ label, value, icon }: StatCardProps) {
+function StatCard({ label, value, icon, spark, trend, trendKind }: StatCardProps) {
   return (
     <Card padding="md" className="admin-stat-card">
       <div className="admin-stat-label">
@@ -62,7 +104,15 @@ function StatCard({ label, value, icon }: StatCardProps) {
         </span>
         <span>{label}</span>
       </div>
-      <div className="admin-stat-value">{value}</div>
+      <div className="admin-stat-value">
+        <CountUp value={value} />
+      </div>
+      <div className="admin-stat-spark">
+        <Sparkline data={spark} height={32} />
+      </div>
+      <div className={trendKind === "down" ? "admin-stat-trend down" : "admin-stat-trend"}>
+        {trend}
+      </div>
     </Card>
   );
 }
@@ -70,14 +120,38 @@ function StatCard({ label, value, icon }: StatCardProps) {
 export function StatsGrid({ stats, labels }: StatsGridProps) {
   return (
     <div className="admin-stats-grid">
-      <StatCard label={labels.messagesToday} value={stats.messagesToday} icon={<MailIcon />} />
-      <StatCard label={labels.unread} value={stats.unreadMessages} icon={<InboxIcon />} />
       <StatCard
-        label={labels.visibleProjects}
-        value={stats.visibleProjects}
-        icon={<ProjectsIcon />}
+        label={labels.visits}
+        value={stats.totalVisits}
+        icon={<EyeIcon />}
+        spark={stats.visitsSpark}
+        trend={stats.visitsTrend}
+        trendKind={stats.visitsTrendKind}
       />
-      <StatCard label={labels.aiCalls} value={stats.aiCalls7d} icon={<SparkIcon />} />
+      <StatCard
+        label={labels.messages}
+        value={stats.totalMessages}
+        icon={<MailIcon />}
+        spark={stats.messagesSpark}
+        trend={stats.messagesTrend}
+        trendKind={stats.messagesTrendKind}
+      />
+      <StatCard
+        label={labels.projects}
+        value={stats.visibleProjects}
+        icon={<FolderIcon />}
+        spark={stats.projectsSpark}
+        trend={stats.projectsTrend}
+        trendKind={stats.projectsTrendKind}
+      />
+      <StatCard
+        label={labels.cvDownloads}
+        value={stats.cvDownloads}
+        icon={<DownloadIcon />}
+        spark={stats.cvSpark}
+        trend={stats.cvTrend}
+        trendKind={stats.cvTrendKind}
+      />
     </div>
   );
 }

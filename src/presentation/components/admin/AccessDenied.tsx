@@ -1,10 +1,11 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { signOut } from "next-auth/react";
 
-import { Button } from "@/presentation/components/admin/ui/Button";
+import { AdminGlow } from "@/presentation/components/admin/AdminGlow";
+import { AmbientBackground } from "@/presentation/components/admin/shell/AmbientBackground";
 
 export interface AccessDeniedProps {
   email: string;
@@ -14,24 +15,34 @@ export function AccessDenied({ email }: AccessDeniedProps) {
   const t = useTranslations("admin.accessDenied");
 
   return (
-    <div className="admin-shell admin-ambient" data-theme="dark">
-      <div className="admin-access-denied">
-        <div className="admin-access-denied-card">
-          <span className="admin-access-denied-mark" aria-hidden="true">
-            <AlertCircle size={28} />
-          </span>
-          <h1 className="admin-access-denied-title">{t("title")}</h1>
-          <p className="admin-access-denied-message">{t("message", { email })}</p>
-          <Button
-            variant="primary"
+    <div className="admin-shell" data-theme="dark">
+      <AmbientBackground />
+      <AdminGlow />
+      <main className="admin-signin">
+        <div className="admin-signin-card">
+          <div className="admin-signin-mark is-danger" aria-hidden="true">
+            !
+          </div>
+          <h1>{t("title")}</h1>
+          <p>
+            {t.rich("message", {
+              email: () => <strong>{email}</strong>,
+            })}
+          </p>
+          <button
+            type="button"
+            className="admin-signin-google"
             onClick={() => {
               void signOut({ callbackUrl: "/admin/signin" });
             }}
           >
-            {t("tryAnother")}
-          </Button>
+            <span>{t("tryAnother")}</span>
+          </button>
+          <div className="admin-signin-foot">
+            <Link href="/">{t("backToPortfolio")}</Link>
+          </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 }

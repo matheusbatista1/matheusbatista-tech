@@ -1,129 +1,171 @@
-.admin-projects-toolbar {
+/* ============================================================
+   View toggle in PageHead actions
+   ============================================================ */
+.admin-projects-view-toggle {
   display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
 }
-.admin-projects-toolbar .search {
-  flex: 1;
-  max-width: 320px;
-  min-width: 200px;
-}
-.admin-projects-toolbar .spacer {
-  flex: 1;
+.admin-projects-view-toggle .admin-btn {
+  border-radius: 6px;
 }
 
+/* ============================================================
+   Grid view
+   ============================================================ */
 .admin-projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
 }
 
 .admin-project-card {
-  padding: 16px;
-  cursor: pointer;
-  transition: border-color 140ms;
+  position: relative;
   background: var(--admin-surface);
   border: 1px solid var(--admin-border);
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  text-align: left;
-  color: inherit;
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
 }
 .admin-project-card:hover {
-  border-color: var(--admin-border-strong);
+  transform: translateY(-2px);
+  border-color: var(--admin-border-soft, rgba(255, 255, 255, 0.18));
 }
-.admin-project-card:focus-visible {
+.admin-project-card:focus-within {
   outline: 2px solid var(--admin-accent-blue);
   outline-offset: 2px;
 }
-.admin-project-card .cover {
-  aspect-ratio: 16 / 10;
-  background: var(--admin-surface-2);
-  border-radius: 8px;
-  overflow: hidden;
-  margin-bottom: 12px;
-  display: grid;
-  place-items: center;
-  color: var(--admin-text-dim);
-  font-size: 11px;
+
+.admin-project-card-button {
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+  text-align: left;
 }
-.admin-project-card .cover img {
+
+.admin-project-card-thumb {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(135deg, #1a1a22, #0e0e12);
+  overflow: hidden;
+}
+.admin-project-card-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
-.admin-project-card .name {
-  font-weight: 600;
-  font-size: 14px;
-}
-.admin-project-card .meta {
-  font-size: 12px;
-  color: var(--admin-text-mute);
+
+.admin-project-card-body {
+  padding: 14px 16px;
   display: flex;
+  flex-direction: column;
   gap: 6px;
-  align-items: center;
 }
+
+.admin-project-card h4 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--admin-text);
+  line-height: 1.3;
+}
+
+.admin-project-card .draft-inline {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--admin-text-dim);
+  margin-left: 4px;
+}
+
+.admin-project-card .url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  color: var(--admin-text-dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .admin-project-card .tags {
   display: flex;
   gap: 4px;
-  flex-wrap: wrap;
   margin-top: 8px;
+  flex-wrap: wrap;
 }
-.admin-project-card .tag {
-  font-size: 10.5px;
-  padding: 2px 6px;
-  border-radius: 4px;
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  border: 1px solid var(--admin-border-soft, rgba(255, 255, 255, 0.12));
   background: var(--admin-surface-2);
   color: var(--admin-text-mute);
-}
-.admin-project-card .draft {
-  color: var(--admin-yellow);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-.admin-project-card .hidden {
-  color: var(--admin-text-dim);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-.admin-project-card .pill {
   font-size: 10px;
-  letter-spacing: 0.08em;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: var(--admin-accent-blue-soft);
-  color: var(--admin-accent-blue);
-  font-weight: 700;
-  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-transform: none;
 }
-.admin-project-card .reorder {
+
+.tag-chip.is-images {
+  background: rgba(48, 209, 88, 0.1);
+  border-color: rgba(48, 209, 88, 0.3);
+  color: var(--admin-green);
+}
+
+.admin-project-card-actions {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   display: flex;
   gap: 4px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid var(--admin-border);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.admin-project-card-actions .admin-btn {
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  border: 0;
+}
+.admin-project-card:hover .admin-project-card-actions,
+.admin-project-card:focus-within .admin-project-card-actions {
+  opacity: 1;
+}
+
+/* ============================================================
+   Table view
+   ============================================================ */
+.admin-projects-table-wrap {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .admin-projects-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 13px;
-  background: var(--admin-surface);
-  border: 1px solid var(--admin-border);
-  border-radius: 10px;
-  overflow: hidden;
 }
+
 .admin-projects-table th,
 .admin-projects-table td {
   padding: 10px 12px;
   text-align: left;
   border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
 }
 .admin-projects-table th {
   background: var(--admin-surface-2);
@@ -136,44 +178,106 @@
 .admin-projects-table tr:last-child td {
   border-bottom: 0;
 }
-.admin-projects-table tr {
+
+.admin-projects-row {
   cursor: pointer;
 }
-.admin-projects-table tr:hover td {
+.admin-projects-row:hover td {
   background: var(--admin-surface-hover);
 }
+.admin-projects-table .col-order {
+  width: 50px;
+}
+.admin-projects-table .col-imgs {
+  width: 80px;
+}
+.admin-projects-table .col-order-actions {
+  width: 100px;
+}
+.admin-projects-table .col-actions {
+  width: 130px;
+}
+.admin-projects-table .dim {
+  color: var(--admin-text-dim);
+}
+
+.admin-projects-table .name-cell {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+.admin-projects-table .name-cell .draft-inline {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--admin-text-dim);
+  font-weight: 500;
+}
+.admin-projects-table .desc-cell {
+  font-size: 12px;
+  color: var(--admin-text-mute);
+  margin-top: 2px;
+  max-width: 360px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.admin-projects-table .url-cell {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  color: var(--admin-text-dim);
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.admin-projects-table .tags-cell {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
 .admin-projects-table .row-actions {
   display: flex;
   gap: 4px;
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+.admin-projects-table .row-actions-hover {
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+.admin-projects-row:hover .row-actions-hover,
+.admin-projects-row:focus-within .row-actions-hover {
+  opacity: 1;
 }
 
+/* ============================================================
+   Modal & form
+   ============================================================ */
 .admin-modal-wide {
   max-width: 880px !important;
 }
 
 .admin-project-form {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-}
-.admin-project-form .full {
-  grid-column: 1 / -1;
-}
-@media (max-width: 720px) {
-  .admin-project-form {
-    grid-template-columns: 1fr;
-  }
+  display: flex;
+  flex-direction: column;
 }
 
-.admin-project-form .lang-row {
-  display: grid;
-  grid-template-columns: 64px 1fr;
-  gap: 10px;
-  align-items: start;
+.admin-project-form .admin-form-row-full {
+  grid-template-columns: 1fr;
 }
-.admin-project-form .lang-row + .lang-row {
-  margin-top: 8px;
+.admin-project-form .admin-form-row-field-full {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-project-ai-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 4px;
 }
 
 .admin-project-form-foot {
@@ -186,111 +290,6 @@
   flex: 1;
 }
 
-.admin-gallery-editor {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-}
-@media (max-width: 600px) {
-  .admin-gallery-editor {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-.admin-gallery-tile {
-  aspect-ratio: 16 / 10;
-  background: var(--admin-surface-2);
-  border-radius: 8px;
-  position: relative;
-  overflow: hidden;
-  cursor: grab;
-}
-.admin-gallery-tile.is-dragging {
-  opacity: 0.4;
-}
-.admin-gallery-tile.is-drop-target {
-  outline: 2px dashed var(--admin-accent-blue);
-  outline-offset: -2px;
-}
-.admin-gallery-tile img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-.admin-gallery-tile .actions {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: rgba(0, 0, 0, 0.5);
-  opacity: 0;
-  transition: opacity 140ms;
-}
-.admin-gallery-tile:hover .actions,
-.admin-gallery-tile:focus-within .actions {
-  opacity: 1;
-}
-.admin-gallery-tile .cover-badge {
-  position: absolute;
-  top: 6px;
-  left: 6px;
-  background: var(--admin-accent);
-  color: #000;
-  font-size: 10px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  letter-spacing: 0.04em;
-}
-.admin-gallery-add {
-  aspect-ratio: 16 / 10;
-  border: 2px dashed var(--admin-border-strong);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-  cursor: pointer;
-  color: var(--admin-text-mute);
-  background: transparent;
-  font-size: 12px;
-  transition:
-    border-color 140ms,
-    color 140ms;
-}
-.admin-gallery-add:hover {
-  border-color: var(--admin-accent);
-  color: var(--admin-text);
-}
-.admin-gallery-add[disabled] {
-  cursor: progress;
-  opacity: 0.6;
-}
-.admin-gallery-add input {
-  display: none;
-}
-
-.admin-project-empty {
-  border: 1px dashed var(--admin-border-strong);
-  border-radius: 10px;
-  padding: 32px;
-  text-align: center;
-  color: var(--admin-text-mute);
-}
-
-.admin-project-form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-@media (max-width: 540px) {
-  .admin-project-form-row {
-    grid-template-columns: 1fr;
-  }
-}
-
 .admin-project-section-title {
   font-size: 12px;
   text-transform: uppercase;
@@ -300,22 +299,139 @@
   font-weight: 600;
 }
 
-.admin-projects-view-toggle {
+/* ============================================================
+   Gallery editor
+   ============================================================ */
+.admin-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.admin-gallery-tile {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background: var(--admin-bg-2, var(--admin-surface-2));
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: grab;
+}
+.admin-gallery-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.admin-gallery-tile.is-dragging {
+  opacity: 0.5;
+}
+.admin-gallery-tile.is-drop-target {
+  border-color: var(--admin-accent, var(--admin-accent-blue));
+}
+
+.admin-gallery-tile .cover-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 6px;
+  border-radius: 4px;
+}
+
+.admin-gallery-tile .ic-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
   display: flex;
   gap: 4px;
+  opacity: 0;
+  transition: opacity 180ms ease;
 }
-.admin-projects-status-live {
-  color: var(--admin-green);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+.admin-gallery-tile:hover .ic-actions,
+.admin-gallery-tile:focus-within .ic-actions {
+  opacity: 1;
 }
-.admin-projects-table th.sr-col {
-  width: 140px;
+.admin-gallery-tile .ic-actions button {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.7);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
 }
-.admin-projects-table th.col-order {
-  width: 48px;
+.admin-gallery-tile .ic-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
+.admin-gallery-tile .ic-actions button:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.85);
+}
+
+.admin-gallery-rot-left svg,
+.admin-gallery-rot-right svg {
+  transform: rotate(-90deg);
+}
+
+.admin-gallery-upload {
+  aspect-ratio: 16 / 10;
+  border-radius: 10px;
+  border: 1.5px dashed var(--admin-border-soft, rgba(255, 255, 255, 0.12));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--admin-text-mute);
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    border-color 180ms ease,
+    background 180ms ease,
+    color 180ms ease;
+}
+.admin-gallery-upload:hover,
+.admin-gallery-upload.is-drop-target {
+  border-color: var(--admin-border-strong);
+  background: var(--admin-surface);
+  color: var(--admin-text);
+}
+.admin-gallery-upload.is-uploading {
+  cursor: progress;
+  opacity: 0.7;
+}
+.admin-gallery-upload input {
+  display: none;
+}
+
+.admin-gallery-hint {
+  margin-top: 8px;
+}
+
+/* ============================================================
+   Empty state
+   ============================================================ */
+.admin-project-empty {
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: 10px;
+  padding: 32px;
+  text-align: center;
+  color: var(--admin-text-mute);
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -326,14 +442,4 @@
   clip: rect(0, 0, 0, 0);
   white-space: nowrap;
   border: 0;
-}
-
-.admin-project-card-button {
-  background: transparent;
-  border: 0;
-  padding: 0;
-  color: inherit;
-  cursor: pointer;
-  text-align: left;
-  width: 100%;
 }

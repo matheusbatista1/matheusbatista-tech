@@ -1,10 +1,9 @@
-import { Inbox } from "lucide-react";
+import { Mail } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import type { ContactMessage } from "@/domain/entities/ContactMessage";
-import { Card } from "@/presentation/components/admin/ui/Card";
-import { EmptyState } from "@/presentation/components/admin/ui/EmptyState";
 import { MessageActions, type InboxServerActions } from "./MessageActions";
+import { MessageHeadActions } from "./MessageHeadActions";
 
 interface MessageDetailProps {
   locale: string;
@@ -24,49 +23,55 @@ export async function MessageDetail({ locale, message, actions }: MessageDetailP
 
   if (!message) {
     return (
-      <Card padding="md" className="admin-msg-detail-card">
-        <EmptyState icon={<Inbox size={20} />} title={t("title")} description={t("selectOne")} />
-      </Card>
+      <section className="admin-msg-detail">
+        <div className="admin-msg-empty-state">
+          <Mail size={32} className="admin-msg-empty-icon" />
+          <span>{t("selectOne")}</span>
+        </div>
+      </section>
     );
   }
 
   const subject = message.subject?.trim() || "—";
 
   return (
-    <Card padding="md" className="admin-msg-detail-card">
-      <article className="admin-msg-detail">
-        <header className="head">
-          <div className="from">
-            <span className="name">{message.from}</span>
-            <a className="email" href={`mailto:${message.email}`}>
-              {message.email}
-            </a>
+    <section className="admin-msg-detail">
+      <div className="admin-msg-detail-head">
+        <div>
+          <h2>{subject}</h2>
+          <div className="meta">
+            <strong>{message.from}</strong> · {message.email}
+            <br />
+            {t("received")}{" "}
+            <time dateTime={message.createdAt.toISOString()}>
+              {formatDateTime(message.createdAt, locale)}
+            </time>
           </div>
-          <h2 className="subject">{subject}</h2>
-          <time className="when" dateTime={message.createdAt.toISOString()}>
-            {formatDateTime(message.createdAt, locale)}
-          </time>
-        </header>
-
-        <div className="body">
-          {message.body.split("\n").map((line, i) => (
-            <p key={i}>{line || " "}</p>
-          ))}
         </div>
-
-        <div className="actions">
-          <MessageActions
+        <div className="head-actions">
+          <MessageHeadActions
             id={message.id}
             locale={locale}
             read={message.read}
-            archived={message.archived}
-            from={message.from}
-            email={message.email}
-            subject={message.subject}
             actions={actions}
           />
         </div>
-      </article>
-    </Card>
+      </div>
+
+      <div className="body">
+        {message.body.split("\n").map((line, i) => (
+          <p key={i}>{line || " "}</p>
+        ))}
+      </div>
+
+      <div className="actions">
+        <MessageActions
+          id={message.id}
+          locale={locale}
+          email={message.email}
+          subject={message.subject}
+        />
+      </div>
+    </section>
   );
 }

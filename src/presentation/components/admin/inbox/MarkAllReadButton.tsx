@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCheck } from "lucide-react";
+import { Check } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 
@@ -18,9 +18,9 @@ export function MarkAllReadButton({ locale, disabled, action }: MarkAllReadButto
 
   return (
     <Button
-      variant="default"
+      variant="ghost"
       size="sm"
-      icon={<CheckCheck size={14} />}
+      icon={<Check size={14} />}
       loading={pending}
       disabled={disabled}
       onClick={() =>

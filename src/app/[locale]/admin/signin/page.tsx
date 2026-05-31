@@ -1,52 +1,69 @@
+import "@/presentation/app/admin.css";
+
+import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getTranslations } from "next-intl/server";
+
 import { auth, signIn } from "@/infrastructure/auth/auth";
-import { isAuthConfigured } from "@/infrastructure/config/env";
+import { AdminGlow } from "@/presentation/components/admin/AdminGlow";
+import { AmbientBackground } from "@/presentation/components/admin/shell/AmbientBackground";
+import { GoogleIcon } from "@/presentation/components/admin/GoogleIcon";
 
 interface SignInPageProps {
-  searchParams: Promise<{ error?: string }>;
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ error?: string; callbackUrl?: string }>;
 }
 
-export default async function SignInPage({ searchParams }: SignInPageProps) {
+export default async function SignInPage({ params, searchParams }: SignInPageProps) {
+  const { locale } = await params;
   const session = await auth();
-  if (session?.user) redirect("/admin");
+  if (session?.user) redirect(`/${locale}/admin`);
 
-  const { error } = await searchParams;
+  const { error, callbackUrl } = await searchParams;
+  const t = await getTranslations({ locale, namespace: "admin.signin" });
+
+  const authConfigured = Boolean(process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET);
+
+  const errorMessage = error
+    ? error === "AccessDenied"
+      ? t("errorAccessDenied")
+      : t("errorGeneric")
+    : null;
+
+  const subtitleHtml = t("subtitle").replace(/\n/g, "<br />");
+
+  async function signInAction() {
+    "use server";
+    const redirectTo = callbackUrl && callbackUrl.startsWith("/") ? callbackUrl : "/admin";
+    await signIn("google", { redirectTo });
+  }
 
   return (
-    <main className="admin-signin">
-      <div className="admin-signin-card">
-        <div className="admin-signin-mark">mb.</div>
-        <h1>Sign in to admin</h1>
-        <p>Restricted to the configured email allowlist.</p>
+    <div className="admin-shell" data-theme="dark">
+      <AmbientBackground />
+      <AdminGlow />
+      <main className="admin-signin">
+        <div className="admin-signin-card">
+          <div className="admin-signin-mark">mb</div>
+          <h1>{t("title")}</h1>
+          <p dangerouslySetInnerHTML={{ __html: subtitleHtml }} />
 
-        {error && (
-          <p className="admin-signin-error">
-            {error === "AccessDenied"
-              ? "This Google account is not allowed."
-              : "Could not sign in. Please try again."}
-          </p>
-        )}
+          {errorMessage && <div className="admin-signin-error">{errorMessage}</div>}
 
-        {isAuthConfigured ? (
-          <form
-            action={async () => {
-              "use server";
-              await signIn("google", { redirectTo: "/admin" });
-            }}
-          >
-            <button type="submit" className="admin-signin-google">
-              <span aria-hidden="true">G</span>
-              Continue with Google
+          {!authConfigured && <div className="admin-signin-warn">{t("authNotConfigured")}</div>}
+
+          <form action={signInAction}>
+            <button type="submit" className="admin-signin-google" disabled={!authConfigured}>
+              <GoogleIcon size={18} />
+              <span>{t("continueWithGoogle")}</span>
             </button>
           </form>
-        ) : (
-          <p className="admin-signin-warn">
-            Auth not configured. Set <code>AUTH_GOOGLE_ID</code>, <code>AUTH_GOOGLE_SECRET</code>,{" "}
-            <code>AUTH_SECRET</code> and <code>AUTH_ALLOWED_EMAILS</code> in <code>.env.local</code>
-            .
-          </p>
-        )}
-      </div>
-    </main>
+
+          <div className="admin-signin-foot">
+            <Link href={`/${locale}`}>{t("backToPortfolio")}</Link>
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

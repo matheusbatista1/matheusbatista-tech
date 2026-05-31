@@ -1,87 +1,53 @@
-.admin-social-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-bottom: 16px;
+.admin-social-card {
+  padding: 0 !important;
 }
-
-.admin-social-list {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  list-style: none;
-  margin: 0;
+.admin-social-card .admin-card-body {
   padding: 0;
 }
 
-.admin-social-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: var(--admin-surface);
-  border: 1px solid transparent;
-  border-radius: 8px;
-  cursor: move;
-  transition:
-    background 120ms ease,
-    border-color 120ms ease,
-    opacity 120ms ease;
-}
-.admin-social-row:hover {
-  background: var(--admin-surface-2);
-}
-.admin-social-row[data-dragging="true"] {
-  opacity: 0.5;
-}
-.admin-social-row[data-drop-target="true"] {
-  border-color: var(--admin-accent-blue);
-  background: var(--admin-accent-blue-soft);
+.admin-social-tbl {
+  width: 100%;
 }
 
-.admin-social-row .drag-handle {
-  color: var(--admin-text-dim);
-  cursor: grab;
-  display: inline-flex;
-  align-items: center;
+.admin-social-tbl th.admin-social-th-icon {
+  width: 60px;
 }
-.admin-social-row .drag-handle:active {
-  cursor: grabbing;
+.admin-social-tbl th.admin-social-th-visible {
+  width: 80px;
+}
+.admin-social-tbl th.admin-social-th-actions {
+  width: 120px;
 }
 
-.admin-social-row .icon {
-  width: 18px;
-  height: 18px;
+.admin-social-tbl td.admin-social-td-icon {
+  width: 60px;
   color: var(--admin-text-mute);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  vertical-align: middle;
 }
-
-.admin-social-row .name {
+.admin-social-tbl td.admin-social-td-name strong {
   font-weight: 500;
-  min-width: 100px;
   color: var(--admin-text);
 }
-
-.admin-social-row .url {
+.admin-social-tbl td.admin-social-td-url {
   color: var(--admin-text-mute);
-  font-size: 13px;
-  flex: 1;
+  font-family: var(--admin-font-mono, ui-monospace, SFMono-Regular, Menlo, Monaco, monospace);
+  font-size: 12px;
+  max-width: 280px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  text-decoration: none;
 }
-.admin-social-row .url:hover {
-  color: var(--admin-accent-blue);
-  text-decoration: underline;
+.admin-social-tbl td.admin-social-td-visible {
+  width: 80px;
+}
+.admin-social-tbl td.admin-social-td-actions {
+  width: 120px;
 }
 
-.admin-social-row .actions {
+.admin-social-row-actions {
   display: flex;
   gap: 6px;
+  justify-content: flex-end;
 }
 
 .admin-social-empty {

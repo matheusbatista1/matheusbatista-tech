@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { Save, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { SocialLink } from "@/domain/entities/SocialLink";
 import { Modal } from "@/presentation/components/admin/ui/Modal";
@@ -20,6 +21,7 @@ interface SocialModalProps {
 }
 
 export function SocialModal({ mode, social, actions, onClose }: SocialModalProps) {
+  const t = useTranslations("admin.social");
   const { toast } = useToast();
   const { confirm } = useConfirm();
   const [deleting, startDelete] = useTransition();
@@ -27,12 +29,12 @@ export function SocialModal({ mode, social, actions, onClose }: SocialModalProps
   const formRef = useRef<SocialFormHandle>(null);
 
   const isEdit = mode === "edit" && Boolean(social);
-  const title = isEdit ? `Edit ${social!.name}` : "New social link";
+  const title = isEdit ? `${social!.name}` : t("new");
 
   async function onDelete() {
     if (!social) return;
     const ok = await confirm({
-      title: "Delete link?",
+      title: t("confirmDelete"),
       message: `“${social.name}” will be removed permanently.`,
       danger: true,
       confirmLabel: "Delete",
@@ -45,7 +47,7 @@ export function SocialModal({ mode, social, actions, onClose }: SocialModalProps
         toast({ title: result.error, kind: "error" });
         return;
       }
-      toast({ title: "Link deleted", kind: "success" });
+      toast({ title: t("deleted"), kind: "success" });
       onClose();
     });
   }
@@ -59,23 +61,32 @@ export function SocialModal({ mode, social, actions, onClose }: SocialModalProps
       toast({ title: result.error, kind: "error" });
       return;
     }
-    toast({ title: isEdit ? "Changes saved" : "Link created", kind: "success" });
+    toast({ title: t("saved"), kind: "success" });
     onClose();
   }
 
   const footer = (
     <div className="admin-social-modal-foot">
       {isEdit && social && (
-        <Button variant="danger" icon={<Trash2 size={14} />} loading={deleting} onClick={onDelete}>
-          Delete
-        </Button>
+        <Button
+          variant="danger-solid"
+          icon={<Trash2 size={14} />}
+          loading={deleting}
+          onClick={onDelete}
+          aria-label="Delete"
+        />
       )}
       <div className="spacer" />
       <Button variant="ghost" onClick={onClose} disabled={submitting || deleting}>
         Cancel
       </Button>
-      <Button variant="primary" loading={submitting} onClick={handleSubmit}>
-        {isEdit ? "Save changes" : "Create link"}
+      <Button
+        variant="primary"
+        icon={<Save size={14} />}
+        loading={submitting}
+        onClick={handleSubmit}
+      >
+        Save
       </Button>
     </div>
   );

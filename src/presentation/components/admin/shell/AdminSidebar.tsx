@@ -3,14 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Inbox,
+  LayoutGrid,
+  Mail,
+  ScrollText,
+  Home,
+  Folder,
   Sparkles,
   User,
-  FolderKanban,
+  Link2,
   FileText,
-  Share2,
-  Wrench,
   Settings,
   LogOut,
 } from "lucide-react";
@@ -22,12 +23,13 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 export type AdminNavItemKey =
   | "dashboard"
   | "inbox"
+  | "logs"
   | "hero"
-  | "about"
   | "projects"
-  | "cv"
-  | "social"
   | "skills"
+  | "about"
+  | "social"
+  | "cv"
   | "settings";
 
 type SidebarItem = {
@@ -54,14 +56,15 @@ export type AdminSidebarUser = {
 };
 
 const ICONS: Record<AdminNavItemKey, IconComponent> = {
-  dashboard: LayoutDashboard,
-  inbox: Inbox,
-  hero: Sparkles,
+  dashboard: LayoutGrid,
+  inbox: Mail,
+  logs: ScrollText,
+  hero: Home,
+  projects: Folder,
+  skills: Sparkles,
   about: User,
-  projects: FolderKanban,
+  social: Link2,
   cv: FileText,
-  social: Share2,
-  skills: Wrench,
   settings: Settings,
 };
 
@@ -110,15 +113,18 @@ export function AdminSidebar({
       aria-label={brandLabel}
     >
       <div className="admin-sidebar-brand">
-        <span className="admin-sidebar-mark" aria-hidden="true">
+        <div className="admin-sidebar-mark" aria-hidden="true">
           {brandMark}
-        </span>
-        <span>{brandLabel}</span>
+        </div>
+        <div className="admin-sidebar-brand-info">
+          <span className="t">Portfolio</span>
+          <span className="s">{brandLabel}</span>
+        </div>
       </div>
 
       <nav aria-label={brandLabel}>
         {sections.map((section) => (
-          <div key={section.id}>
+          <div key={section.id} className="admin-sidebar-section">
             <div className="admin-sidebar-section-label">{section.label}</div>
             {section.items.map((item) => {
               const Icon = ICONS[item.key];
@@ -163,28 +169,21 @@ function SidebarFooter({
 }): ReactNode {
   return (
     <div className="admin-sidebar-footer">
-      <div className="admin-sidebar-user">
-        <span className="avatar" aria-hidden="true">
-          {user.image ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={user.image} alt="" />
-          ) : (
-            initialsOf(user.name, user.email)
-          )}
-        </span>
-        <span className="info">
-          <span className="name">{user.name ?? user.email ?? ""}</span>
-          {user.email ? <span className="email">{user.email}</span> : null}
-        </span>
-      </div>
+      <span className="avatar" aria-hidden="true">
+        {user.image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={user.image} alt="" />
+        ) : (
+          initialsOf(user.name, user.email)
+        )}
+      </span>
+      <span className="info">
+        <span className="name">{user.name ?? user.email ?? ""}</span>
+        {user.email ? <span className="email">{user.email}</span> : null}
+      </span>
       <form action={signOutAction}>
-        <button
-          type="submit"
-          className="admin-sidebar-link"
-          style={{ width: "100%", background: "transparent", border: "none", cursor: "pointer" }}
-        >
-          <LogOut aria-hidden="true" />
-          <span>{labels.signOut}</span>
+        <button type="submit" aria-label={labels.signOut} className="signout-icon">
+          <LogOut aria-hidden="true" width={16} height={16} />
         </button>
       </form>
     </div>
