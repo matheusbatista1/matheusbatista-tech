@@ -25,6 +25,10 @@
       "title": "Dashboard",
       "lead": "Quick overview of your portfolio.",
       "stats": {
+        "visits": "Total visits",
+        "messages": "Messages",
+        "projects": "Projects",
+        "cvDownloads": "CV downloads",
         "messagesToday": "Messages today",
         "unread": "Unread",
         "visibleProjects": "Visible projects",
@@ -33,7 +37,65 @@
       "recentActivity": "Recent activity",
       "recentMessages": "Recent messages",
       "noActivity": "No activity yet.",
-      "noMessages": "No messages yet."
+      "noMessages": "No messages yet.",
+      "viewPortfolio": "View portfolio",
+      "table": {
+        "from": "From",
+        "subject": "Subject",
+        "received": "Received"
+      },
+      "activity": {
+        "newMessageFrom": "New message from {name}",
+        "newMessageFromAbout": "New message from {name} about {subject}",
+        "projectCreated": "Project {name} created",
+        "projectUpdated": "Project {name} updated",
+        "projectDeleted": "Project {name} deleted",
+        "projectPublished": "Project {name} published",
+        "skillCreated": "Skill {name} added",
+        "skillUpdated": "Skill {name} updated",
+        "skillDeleted": "Skill {name} removed",
+        "socialCreated": "Social link added",
+        "socialUpdated": "Social link updated",
+        "socialDeleted": "Social link removed",
+        "heroUpdated": "Hero section edited",
+        "aboutUpdated": "About section edited",
+        "settingsUpdated": "Settings updated",
+        "cvUploaded": "New CV uploaded",
+        "cvDeleted": "CV removed",
+        "assetUploaded": "New asset uploaded",
+        "assetDeleted": "Asset removed",
+        "aiApplied": "AI suggestion applied to {entity}",
+        "reset": "{entity} reset",
+        "fallback": "{action} on {entity}"
+      }
+    },
+    "logs": {
+      "title": "Logs",
+      "lead": "Activity log from all admin and API operations.",
+      "liveTail": "Live tail",
+      "paused": "Paused",
+      "playing": "Streaming",
+      "search": "Search logs...",
+      "clear": "Clear",
+      "noResults": "No logs match the current filters.",
+      "copyJson": "Copy JSON",
+      "copied": "Copied!",
+      "levels": {
+        "all": "All levels",
+        "error": "Error",
+        "warn": "Warning",
+        "info": "Info",
+        "debug": "Debug"
+      },
+      "sources": {
+        "all": "All sources",
+        "api": "API",
+        "database": "Database",
+        "auth": "Auth",
+        "system": "System",
+        "ai": "AI",
+        "email": "Email"
+      }
     },
     "inbox": {
       "title": "Inbox",

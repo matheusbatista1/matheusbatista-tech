@@ -25,6 +25,10 @@
       "title": "Painel",
       "lead": "Visão rápida do seu portfolio.",
       "stats": {
+        "visits": "Visitas totais",
+        "messages": "Mensagens",
+        "projects": "Projetos",
+        "cvDownloads": "Downloads do CV",
         "messagesToday": "Mensagens hoje",
         "unread": "Não lidas",
         "visibleProjects": "Projetos visíveis",
@@ -33,7 +37,65 @@
       "recentActivity": "Atividade recente",
       "recentMessages": "Mensagens recentes",
       "noActivity": "Nenhuma atividade ainda.",
-      "noMessages": "Nenhuma mensagem ainda."
+      "noMessages": "Nenhuma mensagem ainda.",
+      "viewPortfolio": "Ver portfolio",
+      "table": {
+        "from": "De",
+        "subject": "Assunto",
+        "received": "Recebido"
+      },
+      "activity": {
+        "newMessageFrom": "Nova mensagem de {name}",
+        "newMessageFromAbout": "Nova mensagem de {name} sobre {subject}",
+        "projectCreated": "Projeto {name} criado",
+        "projectUpdated": "Projeto {name} atualizado",
+        "projectDeleted": "Projeto {name} removido",
+        "projectPublished": "Projeto {name} publicado",
+        "skillCreated": "Habilidade {name} adicionada",
+        "skillUpdated": "Habilidade {name} atualizada",
+        "skillDeleted": "Habilidade {name} removida",
+        "socialCreated": "Link social adicionado",
+        "socialUpdated": "Link social atualizado",
+        "socialDeleted": "Link social removido",
+        "heroUpdated": "Seção Hero editada",
+        "aboutUpdated": "Seção Sobre editada",
+        "settingsUpdated": "Configurações atualizadas",
+        "cvUploaded": "Novo CV enviado",
+        "cvDeleted": "CV removido",
+        "assetUploaded": "Novo asset enviado",
+        "assetDeleted": "Asset removido",
+        "aiApplied": "Sugestão de IA aplicada em {entity}",
+        "reset": "{entity} redefinido",
+        "fallback": "{action} em {entity}"
+      }
+    },
+    "logs": {
+      "title": "Registros",
+      "lead": "Registro de atividades de todas as operações do admin e da API.",
+      "liveTail": "Tempo real",
+      "paused": "Pausado",
+      "playing": "Transmitindo",
+      "search": "Buscar registros...",
+      "clear": "Limpar",
+      "noResults": "Nenhum registro corresponde aos filtros atuais.",
+      "copyJson": "Copiar JSON",
+      "copied": "Copiado!",
+      "levels": {
+        "all": "Todos os níveis",
+        "error": "Erro",
+        "warn": "Aviso",
+        "info": "Info",
+        "debug": "Debug"
+      },
+      "sources": {
+        "all": "Todas as fontes",
+        "api": "API",
+        "database": "Banco de dados",
+        "auth": "Autenticação",
+        "system": "Sistema",
+        "ai": "IA",
+        "email": "Email"
+      }
     },
     "inbox": {
       "title": "Mensagens",
