@@ -5,6 +5,7 @@ export interface ContactMessage {
   subject: string | null;
   body: string;
   read: boolean;
+  archived: boolean;
   createdAt: Date;
 }
 

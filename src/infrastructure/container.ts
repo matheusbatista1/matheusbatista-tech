@@ -11,8 +11,13 @@ import { PrismaSocialLinkRepository } from "./repositories/PrismaSocialLinkRepos
 import { PrismaContentRepository } from "./repositories/PrismaContentRepository";
 import { PrismaMessageRepository } from "./repositories/PrismaMessageRepository";
 import { PrismaAICacheRepository } from "./repositories/PrismaAICacheRepository";
+import { PrismaProjectImageRepository } from "./repositories/PrismaProjectImageRepository";
+import { PrismaCVAssetRepository } from "./repositories/PrismaCVAssetRepository";
+import { PrismaSiteSettingsRepository } from "./repositories/PrismaSiteSettingsRepository";
+import { PrismaActivityEventRepository } from "./repositories/PrismaActivityEventRepository";
 import { GeminiProvider } from "./ai/GeminiProvider";
 import { UpstashRateLimiter } from "./ratelimit/UpstashRateLimiter";
+import { VercelBlobStorage } from "./storage/VercelBlobStorage";
 
 import { ListProjects } from "@/application/use-cases/projects/ListProjects";
 import { GetProjectById } from "@/application/use-cases/projects/GetProjectById";
@@ -41,6 +46,10 @@ import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContex
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
 import { AdaptPersonaCopy } from "@/application/use-cases/ai/AdaptPersonaCopy";
 import { SemanticSearchProjects } from "@/application/use-cases/ai/SemanticSearchProjects";
+import { LogActivity } from "@/application/use-cases/activity/LogActivity";
+import { ListRecentActivity } from "@/application/use-cases/activity/ListRecentActivity";
+import { UploadAsset } from "@/application/use-cases/assets/UploadAsset";
+import { DeleteAsset } from "@/application/use-cases/assets/DeleteAsset";
 
 // ─── Repositories ────────────────────────────────────────────────────────────
 const projectRepo = new PrismaProjectRepository();
@@ -49,9 +58,14 @@ const socialRepo = new PrismaSocialLinkRepository();
 const contentRepo = new PrismaContentRepository();
 const messageRepo = new PrismaMessageRepository();
 const aiCacheRepo = new PrismaAICacheRepository();
+const projectImageRepo = new PrismaProjectImageRepository();
+const cvAssetRepo = new PrismaCVAssetRepository();
+const siteSettingsRepo = new PrismaSiteSettingsRepository();
+const activityRepo = new PrismaActivityEventRepository();
 
 // ─── External services ───────────────────────────────────────────────────────
 const aiProvider = new GeminiProvider();
+const blobStorage = new VercelBlobStorage();
 
 // Rate limiters: 10 msgs/min e 100/dia por IP (recomendados no plano)
 const chatLimiter = new UpstashRateLimiter({
@@ -68,6 +82,10 @@ const dailyLimiter = new UpstashRateLimiter({
 
 // ─── Use cases ───────────────────────────────────────────────────────────────
 const buildPromptContext = new BuildPromptContext(contentRepo, projectRepo, skillRepo, socialRepo);
+const logActivity = new LogActivity(activityRepo);
+const listRecentActivity = new ListRecentActivity(activityRepo);
+const uploadAsset = new UploadAsset(blobStorage, logActivity);
+const deleteAsset = new DeleteAsset(blobStorage, logActivity);
 
 export const container = {
   // Repositories (raramente expor — preferir use cases)
@@ -78,12 +96,20 @@ export const container = {
     content: contentRepo,
     message: messageRepo,
     aiCache: aiCacheRepo,
+    projectImage: projectImageRepo,
+    cvAsset: cvAssetRepo,
+    siteSettings: siteSettingsRepo,
+    activity: activityRepo,
   },
 
   // External services
   ai: {
     provider: aiProvider,
     rateLimits: { chat: chatLimiter, daily: dailyLimiter },
+  },
+
+  services: {
+    blob: blobStorage,
   },
 
   // Use cases
@@ -115,6 +141,10 @@ export const container = {
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
     adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),
     semanticSearchProjects: new SemanticSearchProjects(aiProvider, buildPromptContext, aiCacheRepo),
+    logActivity,
+    listRecentActivity,
+    uploadAsset,
+    deleteAsset,
   },
 };
 

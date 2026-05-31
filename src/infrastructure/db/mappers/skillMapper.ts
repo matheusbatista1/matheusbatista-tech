@@ -18,6 +18,8 @@ export function toSkill(row: PrismaSkill): Skill {
       ? (row.category as SkillCategory)
       : "tools",
     color: row.color,
+    fg: row.fg,
+    iconUrl: row.iconUrl,
     order: row.order,
   };
 }

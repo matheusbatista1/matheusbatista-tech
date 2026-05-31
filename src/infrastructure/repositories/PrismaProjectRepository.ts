@@ -24,22 +24,32 @@ export class PrismaProjectRepository implements IProjectRepository {
     const rows = await prisma.project.findMany({
       where: visibleOnly ? { visible: true } : undefined,
       orderBy: { order: "asc" },
+      include: { gallery: { orderBy: { order: "asc" } } },
     });
     return rows.map(toProject);
   }
 
   async findById(id: string): Promise<Project | null> {
-    const row = await prisma.project.findUnique({ where: { id } });
+    const row = await prisma.project.findUnique({
+      where: { id },
+      include: { gallery: { orderBy: { order: "asc" } } },
+    });
     return row ? toProject(row) : null;
   }
 
   async findBySlug(slug: string): Promise<Project | null> {
-    const row = await prisma.project.findUnique({ where: { slug } });
+    const row = await prisma.project.findUnique({
+      where: { slug },
+      include: { gallery: { orderBy: { order: "asc" } } },
+    });
     return row ? toProject(row) : null;
   }
 
   async findManyByIds(ids: string[]): Promise<Project[]> {
-    const rows = await prisma.project.findMany({ where: { id: { in: ids } } });
+    const rows = await prisma.project.findMany({
+      where: { id: { in: ids } },
+      include: { gallery: { orderBy: { order: "asc" } } },
+    });
     return rows.map(toProject);
   }
 
