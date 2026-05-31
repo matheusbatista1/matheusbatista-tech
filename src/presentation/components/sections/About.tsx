@@ -98,6 +98,9 @@ export async function About({
                 <MailIcon />
                 {t("send")}
               </a>
+              {/* TODO(cv): once a CV asset is uploaded for this locale, add
+                  <a href={`/api/cv/${locale}`}> to enable tracked downloads
+                  via the /api/cv/[locale] route. */}
             </div>
           </div>
         </div>

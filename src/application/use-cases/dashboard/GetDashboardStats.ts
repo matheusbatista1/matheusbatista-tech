@@ -1,6 +1,9 @@
 import type { IMessageRepository } from "@/domain/repositories/IMessageRepository";
 import type { IProjectRepository } from "@/domain/repositories/IProjectRepository";
 import type { IActivityEventRepository } from "@/domain/repositories/IActivityEventRepository";
+import type { IPageViewRepository } from "@/domain/repositories/IPageViewRepository";
+import type { ICVDownloadRepository } from "@/domain/repositories/ICVDownloadRepository";
+import type { IAIUsageLogRepository } from "@/domain/repositories/IAIUsageLogRepository";
 
 export type TrendKind = "up" | "down";
 
@@ -36,11 +39,35 @@ function startOfDayUTC(ts: number): number {
   return d.getTime();
 }
 
+function dayKey(ts: number): string {
+  return new Date(ts).toISOString().slice(0, 10);
+}
+
+function buildSpark(byDay: Map<string, number>, todayStart: number): number[] {
+  return Array.from({ length: 7 }, (_, idx) => {
+    const dayStart = todayStart - (6 - idx) * DAY_MS;
+    return byDay.get(dayKey(dayStart)) ?? 0;
+  });
+}
+
+function computeTrend(last: number, prev: number): { label: string; kind: TrendKind } {
+  if (prev === 0 && last > 0) return { label: "+100%", kind: "up" };
+  if (prev === 0 && last === 0) return { label: "+0%", kind: "up" };
+  const pct = ((last - prev) / prev) * 100;
+  const rounded = Math.round(pct);
+  const label = `${rounded >= 0 ? "+" : ""}${rounded}%`;
+  const kind: TrendKind = rounded >= 0 ? "up" : "down";
+  return { label, kind };
+}
+
 export class GetDashboardStats {
   constructor(
     private readonly messageRepo: IMessageRepository,
     private readonly projectRepo: IProjectRepository,
     private readonly activityRepo: IActivityEventRepository,
+    private readonly pageViewRepo: IPageViewRepository,
+    private readonly cvDownloadRepo: ICVDownloadRepository,
+    private readonly aiUsageLogRepo: IAIUsageLogRepository,
   ) {}
 
   async execute(): Promise<DashboardStats> {
@@ -49,20 +76,49 @@ export class GetDashboardStats {
     const sevenDaysAgo = now - 7 * DAY_MS;
     const fourteenDaysAgo = now - 14 * DAY_MS;
 
-    const [allMessages, unread, projects, activity] = await Promise.all([
+    const sevenDaysAgoDate = new Date(sevenDaysAgo);
+    const fourteenDaysAgoDate = new Date(fourteenDaysAgo);
+    const nowDate = new Date(now);
+
+    const [
+      allMessages,
+      unread,
+      projects,
+      activity,
+      totalVisits,
+      visitsByDay,
+      visitsLast7,
+      visitsLast14,
+      cvDownloads,
+      cvByDay,
+      cvLast7,
+      cvLast14,
+      aiCalls7d,
+    ] = await Promise.all([
       this.messageRepo.list({}),
       this.messageRepo.list({ unreadOnly: true }),
       this.projectRepo.list(),
       this.activityRepo.listRecent({ limit: 200 }),
+      this.pageViewRepo.count(),
+      this.pageViewRepo.countByDayRange(sevenDaysAgoDate, nowDate),
+      this.pageViewRepo.countSince(sevenDaysAgoDate),
+      this.pageViewRepo.countSince(fourteenDaysAgoDate),
+      this.cvDownloadRepo.count(),
+      this.cvDownloadRepo.countByDayRange(sevenDaysAgoDate, nowDate),
+      this.cvDownloadRepo.countSince(sevenDaysAgoDate),
+      this.cvDownloadRepo.countSince(fourteenDaysAgoDate),
+      this.aiUsageLogRepo.countSince(sevenDaysAgoDate),
     ]);
 
+    // activity é mantido para uso futuro (atividade recente)
+    void activity;
+
     const messagesToday = allMessages.filter((m) => m.createdAt.getTime() >= oneDayAgo).length;
-    const aiCalls7d = activity.filter(
-      (a) => a.action === "ai_apply" && a.createdAt.getTime() >= sevenDaysAgo,
-    ).length;
     const visibleProjects = projects.filter((p) => p.visible).length;
+    const totalProjects = projects.length;
 
     const todayStart = startOfDayUTC(now);
+
     const messagesSpark: number[] = Array.from({ length: 7 }, (_, idx) => {
       const dayStart = todayStart - (6 - idx) * DAY_MS;
       const dayEnd = dayStart + DAY_MS;
@@ -77,33 +133,23 @@ export class GetDashboardStats {
       const t = m.createdAt.getTime();
       return t >= fourteenDaysAgo && t < sevenDaysAgo;
     }).length;
-    const messagesDelta = messagesLast7 - messagesPrev7;
-    const messagesTrendPct =
-      messagesPrev7 === 0
-        ? messagesLast7 === 0
-          ? 0
-          : 100
-        : Math.round((messagesDelta / messagesPrev7) * 100);
-    const messagesTrendKind: TrendKind = messagesDelta < 0 ? "down" : "up";
-    const messagesTrend = `${messagesDelta >= 0 ? "+" : ""}${messagesTrendPct}%`;
+    const messagesTrendInfo = computeTrend(messagesLast7, messagesPrev7);
 
     const projectsSpark: number[] = Array.from({ length: 6 }, (_, i) => {
       const monthsAgo = 5 - i;
       const cutoff = now - monthsAgo * 30 * DAY_MS;
       return projects.filter((p) => p.createdAt && p.createdAt.getTime() <= cutoff).length;
     });
-    const projectsTrend = "live";
+    const projectsTrend = `${visibleProjects}/${totalProjects} live`;
     const projectsTrendKind: TrendKind = "up";
 
-    const visitsSpark: number[] = Array.from({ length: 7 }, (_, i) => 820 + ((i * 47) % 380));
-    const totalVisits = 0;
-    const visitsTrend = "+0%";
-    const visitsTrendKind: TrendKind = "up";
+    const visitsSpark = buildSpark(visitsByDay, todayStart);
+    const visitsPrev7 = visitsLast14 - visitsLast7;
+    const visitsTrendInfo = computeTrend(visitsLast7, visitsPrev7);
 
-    const cvSpark: number[] = Array.from({ length: 7 }, (_, i) => 12 + ((i * 7) % 22));
-    const cvDownloads = 0;
-    const cvTrend = "+0%";
-    const cvTrendKind: TrendKind = "up";
+    const cvSpark = buildSpark(cvByDay, todayStart);
+    const cvPrev7 = cvLast14 - cvLast7;
+    const cvTrendInfo = computeTrend(cvLast7, cvPrev7);
 
     return {
       totalVisits,
@@ -117,14 +163,14 @@ export class GetDashboardStats {
       messagesSpark,
       projectsSpark,
       cvSpark,
-      visitsTrend,
-      visitsTrendKind,
-      messagesTrend,
-      messagesTrendKind,
+      visitsTrend: visitsTrendInfo.label,
+      visitsTrendKind: visitsTrendInfo.kind,
+      messagesTrend: messagesTrendInfo.label,
+      messagesTrendKind: messagesTrendInfo.kind,
       projectsTrend,
       projectsTrendKind,
-      cvTrend,
-      cvTrendKind,
+      cvTrend: cvTrendInfo.label,
+      cvTrendKind: cvTrendInfo.kind,
     };
   }
 }

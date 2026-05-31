@@ -15,6 +15,9 @@ import { PrismaProjectImageRepository } from "./repositories/PrismaProjectImageR
 import { PrismaCVAssetRepository } from "./repositories/PrismaCVAssetRepository";
 import { PrismaSiteSettingsRepository } from "./repositories/PrismaSiteSettingsRepository";
 import { PrismaActivityEventRepository } from "./repositories/PrismaActivityEventRepository";
+import { PrismaPageViewRepository } from "./repositories/PrismaPageViewRepository";
+import { PrismaCVDownloadRepository } from "./repositories/PrismaCVDownloadRepository";
+import { PrismaAIUsageLogRepository } from "./repositories/PrismaAIUsageLogRepository";
 import { GeminiProvider } from "./ai/GeminiProvider";
 import { UpstashRateLimiter } from "./ratelimit/UpstashRateLimiter";
 import { VercelBlobStorage } from "./storage/VercelBlobStorage";
@@ -73,6 +76,9 @@ import { TranslateText } from "@/application/use-cases/ai/TranslateText";
 import { DraftReplyToMessage } from "@/application/use-cases/ai/DraftReplyToMessage";
 import { LogActivity } from "@/application/use-cases/activity/LogActivity";
 import { ListRecentActivity } from "@/application/use-cases/activity/ListRecentActivity";
+import { LogPageView } from "@/application/use-cases/analytics/LogPageView";
+import { LogCVDownload } from "@/application/use-cases/analytics/LogCVDownload";
+import { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 import { UploadAsset } from "@/application/use-cases/assets/UploadAsset";
 import { DeleteAsset } from "@/application/use-cases/assets/DeleteAsset";
 
@@ -87,6 +93,9 @@ const projectImageRepo = new PrismaProjectImageRepository();
 const cvAssetRepo = new PrismaCVAssetRepository();
 const siteSettingsRepo = new PrismaSiteSettingsRepository();
 const activityRepo = new PrismaActivityEventRepository();
+const pageViewRepo = new PrismaPageViewRepository();
+const cvDownloadRepo = new PrismaCVDownloadRepository();
+const aiUsageLogRepo = new PrismaAIUsageLogRepository();
 
 // ─── External services ───────────────────────────────────────────────────────
 const aiProvider = new GeminiProvider();
@@ -119,6 +128,9 @@ const reorderProjectImages = new ReorderProjectImages(projectImageRepo, logActiv
 const uploadCV = new UploadCV(cvAssetRepo, blobStorage, logActivity);
 const deleteCV = new DeleteCV(cvAssetRepo, blobStorage, logActivity);
 const listCVs = new ListCVs(cvAssetRepo);
+const logAIUsage = new LogAIUsage(aiUsageLogRepo);
+const logCVDownload = new LogCVDownload(cvDownloadRepo);
+const logPageView = new LogPageView(pageViewRepo);
 
 export const container = {
   // Repositories (raramente expor — preferir use cases)
@@ -133,6 +145,9 @@ export const container = {
     cvAsset: cvAssetRepo,
     siteSettings: siteSettingsRepo,
     activity: activityRepo,
+    pageView: pageViewRepo,
+    cvDownload: cvDownloadRepo,
+    aiUsageLog: aiUsageLogRepo,
   },
 
   // External services
@@ -174,7 +189,14 @@ export const container = {
     markAllMessagesRead: new MarkAllMessagesRead(messageRepo, logActivity),
     archiveMessage: new ArchiveMessage(messageRepo, logActivity),
     deleteMessage: new DeleteMessage(messageRepo, logActivity),
-    getDashboardStats: new GetDashboardStats(messageRepo, projectRepo, activityRepo),
+    getDashboardStats: new GetDashboardStats(
+      messageRepo,
+      projectRepo,
+      activityRepo,
+      pageViewRepo,
+      cvDownloadRepo,
+      aiUsageLogRepo,
+    ),
     getSiteContent: new GetSiteContent(contentRepo),
     updateHeroContent: new UpdateHeroContent(contentRepo),
     updateAboutContent: new UpdateAboutContent(contentRepo),
@@ -201,17 +223,28 @@ export const container = {
       logActivity,
     ),
     buildPromptContext,
-    chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
-    adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),
-    semanticSearchProjects: new SemanticSearchProjects(aiProvider, buildPromptContext, aiCacheRepo),
-    summarizeText: new SummarizeText(aiProvider, aiCacheRepo, chatLimiter, logActivity),
-    improveCopy: new ImproveCopy(aiProvider, aiCacheRepo, chatLimiter, logActivity),
+    chatWithAssistant: new ChatWithAssistant(
+      aiProvider,
+      buildPromptContext,
+      aiCacheRepo,
+      logAIUsage,
+    ),
+    adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo, logAIUsage),
+    semanticSearchProjects: new SemanticSearchProjects(
+      aiProvider,
+      buildPromptContext,
+      aiCacheRepo,
+      logAIUsage,
+    ),
+    summarizeText: new SummarizeText(aiProvider, aiCacheRepo, chatLimiter, logActivity, logAIUsage),
+    improveCopy: new ImproveCopy(aiProvider, aiCacheRepo, chatLimiter, logActivity, logAIUsage),
     generateProjectDescription: new GenerateProjectDescription(
       aiProvider,
       aiCacheRepo,
       chatLimiter,
       logActivity,
       buildPromptContext,
+      logAIUsage,
     ),
     suggestProjectTags: new SuggestProjectTags(
       aiProvider,
@@ -219,8 +252,9 @@ export const container = {
       chatLimiter,
       logActivity,
       buildPromptContext,
+      logAIUsage,
     ),
-    translateText: new TranslateText(aiProvider, aiCacheRepo, chatLimiter, logActivity),
+    translateText: new TranslateText(aiProvider, aiCacheRepo, chatLimiter, logActivity, logAIUsage),
     draftReplyToMessage: new DraftReplyToMessage(
       aiProvider,
       aiCacheRepo,
@@ -228,9 +262,13 @@ export const container = {
       logActivity,
       buildPromptContext,
       messageRepo,
+      logAIUsage,
     ),
     logActivity,
     listRecentActivity,
+    logPageView,
+    logCVDownload,
+    logAIUsage,
     uploadAsset,
     deleteAsset,
   },

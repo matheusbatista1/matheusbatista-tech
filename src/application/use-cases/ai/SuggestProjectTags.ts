@@ -9,6 +9,7 @@ import {
   type SuggestTagsSchemaType,
 } from "@/application/ai/schemas/suggest-tags";
 import { buildSuggestTagsPrompt } from "@/application/ai/prompts/suggest-tags";
+import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "suggest-tags";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -34,6 +35,7 @@ export class SuggestProjectTags {
     private readonly rateLimiter: IRateLimiter,
     private readonly logActivity: LogActivity,
     private readonly buildContext: BuildPromptContext,
+    private readonly logAIUsage?: LogAIUsage,
   ) {}
 
   async execute(input: SuggestProjectTagsInput): Promise<SuggestProjectTagsResult> {
@@ -63,46 +65,91 @@ export class SuggestProjectTags {
       content: fingerprint,
     });
 
+    const started = performance.now();
     const cached = await this.cacheRepo.findByHash(hash);
     if (cached) {
       await this.cacheRepo.incrementHits(hash);
       const cachedResponse = cached.response as SuggestTagsSchemaType;
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: "en",
+          persona: "admin",
+          ip: input.ip ?? "unknown",
+          cached: true,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
       return { tags: cachedResponse.tags, cached: true };
     }
 
     const prompt = buildSuggestTagsPrompt({ name, description, context });
 
-    const result = await this.aiProvider.generateJSON({
-      prompt,
-      schema: SuggestTagsSchema,
-      maxTokens: MAX_OUTPUT_TOKENS,
-    });
+    try {
+      const result = await this.aiProvider.generateJSON({
+        prompt,
+        schema: SuggestTagsSchema,
+        maxTokens: MAX_OUTPUT_TOKENS,
+      });
 
-    const normalizedTags = Array.from(
-      new Set(result.tags.map((t) => t.trim().toLowerCase()).filter(Boolean)),
-    ).slice(0, 6);
+      const normalizedTags = Array.from(
+        new Set(result.tags.map((t) => t.trim().toLowerCase()).filter(Boolean)),
+      ).slice(0, 6);
 
-    const finalResponse: SuggestTagsSchemaType = { tags: normalizedTags };
+      const finalResponse: SuggestTagsSchemaType = { tags: normalizedTags };
 
-    await this.cacheRepo.save({
-      hash,
-      kind: KIND,
-      locale: "multi",
-      persona: "admin",
-      prompt,
-      response: finalResponse,
-      expiresAt: new Date(Date.now() + TTL_MS),
-    });
+      await this.cacheRepo.save({
+        hash,
+        kind: KIND,
+        locale: "multi",
+        persona: "admin",
+        prompt,
+        response: finalResponse,
+        expiresAt: new Date(Date.now() + TTL_MS),
+      });
 
-    await this.logActivity.execute({
-      actorEmail: input.actorEmail ?? null,
-      actorId: input.actorId ?? null,
-      action: "ai_apply",
-      entity: "project",
-      diff: { kind: KIND, name },
-      ip: input.ip ?? null,
-    });
+      await this.logActivity.execute({
+        actorEmail: input.actorEmail ?? null,
+        actorId: input.actorId ?? null,
+        action: "ai_apply",
+        entity: "project",
+        diff: { kind: KIND, name },
+        ip: input.ip ?? null,
+      });
 
-    return { tags: normalizedTags, cached: false };
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: "en",
+          persona: "admin",
+          ip: input.ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
+
+      return { tags: normalizedTags, cached: false };
+    } catch (err) {
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: "en",
+          persona: "admin",
+          ip: input.ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "error",
+        });
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   }
 }

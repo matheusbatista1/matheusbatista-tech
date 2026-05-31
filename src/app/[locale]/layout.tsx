@@ -10,6 +10,7 @@ import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
 import { PersonaProvider } from "@/presentation/providers/PersonaProvider";
 import { MenuProvider } from "@/presentation/providers/MenuProvider";
 import { LoadingScreen } from "@/presentation/components/interactions/LoadingScreen";
+import { PageViewTracker } from "@/presentation/components/analytics/PageViewTracker";
 import { env, isAIEnabled } from "@/infrastructure/config/env";
 
 const siteName = "Matheus Batista";
@@ -155,6 +156,7 @@ export default async function LocaleLayout({
           <ThemeProvider>
             <PersonaProvider aiEnabled={isAIEnabled}>
               <LoadingScreen />
+              <PageViewTracker />
               <MenuProvider>{children}</MenuProvider>
             </PersonaProvider>
           </ThemeProvider>

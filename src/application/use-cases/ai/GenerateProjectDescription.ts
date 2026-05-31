@@ -9,6 +9,7 @@ import {
   type ProjectDescriptionSchemaType,
 } from "@/application/ai/schemas/project-description";
 import { buildProjectDescriptionPrompt } from "@/application/ai/prompts/project-description";
+import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "project-description";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -38,6 +39,7 @@ export class GenerateProjectDescription {
     private readonly rateLimiter: IRateLimiter,
     private readonly logActivity: LogActivity,
     private readonly buildContext: BuildPromptContext,
+    private readonly logAIUsage?: LogAIUsage,
   ) {}
 
   async execute(input: GenerateProjectDescriptionInput): Promise<GenerateProjectDescriptionResult> {
@@ -73,10 +75,24 @@ export class GenerateProjectDescription {
       content: fingerprint,
     });
 
+    const started = performance.now();
     const cached = await this.cacheRepo.findByHash(hash);
     if (cached) {
       await this.cacheRepo.incrementHits(hash);
       const cachedResponse = cached.response as ProjectDescriptionSchemaType;
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: "en",
+          persona: "admin",
+          ip: input.ip ?? "unknown",
+          cached: true,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
       return {
         description: cachedResponse.description,
         tagline: cachedResponse.tagline,
@@ -86,35 +102,66 @@ export class GenerateProjectDescription {
 
     const prompt = buildProjectDescriptionPrompt({ name, tags, url, hint, context });
 
-    const result = await this.aiProvider.generateJSON({
-      prompt,
-      schema: ProjectDescriptionSchema,
-      maxTokens: MAX_OUTPUT_TOKENS,
-    });
+    try {
+      const result = await this.aiProvider.generateJSON({
+        prompt,
+        schema: ProjectDescriptionSchema,
+        maxTokens: MAX_OUTPUT_TOKENS,
+      });
 
-    await this.cacheRepo.save({
-      hash,
-      kind: KIND,
-      locale: "multi",
-      persona: "admin",
-      prompt,
-      response: result,
-      expiresAt: new Date(Date.now() + TTL_MS),
-    });
+      await this.cacheRepo.save({
+        hash,
+        kind: KIND,
+        locale: "multi",
+        persona: "admin",
+        prompt,
+        response: result,
+        expiresAt: new Date(Date.now() + TTL_MS),
+      });
 
-    await this.logActivity.execute({
-      actorEmail: input.actorEmail ?? null,
-      actorId: input.actorId ?? null,
-      action: "ai_apply",
-      entity: "project",
-      diff: { kind: KIND, name, tags },
-      ip: input.ip ?? null,
-    });
+      await this.logActivity.execute({
+        actorEmail: input.actorEmail ?? null,
+        actorId: input.actorId ?? null,
+        action: "ai_apply",
+        entity: "project",
+        diff: { kind: KIND, name, tags },
+        ip: input.ip ?? null,
+      });
 
-    return {
-      description: result.description,
-      tagline: result.tagline,
-      cached: false,
-    };
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: "en",
+          persona: "admin",
+          ip: input.ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
+
+      return {
+        description: result.description,
+        tagline: result.tagline,
+        cached: false,
+      };
+    } catch (err) {
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: "en",
+          persona: "admin",
+          ip: input.ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "error",
+        });
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   }
 }

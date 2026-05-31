@@ -54,6 +54,19 @@ export async function POST(request: Request) {
   ]);
 
   if (!perMinute.success || !perDay.success) {
+    try {
+      await container.useCases.logAIUsage.execute({
+        kind: "project-description",
+        locale: "en",
+        persona: "admin",
+        ip,
+        cached: false,
+        durationMs: 0,
+        status: "rate_limited",
+      });
+    } catch {
+      /* best-effort */
+    }
     return NextResponse.json(
       { error: "Rate limit exceeded", retryAfter: Math.max(perMinute.reset, perDay.reset) },
       { status: 429 },
