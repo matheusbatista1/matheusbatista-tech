@@ -6,7 +6,7 @@ export async function AdminSidebarServer({
   user,
   unreadCount,
   signOutAction,
-  brandMark = "M",
+  brandMark = "mb",
 }: {
   user: AdminSidebarUser;
   unreadCount?: number;
@@ -28,6 +28,7 @@ export async function AdminSidebarServer({
           label: tNav("inbox"),
           badgeCount: unreadCount,
         },
+        { key: "logs" as const, href: "/admin/logs", label: tNav("logs") },
       ],
     },
     {
@@ -35,9 +36,9 @@ export async function AdminSidebarServer({
       label: tNav("content"),
       items: [
         { key: "hero" as const, href: "/admin/hero", label: tNav("hero") },
-        { key: "about" as const, href: "/admin/about", label: tNav("about") },
         { key: "projects" as const, href: "/admin/projects", label: tNav("projects") },
-        { key: "cv" as const, href: "/admin/cv", label: tNav("cv") },
+        { key: "skills" as const, href: "/admin/skills", label: tNav("skills") },
+        { key: "about" as const, href: "/admin/about", label: tNav("about") },
       ],
     },
     {
@@ -45,7 +46,7 @@ export async function AdminSidebarServer({
       label: tNav("configuration"),
       items: [
         { key: "social" as const, href: "/admin/social", label: tNav("social") },
-        { key: "skills" as const, href: "/admin/skills", label: tNav("skills") },
+        { key: "cv" as const, href: "/admin/cv", label: tNav("cv") },
         { key: "settings" as const, href: "/admin/settings", label: tNav("settings") },
       ],
     },

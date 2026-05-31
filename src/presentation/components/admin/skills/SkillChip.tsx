@@ -22,6 +22,9 @@ export function SkillChip({ skill, onOpen, onDelete }: SkillChipProps) {
     onDelete();
   }
 
+  const swatchBg = skill.color ?? "#3178c6";
+  const swatchFg = skill.fg ?? "#fff";
+
   return (
     <div
       role="button"
@@ -31,12 +34,8 @@ export function SkillChip({ skill, onOpen, onDelete }: SkillChipProps) {
       onKeyDown={handleKeyDown}
       aria-label={`Edit ${skill.name}`}
     >
-      <span
-        className="sw"
-        style={{ background: skill.color ?? "#3178c6", color: skill.fg ?? "#fff" }}
-        aria-hidden="true"
-      >
-        {skill.key}
+      <span className="sw" style={{ background: swatchBg, color: swatchFg }} aria-hidden="true">
+        {skill.key.toUpperCase()}
       </span>
       <span className="name">{skill.name}</span>
       <button

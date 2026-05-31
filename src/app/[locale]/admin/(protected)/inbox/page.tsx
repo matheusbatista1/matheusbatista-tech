@@ -13,7 +13,6 @@ import {
   markAllReadAction,
   markReadAction,
   markUnreadAction,
-  setArchivedAction,
 } from "./actions";
 
 interface InboxPageProps {
@@ -22,15 +21,13 @@ interface InboxPageProps {
 }
 
 function parseFilter(value: string | undefined): InboxFilter {
-  return value === "all" || value === "archived" ? value : "unread";
+  return value === "unread" ? "unread" : "all";
 }
 
 function listOptsFor(filter: InboxFilter): { unreadOnly?: boolean; archived?: boolean } {
   switch (filter) {
     case "unread":
       return { unreadOnly: true, archived: false };
-    case "archived":
-      return { archived: true };
     case "all":
     default:
       return { archived: false };
@@ -42,18 +39,23 @@ export default async function InboxPage({ params, searchParams }: InboxPageProps
   const { filter: filterParam, id } = await searchParams;
   const filter = parseFilter(filterParam);
 
-  const [messages, selected, t] = await Promise.all([
+  const [messages, totalAll, selected, t] = await Promise.all([
     container.useCases.listMessages.execute(listOptsFor(filter)),
+    container.useCases.listMessages.execute({ archived: false }),
     id ? container.useCases.getMessage.execute(id) : Promise.resolve(null),
     getTranslations("admin.inbox"),
   ]);
 
-  const unreadCount = messages.filter((m) => !m.read).length;
+  const unreadCount = totalAll.filter((m) => !m.read).length;
+  const totalCount = totalAll.length;
+
+  if (selected && !selected.read) {
+    await container.useCases.markMessageRead.execute(selected.id);
+  }
 
   const actions: InboxServerActions = {
     markRead: markReadAction,
     markUnread: markUnreadAction,
-    setArchived: setArchivedAction,
     delete: deleteMessageAction,
   };
 
@@ -63,21 +65,24 @@ export default async function InboxPage({ params, searchParams }: InboxPageProps
         title={t("title")}
         lead={t("lead")}
         actions={
-          <MarkAllReadButton
-            locale={locale}
-            disabled={unreadCount === 0}
-            action={markAllReadAction}
-          />
+          <>
+            <InboxFilters
+              locale={locale}
+              current={filter}
+              totalCount={totalCount}
+              unreadCount={unreadCount}
+            />
+            <MarkAllReadButton
+              locale={locale}
+              disabled={unreadCount === 0}
+              action={markAllReadAction}
+            />
+          </>
         }
       />
 
       <div className="admin-inbox-grid">
-        <aside className="admin-inbox-side">
-          <InboxFilters locale={locale} current={filter} />
-        </aside>
-
         <MessageList locale={locale} filter={filter} messages={messages} selectedId={id ?? null} />
-
         <MessageDetail locale={locale} message={selected} actions={actions} />
       </div>
     </div>

@@ -6,7 +6,7 @@ import { auth } from "@/infrastructure/auth/auth";
 import { container } from "@/infrastructure/container";
 import type { CVAsset } from "@/domain/entities/CVAsset";
 import { LOCALES, type Locale } from "@/domain/value-objects/Locale";
-import { CVSlot, type CVSlotLabels } from "@/presentation/components/admin/cv/CVSlot";
+import { CVManager, type CVManagerLabels } from "@/presentation/components/admin/cv/CVManager";
 import { CVTips } from "@/presentation/components/admin/cv/CVTips";
 import { PageHead } from "@/presentation/components/admin/shell/PageHead";
 
@@ -23,44 +23,45 @@ export default async function AdminCVPage({ params }: AdminCVPageProps) {
   const t = await getTranslations({ locale, namespace: "admin.cv" });
 
   const cvs = await container.useCases.listCVs.execute();
-  const byLocale = new Map<Locale, CVAsset>();
-  for (const cv of cvs) byLocale.set(cv.locale, cv);
+  const initialAssets = LOCALES.reduce(
+    (acc, loc) => {
+      acc[loc] = cvs.find((cv) => cv.locale === loc) ?? null;
+      return acc;
+    },
+    {} as Record<Locale, CVAsset | null>,
+  );
+
+  const labels: CVManagerLabels = {
+    notUploaded: t("notUploaded"),
+    versionLabel: t("version", { lang: "{lang}" }),
+    uploaded: t("uploaded"),
+    download: t("download"),
+    remove: t("remove"),
+    confirmRemove: t("confirmRemove"),
+    confirmRemoveMessage: t("confirmRemoveMessage", { locale: "{locale}" }),
+    removedToast: t("removed_toast"),
+    uploadFor: t("uploadFor", { locale: "{locale}" }),
+    replaceFor: t("replaceFor", { locale: "{locale}" }),
+    dropHint: t("dropHint"),
+    maxSize: t("maxSize"),
+    wrongFileType: t("wrongFileType"),
+    tooLarge: t("tooLarge"),
+    uploadedToast: t("uploaded_toast"),
+  };
 
   return (
     <div className="admin-dashboard">
       <PageHead title={t("title")} lead={t("lead")} />
 
-      <div className="admin-cv-grid">
-        {LOCALES.map((loc) => {
-          const labels: CVSlotLabels = {
-            uploadFor: t("uploadFor", { locale: loc.toUpperCase() }),
-            noFile: t("noFile", { locale: loc.toUpperCase() }),
-            filename: t("filename"),
-            size: t("size"),
-            uploaded: t("uploaded"),
-            remove: t("remove"),
-            download: t("download"),
-            wrongFileType: t("wrongFileType"),
-            uploadedToast: t("uploaded_toast"),
-            removedToast: t("removed_toast"),
-            confirmRemove: t("confirmRemove"),
-            dropHint: t("dropHint"),
-            tooLarge: t("tooLarge"),
-          };
-          return (
-            <CVSlot
-              key={loc}
-              locale={loc}
-              current={byLocale.get(loc) ?? null}
-              uploadAction={uploadCV}
-              deleteAction={deleteCV}
-              labels={labels}
-            />
-          );
-        })}
-      </div>
+      <CVManager
+        initialAssets={initialAssets}
+        appLocale={locale}
+        labels={labels}
+        uploadAction={uploadCV}
+        deleteAction={deleteCV}
+      />
 
-      <CVTips locale={locale} />
+      <CVTips />
     </div>
   );
 }

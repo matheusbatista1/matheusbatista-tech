@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, HelpCircle } from "lucide-react";
 import {
   createContext,
   useCallback,
@@ -91,25 +91,25 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
               onClick={() => resolveWith(false)}
             >
               <div
-                role="dialog"
+                role="alertdialog"
                 aria-modal="true"
                 aria-labelledby="admin-confirm-title"
-                className={`admin-modal ${pending.opts.danger ? "is-danger" : ""}`}
+                aria-describedby={pending.opts.message ? "admin-confirm-message" : undefined}
+                className={`admin-modal-confirm ${pending.opts.danger ? "is-danger" : ""}`}
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="admin-modal-header">
-                  {pending.opts.danger && (
-                    <span className="admin-modal-icon" aria-hidden="true">
-                      <AlertTriangle size={20} />
-                    </span>
-                  )}
-                  <h2 id="admin-confirm-title" className="admin-modal-title">
-                    {pending.opts.title}
-                  </h2>
+                <div className="admin-modal-icon" aria-hidden="true">
+                  {pending.opts.danger ? <AlertTriangle size={22} /> : <HelpCircle size={22} />}
                 </div>
 
+                <h2 id="admin-confirm-title" className="admin-modal-title">
+                  {pending.opts.title}
+                </h2>
+
                 {pending.opts.message && (
-                  <p className="admin-modal-message">{pending.opts.message}</p>
+                  <p id="admin-confirm-message" className="admin-modal-message">
+                    {pending.opts.message}
+                  </p>
                 )}
 
                 <div className="admin-modal-actions">
@@ -121,7 +121,7 @@ export function ConfirmProvider({ children }: { children: ReactNode }) {
                     variant={pending.opts.danger ? "danger-solid" : "primary"}
                     onClick={() => resolveWith(true)}
                   >
-                    {pending.opts.confirmLabel ?? "Confirm"}
+                    {pending.opts.confirmLabel ?? (pending.opts.danger ? "Delete" : "Confirm")}
                   </Button>
                 </div>
               </div>

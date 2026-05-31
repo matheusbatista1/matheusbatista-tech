@@ -1,11 +1,13 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { Trash2 } from "lucide-react";
+import { Save, Trash2 } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { Project } from "@/domain/entities/Project";
 import { Modal } from "@/presentation/components/admin/ui/Modal";
 import { Button } from "@/presentation/components/admin/ui/Button";
+import { IconButton } from "@/presentation/components/admin/ui/IconButton";
 import { useConfirm } from "@/presentation/components/admin/providers/ConfirmProvider";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 import { ProjectForm, type ProjectFormHandle } from "./ProjectForm";
@@ -19,6 +21,7 @@ interface ProjectModalProps {
 }
 
 export function ProjectModal({ mode, project, actions, onClose }: ProjectModalProps) {
+  const t = useTranslations();
   const { toast } = useToast();
   const { confirm } = useConfirm();
   const [deleting, startDelete] = useTransition();
@@ -26,12 +29,12 @@ export function ProjectModal({ mode, project, actions, onClose }: ProjectModalPr
   const formRef = useRef<ProjectFormHandle>(null);
 
   const isEdit = mode === "edit" && Boolean(project);
-  const title = isEdit ? `Edit ${project!.name}` : "New project";
+  const title = isEdit ? `Edit ${project!.name}` : t("admin.projects.new");
 
   async function onDelete() {
     if (!project) return;
     const ok = await confirm({
-      title: "Delete project?",
+      title: t("admin.projects.confirmDelete"),
       message: `“${project.name}” will be removed permanently.`,
       danger: true,
       confirmLabel: "Delete",
@@ -44,7 +47,7 @@ export function ProjectModal({ mode, project, actions, onClose }: ProjectModalPr
         toast({ title: result.error, kind: "error" });
         return;
       }
-      toast({ title: "Project deleted", kind: "success" });
+      toast({ title: t("admin.projects.deleted"), kind: "success" });
       onClose();
     });
   }
@@ -58,23 +61,33 @@ export function ProjectModal({ mode, project, actions, onClose }: ProjectModalPr
       toast({ title: result.error, kind: "error" });
       return;
     }
-    toast({ title: isEdit ? "Changes saved" : "Project created", kind: "success" });
+    toast({ title: t("admin.projects.saved"), kind: "success" });
     onClose();
   }
 
   const footer = (
     <div className="admin-project-form-foot">
       {isEdit && project && (
-        <Button variant="danger" icon={<Trash2 size={14} />} loading={deleting} onClick={onDelete}>
-          Delete
-        </Button>
+        <IconButton
+          aria-label="Delete project"
+          tooltip="Delete project"
+          icon={<Trash2 size={14} />}
+          loading={deleting}
+          onClick={onDelete}
+          className="admin-btn-danger-solid"
+        />
       )}
       <div className="spacer" />
       <Button variant="ghost" onClick={onClose} disabled={submitting || deleting}>
         Cancel
       </Button>
-      <Button variant="primary" loading={submitting} onClick={handleSubmit}>
-        {isEdit ? "Save changes" : "Create project"}
+      <Button
+        variant="primary"
+        icon={<Save size={14} />}
+        loading={submitting}
+        onClick={handleSubmit}
+      >
+        {t("admin.projects.save")}
       </Button>
     </div>
   );

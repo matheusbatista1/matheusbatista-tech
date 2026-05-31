@@ -6,7 +6,7 @@ import { auth } from "@/infrastructure/auth/auth";
 import { container } from "@/infrastructure/container";
 import { isLocale, type Locale } from "@/domain/value-objects/Locale";
 
-const MAX_BYTES = 5 * 1024 * 1024;
+const MAX_BYTES = 10 * 1024 * 1024;
 
 export interface CVActionState {
   ok?: boolean;
@@ -32,7 +32,7 @@ export async function uploadCV(locale: string, formData: FormData): Promise<CVAc
   }
   if (raw.size <= 0) return { error: "Empty file" };
   if (raw.size > MAX_BYTES) {
-    return { error: "File too large (max 5MB)" };
+    return { error: "File too large (max 10 MB)" };
   }
 
   const buffer = Buffer.from(await raw.arrayBuffer());

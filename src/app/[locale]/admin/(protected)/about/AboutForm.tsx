@@ -1,14 +1,16 @@
 "use client";
 
 import { Languages, RotateCcw, Save, Sparkles } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
+
+import "@/presentation/components/admin/forms/forms.css";
 
 import type { AboutContent } from "@/domain/entities/AboutContent";
 import { LOCALES, type Locale } from "@/domain/value-objects/Locale";
 import { AIButton } from "@/presentation/components/admin/ai/AIButton";
 import { Button } from "@/presentation/components/admin/ui/Button";
-import { Card } from "@/presentation/components/admin/ui/Card";
 import { Input } from "@/presentation/components/admin/ui/Input";
 import { LocaleSwitcher } from "@/presentation/components/admin/ui/LocaleSwitcher";
 import { Textarea } from "@/presentation/components/admin/ui/Textarea";
@@ -42,6 +44,7 @@ function toFormValues(about: AboutContent): AboutFormValues {
 }
 
 export function AboutForm({ about }: AboutFormProps) {
+  const t = useTranslations("admin.about");
   const { toast } = useToast();
   const [activeLocale, setActiveLocale] = useState<Locale>("en");
   const [pending, startTransition] = useTransition();
@@ -81,11 +84,11 @@ export function AboutForm({ about }: AboutFormProps) {
           toast({ title: "Could not save", message: result.error, kind: "error" });
           return;
         }
-        toast({ title: "About saved", kind: "success" });
+        toast({ title: t("saved"), message: t("savedMessage"), kind: "success" });
         reset(values);
       });
     },
-    [reset, toast],
+    [reset, toast, t],
   );
 
   const runImproveCopy = useCallback(async () => {
@@ -108,8 +111,12 @@ export function AboutForm({ about }: AboutFormProps) {
 
     const data = (await response.json()) as { improved: string };
     setValue(`body.${activeLocale}` as const, data.improved, { shouldDirty: true });
-    toast({ title: "Copy improved", kind: "success" });
-  }, [activeLocale, getValues, setValue, toast]);
+    toast({
+      title: t("improveDone"),
+      message: t("improveDoneMessage", { locale: activeLocale.toUpperCase() }),
+      kind: "success",
+    });
+  }, [activeLocale, getValues, setValue, toast, t]);
 
   const runTranslateAll = useCallback(async () => {
     const current = getValues(`body.${activeLocale}` as const);
@@ -132,29 +139,21 @@ export function AboutForm({ about }: AboutFormProps) {
     }
 
     const data = (await response.json()) as { translated: Record<string, string> };
-    let count = 0;
     for (const target of targets) {
       const value = data.translated?.[target];
       if (typeof value === "string" && value.length > 0) {
         setValue(`body.${target}` as const, value, { shouldDirty: true });
-        count += 1;
       }
     }
 
-    toast({
-      title: "Translation ready",
-      message: `${count} locale${count === 1 ? "" : "s"} translated.`,
-      kind: "success",
-    });
-  }, [activeLocale, getValues, setValue, toast]);
-
-  const localeUpper = activeLocale.toUpperCase();
+    toast({ title: t("translateDone"), kind: "success" });
+  }, [activeLocale, getValues, setValue, toast, t]);
 
   return (
     <form className="admin-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <PageHead
-        title="About"
-        lead="Edit the personal bio shown in the About section. Switch locales to translate the i18n fields."
+        title={t("title")}
+        lead={t("lead")}
         actions={
           <LocaleSwitcher
             value={activeLocale}
@@ -164,109 +163,111 @@ export function AboutForm({ about }: AboutFormProps) {
         }
       />
 
-      <Card padding="lg">
-        <div className="admin-form-row">
-          <div className="admin-form-row-head">
-            <span className="admin-form-row-label">Label · {localeUpper}</span>
-          </div>
-          <Input
-            key={`label-${activeLocale}`}
-            {...register(`label.${activeLocale}` as const, { required: "Required" })}
-            placeholder="About"
-            error={errors.label?.[activeLocale]?.message}
-          />
+      {/* Row 1 — Label (i18n) */}
+      <div className="admin-form-row">
+        <div className="label-col">
+          {t("label")}
+          <div className="help">{t("help.label")}</div>
         </div>
+        <Input
+          key={`label-${activeLocale}`}
+          {...register(`label.${activeLocale}` as const, { required: "Required" })}
+          placeholder="ABOUT ME"
+          error={errors.label?.[activeLocale]?.message}
+        />
+      </div>
 
-        <div className="admin-form-row">
-          <div className="admin-form-row-head">
-            <span className="admin-form-row-label">Body · {localeUpper}</span>
-            <div className="admin-form-row-actions">
-              <AIButton
-                onRun={runImproveCopy}
-                label="Improve copy"
-                icon={<Sparkles size={14} />}
-                title="Rewrite this copy for clarity and tone"
-              />
-              <AIButton
-                onRun={runTranslateAll}
-                label="Translate to all langs"
-                icon={<Languages size={14} />}
-                title="Translate the current text to the other locales"
-              />
-            </div>
-          </div>
+      {/* Row 2 — Body (i18n) + AI buttons */}
+      <div className="admin-form-row">
+        <div className="label-col">
+          {t("body")}
+          <div className="help">{t("help.body")}</div>
+        </div>
+        <div>
           <Textarea
             key={`body-${activeLocale}`}
-            rows={8}
+            rows={5}
             {...register(`body.${activeLocale}` as const, { required: "Required" })}
             placeholder="Tell visitors who you are…"
             error={errors.body?.[activeLocale]?.message}
           />
-        </div>
-
-        <div className="admin-form-row">
-          <div className="admin-form-row-head">
-            <span className="admin-form-row-label">Currently · {localeUpper}</span>
+          <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+            <AIButton
+              onRun={runImproveCopy}
+              label={t("improve")}
+              icon={<Sparkles size={14} />}
+              title={t("improve")}
+            />
+            <AIButton
+              onRun={runTranslateAll}
+              label={t("translateAll")}
+              icon={<Languages size={14} />}
+              title={t("translateAll")}
+            />
           </div>
+        </div>
+      </div>
+
+      {/* Row 3 — Currently (i18n) */}
+      <div className="admin-form-row">
+        <div className="label-col">
+          {t("currently")}
+          <div className="help">{t("help.currently")}</div>
+        </div>
+        <Textarea
+          key={`currently-${activeLocale}`}
+          rows={3}
+          {...register(`currently.${activeLocale}` as const, { required: "Required" })}
+          placeholder="What you are working on right now"
+          error={errors.currently?.[activeLocale]?.message}
+        />
+      </div>
+
+      {/* Row 4 — Profile facts (non-i18n) */}
+      <div className="admin-form-row">
+        <div className="label-col">
+          {t("profileFacts")}
+          <div className="help">{t("help.profileFacts")}</div>
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
           <Input
-            key={`currently-${activeLocale}`}
-            {...register(`currently.${activeLocale}` as const, { required: "Required" })}
-            placeholder="What you are working on right now"
-            error={errors.currently?.[activeLocale]?.message}
+            {...register("role", { required: "Required" })}
+            placeholder="Software Engineer"
+            error={errors.role?.message}
+          />
+          <Input
+            {...register("location", { required: "Required" })}
+            placeholder="Jandira, SP, BR"
+            error={errors.location?.message}
+          />
+          <Input
+            {...register("years", { required: "Required" })}
+            placeholder="2+ years"
+            error={errors.years?.message}
           />
         </div>
+      </div>
 
-        <div className="admin-form-grid-3">
-          <div className="admin-form-row">
-            <span className="admin-form-row-label">Role</span>
-            <Input
-              {...register("role", { required: "Required" })}
-              placeholder="Software Engineer"
-              error={errors.role?.message}
-            />
-          </div>
-          <div className="admin-form-row">
-            <span className="admin-form-row-label">Location</span>
-            <Input
-              {...register("location", { required: "Required" })}
-              placeholder="Remote · São Paulo"
-              error={errors.location?.message}
-            />
-          </div>
-          <div className="admin-form-row">
-            <span className="admin-form-row-label">Years</span>
-            <Input
-              {...register("years", { required: "Required" })}
-              placeholder="6+ years"
-              error={errors.years?.message}
-            />
-          </div>
-        </div>
-
-        <div className="admin-form-foot">
-          <span className="admin-form-foot-status">
-            {isDirty ? "Unsaved changes" : "All changes saved"}
-          </span>
-          <Button
-            type="button"
-            variant="ghost"
-            icon={<RotateCcw size={14} />}
-            disabled={!isDirty || pending}
-            onClick={() => reset(defaults)}
-          >
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            variant="primary"
-            icon={<Save size={14} />}
-            loading={pending}
-            disabled={!isDirty}
-          >
-            Save
-          </Button>
-        </div>
-      </Card>
+      <div className="admin-form-foot">
+        <Button
+          type="button"
+          variant="ghost"
+          icon={<RotateCcw size={14} />}
+          disabled={!isDirty || pending}
+          onClick={() => reset(defaults)}
+        >
+          Reset
+        </Button>
+        <Button
+          type="submit"
+          variant="primary"
+          icon={<Save size={14} />}
+          loading={pending}
+          disabled={!isDirty}
+        >
+          Save
+        </Button>
+      </div>
     </form>
   );
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
 import { auth } from "@/infrastructure/auth/auth";
@@ -9,6 +10,25 @@ import { StatsGrid } from "@/presentation/components/admin/dashboard/StatsGrid";
 
 interface AdminDashboardPageProps {
   params: Promise<{ locale: string }>;
+}
+
+function EyeIcon() {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      width="14"
+      height="14"
+      aria-hidden="true"
+    >
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  );
 }
 
 export default async function AdminDashboardPage({ params }: AdminDashboardPageProps) {
@@ -26,15 +46,29 @@ export default async function AdminDashboardPage({ params }: AdminDashboardPageP
 
   return (
     <div className="admin-dashboard">
-      <PageHead title={t("title")} lead={t("lead")} />
+      <PageHead
+        title={t("title")}
+        lead={t("lead")}
+        actions={
+          <Link
+            href={`/${locale}`}
+            target="_blank"
+            rel="noreferrer"
+            className="admin-btn admin-btn-ghost"
+          >
+            <EyeIcon />
+            {t("viewPortfolio")}
+          </Link>
+        }
+      />
 
       <StatsGrid
         stats={stats}
         labels={{
-          messagesToday: t("stats.messagesToday"),
-          unread: t("stats.unread"),
-          visibleProjects: t("stats.visibleProjects"),
-          aiCalls: t("stats.aiCalls"),
+          visits: t("stats.visits"),
+          messages: t("stats.messages"),
+          projects: t("stats.projects"),
+          cvDownloads: t("stats.cvDownloads"),
         }}
       />
 

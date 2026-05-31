@@ -1,26 +1,24 @@
-import { getTranslations } from "next-intl/server";
+"use client";
+
+import { useTranslations } from "next-intl";
 
 import { Card } from "@/presentation/components/admin/ui/Card";
 
-interface CVTipsProps {
-  locale: string;
-}
-
-export async function CVTips({ locale }: CVTipsProps) {
-  const t = await getTranslations({ locale, namespace: "admin.cv" });
-
-  const tips = t("tipsDesc")
-    .split(/(?<=[.!?])\s+/)
-    .map((part) => part.trim())
-    .filter(Boolean);
+export function CVTips() {
+  const t = useTranslations("admin.cv.tips");
 
   return (
     <div className="admin-cv-tips">
-      <Card header={{ title: t("tips") }} padding="md">
-        <ul>
-          {tips.map((tip, idx) => (
-            <li key={idx}>{tip}</li>
-          ))}
+      <Card padding="lg">
+        <h3 className="admin-cv-tips-title">{t("title")}</h3>
+        <ul className="admin-cv-tips-list">
+          <li>{t("one")}</li>
+          <li>{t("two")}</li>
+          <li>
+            {t.rich("three", {
+              code: (chunks) => <code className="admin-cv-tips-code">{chunks}</code>,
+            })}
+          </li>
         </ul>
       </Card>
     </div>

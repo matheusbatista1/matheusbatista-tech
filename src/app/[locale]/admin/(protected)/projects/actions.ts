@@ -6,8 +6,6 @@ import { auth } from "@/infrastructure/auth/auth";
 import { container } from "@/infrastructure/container";
 import type { ProjectInput } from "@/domain/repositories/IProjectRepository";
 
-const PILL_VALUES = ["FLAGSHIP", "PRODUCTION", "INTEGRATION", "CASE_STUDY", "AI"] as const;
-
 const localizedSchema = z.object({
   en: z.string().min(1, "EN description required"),
   pt: z.string().min(1, "PT description required"),
@@ -15,20 +13,36 @@ const localizedSchema = z.object({
 });
 
 const projectSchema = z.object({
-  slug: z
-    .string()
-    .min(1)
-    .max(80)
-    .regex(/^[a-z0-9-]+$/, "slug must be lowercase letters, numbers and hyphens"),
   name: z.string().min(1).max(120),
   url: z.string().max(300).nullable(),
   liveUrl: z.string().max(300).nullable(),
   description: localizedSchema,
-  pill: z.enum(PILL_VALUES).nullable(),
+  pill: z.string().max(40).nullable(),
   tags: z.array(z.string().min(1).max(40)).max(20),
   deployed: z.boolean(),
   visible: z.boolean(),
 });
+
+function slugifyName(input: string): string {
+  return input
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+}
+
+async function uniqueSlug(base: string, ignoreId?: string): Promise<string> {
+  let slug = base || "project";
+  let suffix = 2;
+  while (true) {
+    const existing = await container.repositories.project.findBySlug(slug);
+    if (!existing || existing.id === ignoreId) return slug;
+    slug = `${base}-${suffix++}`;
+  }
+}
 
 export interface ProjectActionResult {
   ok?: boolean;
@@ -66,8 +80,12 @@ export async function createProjectAction(
   const all = await container.repositories.project.list();
   const order = all.length;
 
+  const slug = await uniqueSlug(slugifyName(parsed.data.name));
+
   const input: ProjectInput = {
     ...parsed.data,
+    pill: parsed.data.pill as ProjectInput["pill"],
+    slug,
     images: [],
     order,
   };
@@ -85,7 +103,7 @@ export async function createProjectAction(
     return { ok: true, id: created.id };
   } catch (error) {
     console.error("createProjectAction error", error);
-    return { error: "Could not create project. Slug may already exist." };
+    return { error: "Could not create project." };
   }
 }
 
@@ -104,8 +122,16 @@ export async function updateProjectAction(
   const existing = await container.repositories.project.findById(id);
   if (!existing) return { error: "Project not found" };
 
+  const desiredBase = slugifyName(parsed.data.name);
+  const slug =
+    desiredBase && desiredBase !== existing.slug
+      ? await uniqueSlug(desiredBase, id)
+      : existing.slug;
+
   const input: ProjectInput = {
     ...parsed.data,
+    pill: parsed.data.pill as ProjectInput["pill"],
+    slug,
     images: existing.images,
     order: existing.order,
   };

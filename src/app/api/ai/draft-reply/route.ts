@@ -74,7 +74,6 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(
       {
-        subject: result.draft.subject,
         body: result.draft.body,
         cached: result.cached,
       },

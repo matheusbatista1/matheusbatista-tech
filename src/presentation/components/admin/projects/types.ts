@@ -1,5 +1,3 @@
-import type { ProjectPill } from "@/domain/entities/Project";
-
 export interface ProjectActionResult {
   ok?: boolean;
   id?: string;
@@ -7,12 +5,11 @@ export interface ProjectActionResult {
 }
 
 export interface ProjectPayload {
-  slug: string;
   name: string;
   url: string | null;
   liveUrl: string | null;
   description: { en: string; pt: string; es: string };
-  pill: ProjectPill | null;
+  pill: string | null;
   tags: string[];
   deployed: boolean;
   visible: boolean;
