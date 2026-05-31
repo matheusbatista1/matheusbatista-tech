@@ -13,26 +13,24 @@ function deriveCrumbKey(pathname: string): string | null {
 
 export function AdminTopbarBreadcrumb({
   rootLabel,
+  dashboardLabel,
   labels,
 }: {
   rootLabel: string;
+  dashboardLabel: string;
   labels: Record<string, string>;
 }) {
   const pathname = usePathname();
   const crumbKey = useMemo(() => deriveCrumbKey(pathname), [pathname]);
-  const crumbLabel = crumbKey ? (labels[crumbKey] ?? crumbKey) : null;
+  const trailingLabel = crumbKey ? (labels[crumbKey] ?? crumbKey) : dashboardLabel;
 
   return (
     <div className="admin-topbar-breadcrumb">
-      <span className={crumbLabel ? "crumb-dim" : undefined}>{rootLabel}</span>
-      {crumbLabel ? (
-        <>
-          <span className="sep" aria-hidden="true">
-            /
-          </span>
-          <span>{crumbLabel}</span>
-        </>
-      ) : null}
+      <span className="crumb-dim">{rootLabel}</span>
+      <span className="sep" aria-hidden="true">
+        {"›"}
+      </span>
+      <span>{trailingLabel}</span>
     </div>
   );
 }
