@@ -2,40 +2,13 @@
    LOGS / OBSERVABILITY
    ============================================================ */
 
-.log-toolbar {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.admin-logs .admin-pagehead {
+  align-items: flex-start;
 }
 
-.log-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--admin-surface);
-  border: 1px solid var(--admin-border);
-  color: var(--admin-text);
-  border-radius: 9px;
-  padding: 7px 12px;
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition:
-    background 160ms,
-    border-color 160ms,
-    color 160ms;
-}
-.log-toggle:hover {
-  border-color: var(--admin-border-strong);
-}
-.log-toggle.on {
-  background: var(--admin-text);
-  color: #0a0a0e;
-  border-color: var(--admin-text);
-}
-.log-toggle svg {
-  width: 13px;
-  height: 13px;
+/* Variant of admin-content that goes full-width (matches design ref) */
+.admin-content.wide {
+  max-width: 100%;
 }
 
 .log-stats {
@@ -188,36 +161,35 @@
   height: 13px;
 }
 
-.log-selects {
+.log-sources {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
+  margin-bottom: 12px;
 }
-.log-select {
-  background: var(--admin-surface);
-  border: 1px solid var(--admin-border);
-  color: var(--admin-text);
-  padding: 8px 30px 8px 12px;
-  border-radius: 9px;
-  font-size: 12.5px;
+.log-srcpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 9999px;
+  background: var(--admin-bg-2);
+  border: 1px solid var(--admin-border-soft);
+  color: var(--admin-text-mute);
+  font-size: 11.5px;
+  font-weight: 500;
   cursor: pointer;
-  appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, var(--admin-text-mute) 50%),
-    linear-gradient(135deg, var(--admin-text-mute) 50%, transparent 50%);
-  background-position:
-    calc(100% - 14px) 50%,
-    calc(100% - 9px) 50%;
-  background-size:
-    5px 5px,
-    5px 5px;
-  background-repeat: no-repeat;
-  transition: border-color 160ms;
+  transition:
+    border-color 140ms,
+    color 140ms,
+    background 140ms;
 }
-.log-select:hover,
-.log-select:focus {
+.log-srcpill:hover {
+  color: var(--admin-text);
   border-color: var(--admin-border-strong);
-  outline: 0;
+}
+.log-srcpill.on {
+  background: var(--admin-surface-2);
 }
 
 .log-console {

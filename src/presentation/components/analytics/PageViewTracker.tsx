@@ -32,10 +32,43 @@ export function PageViewTracker() {
 
     const referrer = document.referrer || null;
 
+    // Best-effort client signals — APIs vary across browsers/private modes
+    let clientTz: string | undefined;
+    let screenW: number | undefined;
+    let screenH: number | undefined;
+    let viewportW: number | undefined;
+    let viewportH: number | undefined;
+    let language: string | undefined;
+
+    try {
+      clientTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {}
+    try {
+      screenW = window.screen?.width;
+      screenH = window.screen?.height;
+    } catch {}
+    try {
+      viewportW = window.innerWidth;
+      viewportH = window.innerHeight;
+    } catch {}
+    try {
+      language = nav.language;
+    } catch {}
+
     void fetch("/api/analytics/pageview", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path, locale, referrer }),
+      body: JSON.stringify({
+        path,
+        locale,
+        referrer,
+        clientTz,
+        screenW,
+        screenH,
+        viewportW,
+        viewportH,
+        language,
+      }),
       keepalive: true,
     }).catch(() => {
       // swallow — analytics must never break the page

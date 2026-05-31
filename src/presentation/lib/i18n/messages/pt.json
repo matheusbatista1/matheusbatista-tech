@@ -12,7 +12,8 @@
       "configuration": "Configuração",
       "dashboard": "Painel",
       "inbox": "Mensagens",
-      "logs": "Registros",
+      "analytics": "Analytics",
+      "logs": "Logs",
       "hero": "Hero",
       "about": "Sobre",
       "projects": "Projetos",
@@ -70,13 +71,24 @@
       }
     },
     "logs": {
-      "title": "Registros",
-      "lead": "Registro de atividades de todas as operações do admin e da API.",
-      "liveTail": "Tempo real",
+      "title": "Logs",
+      "lead": "Observabilidade em tempo real de eventos de API, banco, auth, sistema, IA e e-mail.",
+      "live": "Ao vivo",
       "paused": "Pausado",
       "playing": "Transmitindo",
-      "search": "Buscar registros...",
+      "streaming": "transmitindo",
+      "export": "Exportar",
       "clear": "Limpar",
+      "exportFilename": "portfolio-logs.json",
+      "exportToast": "Exportado — {n} entradas",
+      "clearedToast": "Logs limpos",
+      "clearConfirmTitle": "Limpar todos os logs?",
+      "clearConfirmMessage": "Isso remove todas as entradas da visão atual. Novos eventos continuarão chegando se o modo ao vivo estiver ativo.",
+      "clearConfirmConfirm": "Limpar",
+      "loading": "Carregando…",
+      "filterAll": "Todos",
+      "liveTail": "Tempo real",
+      "search": "Buscar mensagens, IDs de requisição, payloads…",
       "noResults": "Nenhum registro corresponde aos filtros atuais.",
       "copyJson": "Copiar JSON",
       "copied": "Copiado!",
@@ -90,11 +102,93 @@
       "sources": {
         "all": "Todas as fontes",
         "api": "API",
-        "database": "Banco de dados",
-        "auth": "Autenticação",
+        "database": "Banco",
+        "auth": "Auth",
         "system": "Sistema",
         "ai": "IA",
-        "email": "Email"
+        "email": "E-mail"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "lead": "Quem visita seu portfolio — humanos vs. bots, geografia e detalhes de dispositivo.",
+      "viewSite": "Ver site",
+      "range": {
+        "today": "Hoje",
+        "7d": "7d",
+        "30d": "30d",
+        "all": "Tudo"
+      },
+      "cards": {
+        "total": "Visitas totais",
+        "uniq": "Visitantes únicos",
+        "uniqSub": "IPs distintos",
+        "humans": "Humanos",
+        "bots": "Bots"
+      },
+      "agg": {
+        "topCountries": "Top países",
+        "topPages": "Top páginas"
+      },
+      "filter": {
+        "all": "Todos",
+        "humans": "Humanos",
+        "bots": "Bots",
+        "searchPlaceholder": "Buscar path, país, navegador…",
+        "allCountries": "Todos os países",
+        "clearFilters": "Limpar filtros"
+      },
+      "table": {
+        "cols": {
+          "when": "Quando",
+          "path": "Caminho",
+          "location": "Localização",
+          "browser": "Navegador",
+          "device": "Dispositivo",
+          "type": "Tipo",
+          "referrer": "Referência"
+        },
+        "empty": {
+          "title": "Nenhuma visita ainda",
+          "noFilter": "Quando seu portfolio estiver no ar, as visitas aparecerão aqui.",
+          "withFilter": "Nenhuma visita corresponde aos filtros. Aumente o intervalo ou limpe a busca."
+        },
+        "direct": "Direto",
+        "badge": {
+          "human": "Humano",
+          "bot": "Bot"
+        }
+      },
+      "detail": {
+        "identifiedAs": "Identificado como {name} pela assinatura do User-Agent.",
+        "tzMismatch": "Fuso horário divergente — cliente {client} vs servidor {server}. Possível VPN/proxy.",
+        "kv": {
+          "timestamp": "Timestamp",
+          "path": "Caminho",
+          "country": "País",
+          "cityRegion": "Cidade",
+          "latLon": "Lat / Lon",
+          "serverTz": "TZ servidor",
+          "clientTz": "TZ cliente",
+          "screen": "Tela",
+          "viewport": "Viewport",
+          "language": "Idioma",
+          "ipHash": "Hash do IP",
+          "userAgent": "User Agent",
+          "referrerUrl": "URL de referência"
+        }
+      },
+      "pager": {
+        "prev": "Anterior",
+        "next": "Próxima",
+        "pageOf": "Página {current} de {total}"
+      },
+      "time": {
+        "justNow": "agora",
+        "sAgo": "há {n}s",
+        "minAgo": "há {n}min",
+        "hAgo": "há {n}h",
+        "dAgo": "há {n}d"
       }
     },
     "inbox": {

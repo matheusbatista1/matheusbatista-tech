@@ -5,17 +5,25 @@ import { useTranslations } from "next-intl";
 import {
   Check,
   Copy,
+  Cpu,
   Database,
-  Globe,
+  Download,
+  Filter,
+  Lock,
   Mail,
   Pause,
   Play,
   Search,
   Server,
-  Shield,
   Sparkles,
+  Trash2,
   X,
 } from "lucide-react";
+
+import { PageHead } from "@/presentation/components/admin/shell/PageHead";
+import { Button } from "@/presentation/components/admin/ui/Button";
+import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
+import { useConfirm } from "@/presentation/components/admin/providers/ConfirmProvider";
 
 import "./logs.css";
 
@@ -51,13 +59,13 @@ interface LogsResponse {
 
 const LOG_SOURCES: LogSource[] = ["api", "database", "auth", "system", "ai", "email"];
 
-const SOURCE_META: Record<LogSource, { color: string; Icon: typeof Globe }> = {
-  api: { color: "#3b82f6", Icon: Globe },
-  database: { color: "#a855f7", Icon: Database },
-  auth: { color: "#22c55e", Icon: Shield },
-  system: { color: "#8e8e95", Icon: Server },
-  ai: { color: "#d97757", Icon: Sparkles },
-  email: { color: "#f5b800", Icon: Mail },
+const SOURCE_META: Record<LogSource, { color: string; Icon: typeof Server }> = {
+  api: { color: "#3b82f6", Icon: Server },
+  database: { color: "#22c55e", Icon: Database },
+  auth: { color: "#f5b800", Icon: Lock },
+  system: { color: "#8e8e95", Icon: Cpu },
+  ai: { color: "#a78bfa", Icon: Sparkles },
+  email: { color: "#ef4444", Icon: Mail },
 };
 
 const LEVEL_META: Record<LogLevel, { label: string; short: string; color: string }> = {
@@ -84,7 +92,8 @@ function clockTime(iso: string): string {
   const hh = String(d.getHours()).padStart(2, "0");
   const mm = String(d.getMinutes()).padStart(2, "0");
   const ss = String(d.getSeconds()).padStart(2, "0");
-  return `${hh}:${mm}:${ss}`;
+  const ms = String(d.getMilliseconds()).padStart(3, "0");
+  return `${hh}:${mm}:${ss}.${ms}`;
 }
 
 // ---------- component ------------------------------------------
@@ -118,7 +127,6 @@ export function LogsPage() {
   // Fetch logs whenever filters change OR on live-tail interval
   useEffect(() => {
     const fetchLogs = async () => {
-      // Cancel any in-flight request
       abortRef.current?.abort();
       const controller = new AbortController();
       abortRef.current = controller;
@@ -179,7 +187,20 @@ export function LogsPage() {
   const showInitialLoading = loading && entries.length === 0;
 
   return (
-    <div className="admin-logs">
+    <div className="admin-content wide admin-logs">
+      <PageHead
+        title={t("title")}
+        lead={t("lead")}
+        actions={
+          <LogsHeaderActions
+            live={live}
+            onToggleLive={() => setLive((v) => !v)}
+            entries={entries}
+            onCleared={() => setEntries([])}
+          />
+        }
+      />
+
       {/* severity strip */}
       <div className="log-stats">
         {(["error", "warn", "info", "debug"] as LogLevel[]).map((lv) => (
@@ -197,23 +218,11 @@ export function LogsPage() {
 
         <div className="log-live-ind" data-on={live}>
           <span className="lli-dot" />
-          {live ? t("playing") : t("paused")}
-        </div>
-
-        <div className="log-toolbar">
-          <button
-            type="button"
-            className={`log-toggle${live ? "on" : ""}`}
-            onClick={() => setLive((v) => !v)}
-            aria-pressed={live}
-          >
-            {live ? <Pause /> : <Play />}
-            {t("liveTail")}
-          </button>
+          {live ? t("streaming") : t("paused")}
         </div>
       </div>
 
-      {/* controls */}
+      {/* search */}
       <div className="log-controls">
         <div className="log-search">
           <Search />
@@ -228,42 +237,40 @@ export function LogsPage() {
             </button>
           )}
         </div>
+      </div>
 
-        <div className="log-selects">
-          <select
-            className="log-select"
-            value={source}
-            onChange={(e) => setSource(e.target.value as "all" | LogSource)}
-            aria-label={t("sources.all")}
-          >
-            <option value="all">{t("sources.all")}</option>
-            {LOG_SOURCES.map((s) => (
-              <option key={s} value={s}>
-                {t(`sources.${s}`)}
-              </option>
-            ))}
-          </select>
-
-          <select
-            className="log-select"
-            value={level}
-            onChange={(e) => setLevel(e.target.value as "all" | LogLevel)}
-            aria-label={t("levels.all")}
-          >
-            <option value="all">{t("levels.all")}</option>
-            <option value="error">{t("levels.error")}</option>
-            <option value="warn">{t("levels.warn")}</option>
-            <option value="info">{t("levels.info")}</option>
-            <option value="debug">{t("levels.debug")}</option>
-          </select>
-        </div>
+      {/* source filter pills */}
+      <div className="log-sources">
+        <button
+          type="button"
+          className={`log-srcpill${source === "all" ? "on" : ""}`}
+          onClick={() => setSource("all")}
+        >
+          <Filter size={12} /> {t("filterAll")}
+        </button>
+        {LOG_SOURCES.map((s) => {
+          const sm = SOURCE_META[s];
+          const active = source === s;
+          const SIcon = sm.Icon;
+          return (
+            <button
+              key={s}
+              type="button"
+              className={`log-srcpill${active ? "on" : ""}`}
+              style={active ? { borderColor: sm.color, color: "#fff" } : undefined}
+              onClick={() => setSource(active ? "all" : s)}
+            >
+              <SIcon size={12} style={{ color: sm.color }} /> {t(`sources.${s}`)}
+            </button>
+          );
+        })}
       </div>
 
       {/* console */}
       <div className="log-console">
         {showInitialLoading ? (
           <div className="log-empty">
-            <span>Loading...</span>
+            <span>{t("loading")}</span>
           </div>
         ) : showEmpty ? (
           <div className="log-empty">
@@ -285,6 +292,69 @@ export function LogsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// ---------- header actions --------------------------------------
+
+function LogsHeaderActions({
+  live,
+  onToggleLive,
+  entries,
+  onCleared,
+}: {
+  live: boolean;
+  onToggleLive: () => void;
+  entries: LogEntry[];
+  onCleared: () => void;
+}) {
+  const t = useTranslations("admin.logs");
+  const { toast } = useToast();
+  const { confirm } = useConfirm();
+
+  const onExport = () => {
+    const blob = new Blob([JSON.stringify(entries, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = t("exportFilename");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast({ title: t("exportToast", { n: entries.length }) });
+  };
+
+  const onClear = async () => {
+    const ok = await confirm({
+      title: t("clearConfirmTitle"),
+      message: t("clearConfirmMessage"),
+      danger: true,
+      confirmLabel: t("clearConfirmConfirm"),
+    });
+    if (!ok) return;
+    onCleared();
+    toast({ title: t("clearedToast"), kind: "info" });
+  };
+
+  return (
+    <>
+      <Button
+        size="sm"
+        variant={live ? "primary" : "ghost"}
+        icon={live ? <Pause size={14} /> : <Play size={14} />}
+        onClick={onToggleLive}
+        aria-pressed={live}
+      >
+        {live ? t("live") : t("paused")}
+      </Button>
+      <Button size="sm" variant="ghost" icon={<Download size={14} />} onClick={onExport}>
+        {t("export")}
+      </Button>
+      <Button size="sm" variant="danger" icon={<Trash2 size={14} />} onClick={onClear}>
+        {t("clear")}
+      </Button>
+    </>
   );
 }
 
