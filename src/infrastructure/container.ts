@@ -76,6 +76,7 @@ import { TranslateText } from "@/application/use-cases/ai/TranslateText";
 import { DraftReplyToMessage } from "@/application/use-cases/ai/DraftReplyToMessage";
 import { LogActivity } from "@/application/use-cases/activity/LogActivity";
 import { ListRecentActivity } from "@/application/use-cases/activity/ListRecentActivity";
+import { ListLogs } from "@/application/use-cases/activity/ListLogs";
 import { LogPageView } from "@/application/use-cases/analytics/LogPageView";
 import { LogCVDownload } from "@/application/use-cases/analytics/LogCVDownload";
 import { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
@@ -118,6 +119,7 @@ const dailyLimiter = new UpstashRateLimiter({
 const buildPromptContext = new BuildPromptContext(contentRepo, projectRepo, skillRepo, socialRepo);
 const logActivity = new LogActivity(activityRepo);
 const listRecentActivity = new ListRecentActivity(activityRepo);
+const listLogs = new ListLogs(activityRepo, aiUsageLogRepo);
 const uploadAsset = new UploadAsset(blobStorage, logActivity);
 const deleteAsset = new DeleteAsset(blobStorage, logActivity);
 const reorderProjects = new ReorderProjects(projectRepo, logActivity);
@@ -266,6 +268,7 @@ export const container = {
     ),
     logActivity,
     listRecentActivity,
+    listLogs,
     logPageView,
     logCVDownload,
     logAIUsage,

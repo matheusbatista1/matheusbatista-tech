@@ -1,6 +1,9 @@
-import type { AIUsageLog as PrismaAIUsageLog } from "@prisma/client";
+import type { AIUsageLog as PrismaAIUsageLog, Prisma } from "@prisma/client";
 import type { AIUsageEvent, AIUsageStatus, NewAIUsageEvent } from "@/domain/entities/AIUsageEvent";
-import type { IAIUsageLogRepository } from "@/domain/repositories/IAIUsageLogRepository";
+import type {
+  IAIUsageLogRepository,
+  ListRecentAIUsageOptions,
+} from "@/domain/repositories/IAIUsageLogRepository";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { prisma } from "../db/prisma";
 
@@ -18,6 +21,17 @@ function toAIUsageEvent(row: PrismaAIUsageLog): AIUsageEvent {
     status: row.status as AIUsageStatus,
     createdAt: row.createdAt,
   };
+}
+
+function buildFilteredWhere(
+  opts: Omit<ListRecentAIUsageOptions, "limit" | "offset">,
+): Prisma.AIUsageLogWhereInput {
+  const { kind, status, since } = opts;
+  const where: Prisma.AIUsageLogWhereInput = {};
+  if (kind) where.kind = kind;
+  if (status) where.status = status;
+  if (since) where.createdAt = { gte: since };
+  return where;
 }
 
 export class PrismaAIUsageLogRepository implements IAIUsageLogRepository {
@@ -60,5 +74,22 @@ export class PrismaAIUsageLogRepository implements IAIUsageLogRepository {
       out.set(key, Number(row.count));
     }
     return out;
+  }
+
+  async listRecent(opts: ListRecentAIUsageOptions = {}): Promise<AIUsageEvent[]> {
+    const { limit = 50, offset = 0, ...rest } = opts;
+    const rows = await prisma.aIUsageLog.findMany({
+      where: buildFilteredWhere(rest),
+      orderBy: { createdAt: "desc" },
+      take: limit,
+      skip: offset,
+    });
+    return rows.map(toAIUsageEvent);
+  }
+
+  async countFiltered(
+    opts: Omit<ListRecentAIUsageOptions, "limit" | "offset"> = {},
+  ): Promise<number> {
+    return prisma.aIUsageLog.count({ where: buildFilteredWhere(opts) });
   }
 }

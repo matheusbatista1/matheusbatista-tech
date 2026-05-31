@@ -1,9 +1,5 @@
 "use client";
 
-// TODO: ligar a backend de logs real
-// Por enquanto os logs sao gerados sinteticamente no client.
-// Quando houver `/api/logs`, trocar o seed + live tail por SWR/streaming.
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -27,21 +23,7 @@ import "./logs.css";
 
 type LogLevel = "error" | "warn" | "info" | "debug";
 type LogSource = "api" | "database" | "auth" | "system" | "ai" | "email";
-
-type LogDetail = {
-  method?: string;
-  path?: string;
-  status?: number;
-  ms?: number;
-  q?: string;
-  rows?: number;
-  user?: string;
-  provider?: string;
-  to?: string;
-  meta?: string;
-  model?: string;
-  tokens?: number;
-};
+type LogOrigin = "activity" | "ai";
 
 interface LogEntry {
   id: string;
@@ -49,10 +31,20 @@ interface LogEntry {
   source: LogSource;
   level: LogLevel;
   msg: string;
-  detail: LogDetail;
-  reqId: string;
+  durationMs?: number;
+  statusCode?: number;
+  method?: string;
+  path?: string;
+  requestId?: string;
   ip?: string;
-  stack?: string;
+  meta?: Record<string, unknown>;
+  origin: LogOrigin;
+}
+
+interface LogsResponse {
+  entries: LogEntry[];
+  total: number;
+  hasMore: boolean;
 }
 
 // ---------- static metadata -------------------------------------
@@ -74,277 +66,6 @@ const LEVEL_META: Record<LogLevel, { label: string; short: string; color: string
   info: { label: "INFO", short: "INF", color: "#3b82f6" },
   debug: { label: "DEBUG", short: "DBG", color: "#8e8e95" },
 };
-
-// ---------- deterministic sample pools --------------------------
-
-type SampleRow = { level: LogLevel; msg: string } & LogDetail;
-
-const SAMPLE: Record<LogSource, SampleRow[]> = {
-  api: [
-    {
-      level: "info",
-      method: "GET",
-      path: "/api/projects",
-      status: 200,
-      ms: 42,
-      msg: "Request completed",
-    },
-    {
-      level: "info",
-      method: "GET",
-      path: "/api/projects/p-linkedpay",
-      status: 200,
-      ms: 31,
-      msg: "Request completed",
-    },
-    {
-      level: "info",
-      method: "POST",
-      path: "/api/contact",
-      status: 201,
-      ms: 88,
-      msg: "Message created",
-    },
-    {
-      level: "info",
-      method: "GET",
-      path: "/api/cv?lang=pt",
-      status: 200,
-      ms: 17,
-      msg: "CV metadata served",
-    },
-    {
-      level: "warn",
-      method: "GET",
-      path: "/api/projects",
-      status: 429,
-      ms: 5,
-      msg: "Rate limit reached for IP 187.54.x.x",
-    },
-    {
-      level: "error",
-      method: "POST",
-      path: "/api/contact",
-      status: 500,
-      ms: 1204,
-      msg: "Unhandled exception while sending email",
-    },
-    {
-      level: "warn",
-      method: "GET",
-      path: "/api/skills",
-      status: 304,
-      ms: 8,
-      msg: "Not modified (ETag hit)",
-    },
-    {
-      level: "error",
-      method: "GET",
-      path: "/api/projects/x99",
-      status: 404,
-      ms: 12,
-      msg: "Project not found",
-    },
-    {
-      level: "info",
-      method: "PATCH",
-      path: "/api/about",
-      status: 200,
-      ms: 64,
-      msg: "About section updated",
-    },
-  ],
-  database: [
-    {
-      level: "debug",
-      q: 'SELECT * FROM projects WHERE deployed = true ORDER BY "order" ASC',
-      ms: 6,
-      rows: 5,
-      msg: "Query OK",
-    },
-    {
-      level: "debug",
-      q: "SELECT * FROM messages WHERE read = false",
-      ms: 4,
-      rows: 1,
-      msg: "Query OK",
-    },
-    {
-      level: "info",
-      q: "INSERT INTO messages (from, email, subject, body) VALUES ($1,$2,$3,$4)",
-      ms: 11,
-      rows: 1,
-      msg: "Insert committed",
-    },
-    {
-      level: "warn",
-      q: "SELECT * FROM projects p LEFT JOIN images i ON i.project_id = p.id",
-      ms: 842,
-      rows: 137,
-      msg: "Slow query (>500ms) — missing index on images.project_id",
-    },
-    {
-      level: "error",
-      q: "UPDATE cv SET file = $1 WHERE lang = $2",
-      ms: 30012,
-      rows: 0,
-      msg: "Connection pool timeout after 30000ms",
-    },
-    {
-      level: "debug",
-      q: "SELECT count(*) FROM visits WHERE day = CURRENT_DATE",
-      ms: 9,
-      rows: 1,
-      msg: "Query OK",
-    },
-    { level: "info", q: "VACUUM ANALYZE messages", ms: 156, rows: 0, msg: "Maintenance complete" },
-  ],
-  auth: [
-    {
-      level: "info",
-      msg: "OAuth login success",
-      user: "matheus.sbatista@outlook.com",
-      provider: "google",
-    },
-    {
-      level: "warn",
-      msg: "Access denied — non-owner account",
-      user: "visitor@example.com",
-      provider: "google",
-    },
-    { level: "info", msg: "Session refreshed", user: "matheus.sbatista@outlook.com" },
-    { level: "warn", msg: "Expired token rejected", user: "matheus.sbatista@outlook.com" },
-    {
-      level: "error",
-      msg: "OAuth callback failed — state mismatch (possible CSRF)",
-      provider: "google",
-    },
-    { level: "info", msg: "Sign-out", user: "matheus.sbatista@outlook.com" },
-  ],
-  system: [
-    { level: "info", msg: "Deployment succeeded", meta: "vercel · build #4821 · 38s" },
-    { level: "info", msg: "Edge cache purged", meta: "region gru1" },
-    { level: "warn", msg: "Memory usage at 86%", meta: "lambda /api/contact" },
-    { level: "debug", msg: "Cron tick: cleanup-drafts", meta: "0 rows affected" },
-    { level: "error", msg: "Function cold start exceeded 3s budget", meta: "/api/projects · 3.4s" },
-    { level: "info", msg: "Health check passed", meta: "/healthz · 200" },
-  ],
-  ai: [
-    { level: "info", msg: "Persona rewrite", model: "gemini-2.5-flash", tokens: 412, ms: 980 },
-    {
-      level: "info",
-      msg: "Semantic search ranking",
-      model: "gemini-2.5-flash",
-      tokens: 286,
-      ms: 640,
-    },
-    {
-      level: "info",
-      msg: "Assistant reply (generative UI)",
-      model: "gemini-2.5-flash",
-      tokens: 530,
-      ms: 1120,
-    },
-    {
-      level: "warn",
-      msg: "Response truncated at max_tokens",
-      model: "gemini-2.5-flash",
-      tokens: 1024,
-      ms: 1500,
-    },
-    {
-      level: "error",
-      msg: "AI request failed — upstream 529 overloaded",
-      model: "gemini-2.5-flash",
-      tokens: 0,
-      ms: 240,
-    },
-    { level: "debug", msg: "Cache hit — skipped model call", model: "cache", tokens: 0, ms: 1 },
-  ],
-  email: [
-    { level: "info", msg: "Auto-reply queued", to: "anna@coreflow.io" },
-    { level: "info", msg: "Delivery confirmed", to: "pedro.lima@bytemark.com.br" },
-    { level: "error", msg: "SMTP 550 — mailbox unavailable", to: "typo@@gmail.com" },
-    { level: "warn", msg: "Soft bounce — retrying in 5m", to: "j.reyes@studio-aki.com" },
-  ],
-};
-
-const STACKS: Record<string, string> = {
-  contact: `TypeError: Cannot read properties of undefined (reading 'send')
-    at sendMail (/var/task/lib/mailer.js:42:18)
-    at async POST (/var/task/app/api/contact/route.js:28:5)
-    at async /var/task/node_modules/next/server.js:1190:21`,
-  db: `SequelizeConnectionAcquireTimeoutError: Operation timeout
-    at ConnectionManager._acquire (/var/task/node_modules/sequelize/lib/pool.js:118:23)
-    at async CvRepository.update (/var/task/lib/repos/cv.js:51:7)`,
-  ai: `APIError: 529 {"type":"overloaded_error","message":"Overloaded"}
-    at GoogleGenAI.request (/var/task/node_modules/@ai-sdk/google/core.js:301:13)
-    at async aiComplete (/var/task/lib/ai.js:64:18)`,
-  oauth: `AuthError: state_mismatch
-    at verifyState (/var/task/lib/auth/oauth.js:88:11)
-    at async callback (/var/task/app/api/auth/callback/route.js:19:5)`,
-};
-
-const IPS = ["187.54.32.10", "201.17.8.4", "66.249.66.1", "127.0.0.1"];
-
-// ---------- deterministic helpers (no Math.random) --------------
-
-// Build a 32-char base36 id seeded from a number. Deterministic.
-function detSlug(seed: number): string {
-  let s = (seed * 2654435761) >>> 0;
-  let out = "";
-  for (let i = 0; i < 8; i += 1) {
-    out += (s % 36).toString(36);
-    s = Math.floor(s / 36) + ((seed + i) % 31);
-  }
-  return out;
-}
-
-function buildEntry(i: number, ts: Date, idCounter: number): LogEntry {
-  const source = LOG_SOURCES[i % LOG_SOURCES.length] as LogSource;
-  const pool = SAMPLE[source];
-  const sampleIdx = (i * 3) % pool.length;
-  const sample = pool[sampleIdx] as SampleRow;
-  const ip = IPS[(i * 5) % IPS.length] as string;
-
-  const detail: LogDetail = { ...sample };
-  delete (detail as { msg?: string }).msg;
-  delete (detail as { level?: LogLevel }).level;
-
-  const entry: LogEntry = {
-    id: `log_${idCounter}`,
-    ts: ts.toISOString(),
-    source,
-    level: sample.level,
-    msg: sample.msg,
-    detail,
-    reqId: `req_${detSlug(idCounter)}`,
-    ip,
-  };
-
-  if (sample.level === "error") {
-    if (source === "api" && sample.path === "/api/contact") entry.stack = STACKS.contact;
-    else if (source === "database") entry.stack = STACKS.db;
-    else if (source === "ai") entry.stack = STACKS.ai;
-    else if (source === "auth") entry.stack = STACKS.oauth;
-  }
-
-  return entry;
-}
-
-const SEED_COUNT = 30;
-
-// Seed 30 entries with timestamps stepping backwards in deterministic offsets.
-function seedEntries(now: number): LogEntry[] {
-  const out: LogEntry[] = [];
-  for (let i = 0; i < SEED_COUNT; i += 1) {
-    // step: 18s + variable (deterministic) spread up to ~3min between entries
-    const offsetSec = 18 * (i + 1) + ((i * 13) % 47);
-    const ts = new Date(now - offsetSec * 1000);
-    out.push(buildEntry(i, ts, i + 1));
-  }
-  return out;
-}
 
 // ---------- formatters ------------------------------------------
 
@@ -368,33 +89,79 @@ function clockTime(iso: string): string {
 
 // ---------- component ------------------------------------------
 
+const LIVE_REFRESH_MS = 10_000;
+const SEARCH_DEBOUNCE_MS = 300;
+const FETCH_LIMIT = 50;
+
 export function LogsPage() {
   const t = useTranslations("admin.logs");
 
-  // Stable seed: capture the initial mount time once so SSR/CSR match (we are
-  // already client-only, but the seed must not regenerate on re-render).
-  const [logs, setLogs] = useState<LogEntry[]>(() => seedEntries(Date.now()));
+  const [entries, setEntries] = useState<LogEntry[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [live, setLive] = useState(true);
   const [level, setLevel] = useState<"all" | LogLevel>("all");
   const [source, setSource] = useState<"all" | LogSource>("all");
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
   const [nowMs, setNowMs] = useState<number>(() => Date.now());
 
-  const idCounterRef = useRef(SEED_COUNT);
-  const liveIdxRef = useRef(SEED_COUNT);
+  const abortRef = useRef<AbortController | null>(null);
 
-  // Live tail — prepend a new deterministic entry every 2.2s.
+  // Debounce search input
   useEffect(() => {
-    if (!live) return;
-    const iv = setInterval(() => {
-      idCounterRef.current += 1;
-      liveIdxRef.current += 1;
-      const next = buildEntry(liveIdxRef.current, new Date(), idCounterRef.current);
-      setLogs((prev) => [next, ...prev].slice(0, 500));
-    }, 2200);
-    return () => clearInterval(iv);
-  }, [live]);
+    const id = setTimeout(() => setDebouncedQuery(query), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(id);
+  }, [query]);
+
+  // Fetch logs whenever filters change OR on live-tail interval
+  useEffect(() => {
+    const fetchLogs = async () => {
+      // Cancel any in-flight request
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+
+      setLoading(true);
+      try {
+        const params = new URLSearchParams();
+        if (source !== "all") params.set("source", source);
+        if (level !== "all") params.set("level", level);
+        if (debouncedQuery.trim()) params.set("search", debouncedQuery.trim());
+        params.set("limit", String(FETCH_LIMIT));
+
+        const res = await fetch(`/api/admin/logs?${params.toString()}`, {
+          signal: controller.signal,
+          cache: "no-store",
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data: LogsResponse = await res.json();
+        if (controller.signal.aborted) return;
+        setEntries(data.entries);
+        setTotal(data.total);
+      } catch (err) {
+        if ((err as Error).name === "AbortError") return;
+        // Swallow other errors silently — list stays as-is
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
+      }
+    };
+
+    fetchLogs();
+
+    if (!live) {
+      return () => {
+        abortRef.current?.abort();
+      };
+    }
+
+    const iv = setInterval(fetchLogs, LIVE_REFRESH_MS);
+    return () => {
+      clearInterval(iv);
+      abortRef.current?.abort();
+    };
+  }, [source, level, debouncedQuery, live]);
 
   // Keep relative timestamps fresh.
   useEffect(() => {
@@ -404,22 +171,12 @@ export function LogsPage() {
 
   const counts = useMemo(() => {
     const c: Record<LogLevel, number> = { error: 0, warn: 0, info: 0, debug: 0 };
-    for (const l of logs) c[l.level] += 1;
+    for (const l of entries) c[l.level] += 1;
     return c;
-  }, [logs]);
+  }, [entries]);
 
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return logs.filter((l) => {
-      if (level !== "all" && l.level !== level) return false;
-      if (source !== "all" && l.source !== source) return false;
-      if (q) {
-        const hay = `${l.msg} ${l.source} ${JSON.stringify(l.detail)} ${l.reqId}`.toLowerCase();
-        if (!hay.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [logs, level, source, query]);
+  const showEmpty = !loading && entries.length === 0;
+  const showInitialLoading = loading && entries.length === 0;
 
   return (
     <div className="admin-logs">
@@ -504,16 +261,21 @@ export function LogsPage() {
 
       {/* console */}
       <div className="log-console">
-        {filtered.length === 0 ? (
+        {showInitialLoading ? (
+          <div className="log-empty">
+            <span>Loading...</span>
+          </div>
+        ) : showEmpty ? (
           <div className="log-empty">
             <span>{t("noResults")}</span>
           </div>
         ) : (
-          filtered.map((l) => (
+          entries.map((l) => (
             <LogRow
               key={l.id}
               entry={l}
               nowMs={nowMs}
+              total={total}
               open={openId === l.id}
               onToggle={() => setOpenId(openId === l.id ? null : l.id)}
               copyLabel={t("copyJson")}
@@ -538,6 +300,7 @@ function LogRow({
 }: {
   entry: LogEntry;
   nowMs: number;
+  total: number;
   open: boolean;
   onToggle: () => void;
   copyLabel: string;
@@ -546,7 +309,6 @@ function LogRow({
   const lm = LEVEL_META[entry.level];
   const sm = SOURCE_META[entry.source];
   const SIcon = sm.Icon;
-  const d = entry.detail;
 
   const [copied, setCopied] = useState(false);
 
@@ -560,6 +322,17 @@ function LogRow({
       /* clipboard may be blocked */
     }
   };
+
+  const meta = entry.meta;
+  const metaUser = typeof meta?.actorEmail === "string" ? meta.actorEmail : undefined;
+  const metaModel = typeof meta?.kind === "string" ? meta.kind : undefined;
+  const metaTokensIn = typeof meta?.tokensIn === "number" ? meta.tokensIn : undefined;
+  const metaTokensOut = typeof meta?.tokensOut === "number" ? meta.tokensOut : undefined;
+  const metaEntity = typeof meta?.entity === "string" ? meta.entity : undefined;
+  const metaEntityId = typeof meta?.entityId === "string" ? meta.entityId : undefined;
+  const metaAction = typeof meta?.action === "string" ? meta.action : undefined;
+  const metaSql = typeof meta?.sql === "string" ? meta.sql : undefined;
+  const metaStack = typeof meta?.stack === "string" ? meta.stack : undefined;
 
   return (
     <div className={`log-row ${entry.level}${open ? "open" : ""}`}>
@@ -586,18 +359,20 @@ function LogRow({
         </span>
 
         <span className="log-msg">
-          {d.method && <span className="log-method">{d.method}</span>}
-          {d.path && <span className="log-path">{d.path}</span>}
-          {typeof d.status !== "undefined" && (
-            <span className="log-status" data-ok={d.status < 400}>
-              {d.status}
+          {entry.method && <span className="log-method">{entry.method}</span>}
+          {entry.path && <span className="log-path">{entry.path}</span>}
+          {typeof entry.statusCode !== "undefined" && (
+            <span className="log-status" data-ok={entry.statusCode < 400}>
+              {entry.statusCode}
             </span>
           )}
           {entry.msg}
         </span>
 
-        {typeof d.ms !== "undefined" && (
-          <span className={`log-dur${d.ms > 500 ? "slow" : ""}`}>{d.ms}ms</span>
+        {typeof entry.durationMs !== "undefined" && (
+          <span className={`log-dur${entry.durationMs > 500 ? "slow" : ""}`}>
+            {entry.durationMs}ms
+          </span>
         )}
 
         <span className="log-rel">{relTime(entry.ts, nowMs)}</span>
@@ -619,66 +394,78 @@ function LogRow({
               <code>{entry.source}</code>
             </div>
             <div className="ld-kv">
-              <span>request id</span>
-              <code>{entry.reqId}</code>
+              <span>origin</span>
+              <code>{entry.origin}</code>
             </div>
+            {entry.requestId && (
+              <div className="ld-kv">
+                <span>request id</span>
+                <code>{entry.requestId}</code>
+              </div>
+            )}
             {entry.ip && (
               <div className="ld-kv">
                 <span>ip</span>
                 <code>{entry.ip}</code>
               </div>
             )}
-            {d.user && (
+            {metaUser && (
               <div className="ld-kv">
                 <span>user</span>
-                <code>{d.user}</code>
+                <code>{metaUser}</code>
               </div>
             )}
-            {d.model && (
+            {metaModel && (
               <div className="ld-kv">
-                <span>model</span>
-                <code>{d.model}</code>
+                <span>kind</span>
+                <code>{metaModel}</code>
               </div>
             )}
-            {typeof d.tokens !== "undefined" && (
+            {typeof metaTokensIn !== "undefined" && (
               <div className="ld-kv">
-                <span>tokens</span>
-                <code>{d.tokens}</code>
+                <span>tokens in</span>
+                <code>{metaTokensIn}</code>
               </div>
             )}
-            {typeof d.rows !== "undefined" && (
+            {typeof metaTokensOut !== "undefined" && (
               <div className="ld-kv">
-                <span>rows</span>
-                <code>{d.rows}</code>
+                <span>tokens out</span>
+                <code>{metaTokensOut}</code>
               </div>
             )}
-            {d.to && (
+            {metaEntity && (
               <div className="ld-kv">
-                <span>to</span>
-                <code>{d.to}</code>
+                <span>entity</span>
+                <code>{metaEntity}</code>
               </div>
             )}
-            {d.meta && (
+            {metaEntityId && (
               <div className="ld-kv">
-                <span>meta</span>
-                <code>{d.meta}</code>
+                <span>entity id</span>
+                <code>{metaEntityId}</code>
+              </div>
+            )}
+            {metaAction && (
+              <div className="ld-kv">
+                <span>action</span>
+                <code>{metaAction}</code>
               </div>
             )}
           </div>
 
-          {d.q && (
+          {metaSql && (
             <div className="ld-block">
               <div className="ld-block-h">
                 <Database style={{ width: 12, height: 12 }} /> SQL
               </div>
-              <pre className="ld-code sql">{d.q}</pre>
+              <pre className="ld-code sql">{metaSql}</pre>
             </div>
           )}
 
-          {entry.stack && (
+          {metaStack && (
             <div className="ld-block">
               <div className="ld-block-h err">Stack trace</div>
-              <pre className="ld-code stack">{entry.stack}</pre>
+              <pre className="ld-code stack">{metaStack}</pre>
             </div>
           )}
 
