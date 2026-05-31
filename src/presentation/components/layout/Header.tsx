@@ -1,18 +1,15 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
-import type { Route } from "next";
 import { useScrolled } from "@/presentation/hooks/useScrolled";
 import { useTheme } from "@/presentation/providers/ThemeProvider";
 import { useMenu } from "@/presentation/providers/MenuProvider";
 import { BrandMark } from "@/presentation/components/icons/Icons";
-import { LOCALES } from "@/domain/value-objects/Locale";
+import { usePathname, useRouter } from "@/presentation/lib/i18n/routing";
 import type { Locale } from "@/domain/value-objects/Locale";
 
 const LANG_ORDER: readonly Locale[] = ["pt", "en", "es"];
-const DEFAULT_LOCALE: Locale = "en";
 
 export function Header() {
   const scrolled = useScrolled(40);
@@ -25,15 +22,7 @@ export function Header() {
 
   const switchLocale = (next: Locale) => {
     if (next === currentLocale) return;
-    const segments = pathname.split("/").filter(Boolean);
-    const first = segments[0];
-    if (first && (LOCALES as readonly string[]).includes(first)) {
-      segments.shift();
-    }
-    const tail = segments.join("/");
-    const path = next === DEFAULT_LOCALE ? `/${tail}` : `/${next}${tail ? `/${tail}` : ""}`;
-    const normalized = (path === "" ? "/" : path) as Route;
-    startTransition(() => router.replace(normalized));
+    startTransition(() => router.replace(pathname, { locale: next }));
   };
 
   return (

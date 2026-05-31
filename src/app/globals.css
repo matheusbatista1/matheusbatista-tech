@@ -669,18 +669,23 @@ a {
  * ─────────────────────────────────────────────────────────────────────────── */
 
 .reveal {
-  opacity: 0;
-  transform: translateY(20px);
+  opacity: 1;
+  transform: none;
   transition:
     opacity 700ms var(--ease-out-quart),
     transform 700ms var(--ease-out-quart);
 }
-.reveal.in {
+.reveal.js-reveal {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.reveal.js-reveal.in {
   opacity: 1;
   transform: translateY(0);
 }
 @media (prefers-reduced-motion: reduce) {
-  .reveal {
+  .reveal,
+  .reveal.js-reveal {
     opacity: 1;
     transform: none;
   }
@@ -4277,4 +4282,13 @@ a {
     padding-left: 16px;
     padding-right: 16px;
   }
+}
+
+body[data-gate="locked"] {
+  overflow: hidden;
+}
+.loading-root[data-leaving="true"] {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms var(--ease-out-quart);
 }
