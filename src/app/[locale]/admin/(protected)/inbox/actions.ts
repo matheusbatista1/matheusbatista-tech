@@ -44,12 +44,3 @@ export async function deleteMessageAction(formData: FormData): Promise<void> {
   await container.useCases.deleteMessage.execute(id, await actorEmail());
   await revalidateInbox(locale);
 }
-
-export async function setArchivedAction(formData: FormData): Promise<void> {
-  const id = String(formData.get("id") ?? "");
-  const locale = String(formData.get("locale") ?? "en");
-  const archived = formData.get("archived") === "true";
-  if (!id) return;
-  await container.useCases.archiveMessage.execute(id, archived, await actorEmail());
-  await revalidateInbox(locale);
-}

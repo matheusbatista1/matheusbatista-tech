@@ -26,10 +26,6 @@ export interface DraftReplyPromptInput {
   };
 }
 
-/**
- * Prompt template para draft de resposta a uma mensagem de contato.
- * Sempre fala em nome do dono do portfolio (context.name).
- */
 export function buildDraftReplyPrompt({
   context,
   locale,
@@ -42,7 +38,7 @@ export function buildDraftReplyPrompt({
   return [
     `You are drafting an email reply on behalf of ${context.name}, a software engineer.`,
     `Tone: "${tone}" — ${toneHint}.`,
-    `WRITE IN ${langLabel}.`,
+    `Return ONLY the reply body text, no subject line, in the same language as the original message (default ${langLabel}).`,
     `Sign with the first name only. Do not invent meetings, prices, or commitments.`,
     `If the incoming message asks for something specific, address it directly using ONLY the facts below.`,
     ``,
@@ -62,7 +58,7 @@ export function buildDraftReplyPrompt({
     message.body,
     ``,
     `Return COMPACT JSON only:`,
-    `{"subject":"Re: <original or improved>","body":"<the reply body>"}`,
-    `Keep the subject under 120 chars. Keep the body under 1500 chars.`,
+    `{"body":"<the reply body>"}`,
+    `Keep the body under 1500 chars. No subject field.`,
   ].join("\n");
 }
