@@ -43,6 +43,11 @@ export class PrismaMessageRepository implements IMessageRepository {
     return rows.map(toContactMessage);
   }
 
+  async findById(id: string): Promise<ContactMessage | null> {
+    const row = await prisma.contactMessage.findUnique({ where: { id } });
+    return row ? toContactMessage(row) : null;
+  }
+
   async markAsRead(id: string): Promise<void> {
     await prisma.contactMessage.update({ where: { id }, data: { read: true } });
   }

@@ -32,6 +32,13 @@ import { DeleteSkill } from "@/application/use-cases/skills/DeleteSkill";
 import { GroupSkillsByCategory } from "@/application/use-cases/skills/GroupSkillsByCategory";
 import { SendContactMessage } from "@/application/use-cases/messages/SendContactMessage";
 import { ListMessages } from "@/application/use-cases/messages/ListMessages";
+import { GetMessage } from "@/application/use-cases/messages/GetMessage";
+import { MarkMessageRead } from "@/application/use-cases/messages/MarkMessageRead";
+import { MarkMessageUnread } from "@/application/use-cases/messages/MarkMessageUnread";
+import { MarkAllMessagesRead } from "@/application/use-cases/messages/MarkAllMessagesRead";
+import { ArchiveMessage } from "@/application/use-cases/messages/ArchiveMessage";
+import { DeleteMessage } from "@/application/use-cases/messages/DeleteMessage";
+import { GetDashboardStats } from "@/application/use-cases/dashboard/GetDashboardStats";
 import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
 import { UpdateHeroContent } from "@/application/use-cases/content/UpdateHeroContent";
 import { UpdateAboutContent } from "@/application/use-cases/content/UpdateAboutContent";
@@ -127,6 +134,13 @@ export const container = {
     groupSkillsByCategory: new GroupSkillsByCategory(skillRepo),
     sendContactMessage: new SendContactMessage(messageRepo),
     listMessages: new ListMessages(messageRepo),
+    getMessage: new GetMessage(messageRepo),
+    markMessageRead: new MarkMessageRead(messageRepo, logActivity),
+    markMessageUnread: new MarkMessageUnread(messageRepo, logActivity),
+    markAllMessagesRead: new MarkAllMessagesRead(messageRepo, logActivity),
+    archiveMessage: new ArchiveMessage(messageRepo, logActivity),
+    deleteMessage: new DeleteMessage(messageRepo, logActivity),
+    getDashboardStats: new GetDashboardStats(messageRepo, projectRepo, activityRepo),
     getSiteContent: new GetSiteContent(contentRepo),
     updateHeroContent: new UpdateHeroContent(contentRepo),
     updateAboutContent: new UpdateAboutContent(contentRepo),
