@@ -28,6 +28,7 @@ export async function AdminSidebarServer({
           label: tNav("inbox"),
           badgeCount: unreadCount,
         },
+        { key: "analytics" as const, href: "/admin/analytics", label: tNav("analytics") },
         { key: "logs" as const, href: "/admin/logs", label: tNav("logs") },
       ],
     },

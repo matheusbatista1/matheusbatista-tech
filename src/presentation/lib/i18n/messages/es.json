@@ -12,6 +12,7 @@
       "configuration": "Configuración",
       "dashboard": "Panel",
       "inbox": "Mensajes",
+      "analytics": "Analytics",
       "logs": "Logs",
       "hero": "Hero",
       "about": "Acerca",
@@ -106,6 +107,88 @@
         "system": "Sistema",
         "ai": "IA",
         "email": "Email"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "lead": "Quién visita tu portfolio — humanos vs. bots, geografía e info de dispositivo.",
+      "viewSite": "Ver sitio",
+      "range": {
+        "today": "Hoy",
+        "7d": "7d",
+        "30d": "30d",
+        "all": "Todo"
+      },
+      "cards": {
+        "total": "Visitas totales",
+        "uniq": "Visitantes únicos",
+        "uniqSub": "IPs distintos",
+        "humans": "Humanos",
+        "bots": "Bots"
+      },
+      "agg": {
+        "topCountries": "Top países",
+        "topPages": "Top páginas"
+      },
+      "filter": {
+        "all": "Todos",
+        "humans": "Humanos",
+        "bots": "Bots",
+        "searchPlaceholder": "Buscar ruta, país, navegador…",
+        "allCountries": "Todos los países",
+        "clearFilters": "Limpiar filtros"
+      },
+      "table": {
+        "cols": {
+          "when": "Cuándo",
+          "path": "Ruta",
+          "location": "Ubicación",
+          "browser": "Navegador",
+          "device": "Dispositivo",
+          "type": "Tipo",
+          "referrer": "Referencia"
+        },
+        "empty": {
+          "title": "Aún no hay visitas",
+          "noFilter": "Cuando tu portfolio esté en línea, las visitas aparecerán aquí.",
+          "withFilter": "Ninguna visita coincide con tus filtros. Amplía el rango o limpia la búsqueda."
+        },
+        "direct": "Directo",
+        "badge": {
+          "human": "Humano",
+          "bot": "Bot"
+        }
+      },
+      "detail": {
+        "identifiedAs": "Identificado como {name} por la firma del User-Agent.",
+        "tzMismatch": "Zona horaria distinta — cliente {client} vs servidor {server}. Posible VPN/proxy.",
+        "kv": {
+          "timestamp": "Timestamp",
+          "path": "Ruta",
+          "country": "País",
+          "cityRegion": "Ciudad",
+          "latLon": "Lat / Lon",
+          "serverTz": "TZ servidor",
+          "clientTz": "TZ cliente",
+          "screen": "Pantalla",
+          "viewport": "Viewport",
+          "language": "Idioma",
+          "ipHash": "Hash de IP",
+          "userAgent": "User Agent",
+          "referrerUrl": "URL de referencia"
+        }
+      },
+      "pager": {
+        "prev": "Anterior",
+        "next": "Siguiente",
+        "pageOf": "Página {current} de {total}"
+      },
+      "time": {
+        "justNow": "ahora",
+        "sAgo": "hace {n}s",
+        "minAgo": "hace {n}min",
+        "hAgo": "hace {n}h",
+        "dAgo": "hace {n}d"
       }
     },
     "inbox": {

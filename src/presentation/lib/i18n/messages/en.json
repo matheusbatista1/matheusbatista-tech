@@ -12,6 +12,7 @@
       "configuration": "Configuration",
       "dashboard": "Dashboard",
       "inbox": "Inbox",
+      "analytics": "Analytics",
       "logs": "Logs",
       "hero": "Hero",
       "about": "About",
@@ -106,6 +107,88 @@
         "system": "System",
         "ai": "AI",
         "email": "Email"
+      }
+    },
+    "analytics": {
+      "title": "Analytics",
+      "lead": "Who's visiting your portfolio — humans vs. bots, geography, and device intel.",
+      "viewSite": "View site",
+      "range": {
+        "today": "Today",
+        "7d": "7d",
+        "30d": "30d",
+        "all": "All"
+      },
+      "cards": {
+        "total": "Total visits",
+        "uniq": "Unique visitors",
+        "uniqSub": "distinct IPs",
+        "humans": "Humans",
+        "bots": "Bots"
+      },
+      "agg": {
+        "topCountries": "Top countries",
+        "topPages": "Top pages"
+      },
+      "filter": {
+        "all": "All",
+        "humans": "Humans",
+        "bots": "Bots",
+        "searchPlaceholder": "Search path, country, browser…",
+        "allCountries": "All countries",
+        "clearFilters": "Clear filters"
+      },
+      "table": {
+        "cols": {
+          "when": "When",
+          "path": "Path",
+          "location": "Location",
+          "browser": "Browser",
+          "device": "Device",
+          "type": "Type",
+          "referrer": "Referrer"
+        },
+        "empty": {
+          "title": "No visits yet",
+          "noFilter": "Once your portfolio is live, visits will stream in here.",
+          "withFilter": "No visits match your filters. Try widening the date range or clearing search."
+        },
+        "direct": "Direct",
+        "badge": {
+          "human": "Human",
+          "bot": "Bot"
+        }
+      },
+      "detail": {
+        "identifiedAs": "Identified as {name} via User-Agent signature.",
+        "tzMismatch": "Timezone mismatch — client {client} vs server {server}. Possible VPN/proxy.",
+        "kv": {
+          "timestamp": "Timestamp",
+          "path": "Path",
+          "country": "Country",
+          "cityRegion": "City",
+          "latLon": "Lat / Lon",
+          "serverTz": "Server TZ",
+          "clientTz": "Client TZ",
+          "screen": "Screen",
+          "viewport": "Viewport",
+          "language": "Language",
+          "ipHash": "IP hash",
+          "userAgent": "User Agent",
+          "referrerUrl": "Referrer URL"
+        }
+      },
+      "pager": {
+        "prev": "Prev",
+        "next": "Next",
+        "pageOf": "Page {current} of {total}"
+      },
+      "time": {
+        "justNow": "just now",
+        "sAgo": "{n}s ago",
+        "minAgo": "{n}min ago",
+        "hAgo": "{n}h ago",
+        "dAgo": "{n}d ago"
       }
     },
     "inbox": {
