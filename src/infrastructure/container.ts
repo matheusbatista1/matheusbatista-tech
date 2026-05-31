@@ -80,6 +80,8 @@ import { ListLogs } from "@/application/use-cases/activity/ListLogs";
 import { LogPageView } from "@/application/use-cases/analytics/LogPageView";
 import { LogCVDownload } from "@/application/use-cases/analytics/LogCVDownload";
 import { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
+import { ListVisits } from "@/application/use-cases/analytics/ListVisits";
+import { GetVisitsOverview } from "@/application/use-cases/analytics/GetVisitsOverview";
 import { UploadAsset } from "@/application/use-cases/assets/UploadAsset";
 import { DeleteAsset } from "@/application/use-cases/assets/DeleteAsset";
 
@@ -133,6 +135,8 @@ const listCVs = new ListCVs(cvAssetRepo);
 const logAIUsage = new LogAIUsage(aiUsageLogRepo);
 const logCVDownload = new LogCVDownload(cvDownloadRepo);
 const logPageView = new LogPageView(pageViewRepo);
+const listVisits = new ListVisits(pageViewRepo);
+const getVisitsOverview = new GetVisitsOverview(pageViewRepo);
 
 export const container = {
   // Repositories (raramente expor — preferir use cases)
@@ -272,6 +276,8 @@ export const container = {
     logPageView,
     logCVDownload,
     logAIUsage,
+    listVisits,
+    getVisitsOverview,
     uploadAsset,
     deleteAsset,
   },
