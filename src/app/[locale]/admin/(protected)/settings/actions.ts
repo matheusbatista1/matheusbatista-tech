@@ -6,24 +6,9 @@ import { z } from "zod";
 import { auth } from "@/infrastructure/auth/auth";
 import { container } from "@/infrastructure/container";
 
-const localizedSchema = z.object({
-  en: z.string(),
-  pt: z.string(),
-  es: z.string(),
-});
-
 const settingsSchema = z.object({
-  // Legacy SiteContent.settings
   defaultLang: z.enum(["en", "pt", "es"]),
   defaultTheme: z.enum(["dark", "light"]),
-  // New SiteSettings
-  seoTitle: localizedSchema,
-  seoDescription: localizedSchema,
-  ogImageUrl: z.string().url().or(z.literal("")).nullable().optional(),
-  analyticsEnabled: z.boolean(),
-  aiFeaturesEnabled: z.boolean(),
-  maintenanceMode: z.boolean(),
-  contactEmail: z.string().email().or(z.literal("")).nullable().optional(),
 });
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>;
@@ -33,6 +18,8 @@ export interface SettingsActionState {
   error?: string;
 }
 
+// TODO: SEO + feature toggles + contact email moved to /admin/seo (future PR).
+// updateSiteSettings use case is still registered in the container for that route.
 export async function updateSettingsAction(
   input: SettingsFormValues,
 ): Promise<SettingsActionState> {
@@ -48,25 +35,10 @@ export async function updateSettingsAction(
   const actorEmail = session.user.email ?? null;
 
   try {
-    // 1) Legacy SiteContent.settings (defaults)
     await container.useCases.updateContentSettings.execute({
       defaultLang: data.defaultLang,
       defaultTheme: data.defaultTheme,
     });
-
-    // 2) New SiteSettings (SEO + toggles + contact)
-    await container.useCases.updateSiteSettings.execute(
-      {
-        seoTitle: data.seoTitle,
-        seoDescription: data.seoDescription,
-        ogImageUrl: data.ogImageUrl ? data.ogImageUrl : null,
-        analyticsEnabled: data.analyticsEnabled,
-        aiFeaturesEnabled: data.aiFeaturesEnabled,
-        maintenanceMode: data.maintenanceMode,
-        contactEmail: data.contactEmail ? data.contactEmail : null,
-      },
-      actorEmail,
-    );
 
     await container.useCases.logActivity.execute({
       actorId: session.user.id ?? null,

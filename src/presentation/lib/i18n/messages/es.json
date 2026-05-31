@@ -280,19 +280,6 @@
       "defaultTheme": "Tema por defecto",
       "themeDark": "Oscuro",
       "themeLight": "Claro",
-      "seo": {
-        "title": "SEO",
-        "seoTitle": "Título de página",
-        "seoDescription": "Meta descripción",
-        "ogImage": "Imagen de compartir (OG)"
-      },
-      "toggles": {
-        "title": "Funcionalidades",
-        "analytics": "Analytics",
-        "ai": "Funcionalidades de IA",
-        "maintenance": "Modo mantenimiento"
-      },
-      "contactEmail": "Email público de contacto",
       "dangerZone": "Zona de peligro",
       "reset": "Restablecer todo",
       "resetDesc": "Restaurar los datos originales del seed. Esto no se puede deshacer.",

@@ -133,6 +133,9 @@
   background: var(--admin-surface);
   color: var(--admin-text);
 }
+.admin-sidebar-link[data-active="true"] svg {
+  transform: scale(1.05);
+}
 .admin-sidebar-link[data-active="true"]::before {
   content: "";
   position: absolute;
@@ -360,30 +363,80 @@
 /* Content */
 .admin-content {
   padding: 32px 32px 64px;
-  animation: admin-page-in 460ms var(--ease-out-soft) both;
 }
 .admin-content[data-wide="true"] {
   max-width: 100%;
-}
-@keyframes admin-page-in {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .admin-content {
-    animation: none;
-  }
 }
 @media (max-width: 980px) {
   .admin-content {
     padding: 22px 18px 48px;
   }
+}
+
+/* Stagger entry: rows in tables, lists, messages */
+@keyframes admin-row-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.admin-tbl tbody tr,
+.admin-list-row,
+.admin-msg-item,
+.admin-project-card {
+  animation: admin-row-in 420ms ease both;
+}
+.admin-tbl tbody tr:nth-child(1) {
+  animation-delay: 0.02s;
+}
+.admin-tbl tbody tr:nth-child(2) {
+  animation-delay: 0.06s;
+}
+.admin-tbl tbody tr:nth-child(3) {
+  animation-delay: 0.1s;
+}
+.admin-tbl tbody tr:nth-child(4) {
+  animation-delay: 0.14s;
+}
+.admin-tbl tbody tr:nth-child(5) {
+  animation-delay: 0.18s;
+}
+.admin-tbl tbody tr:nth-child(n + 6) {
+  animation-delay: 0.22s;
+}
+
+/* Stagger entry: project cards grid */
+@keyframes admin-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.admin-projects-grid > * {
+  animation: admin-card-in 480ms var(--ease-out-soft) both;
+}
+.admin-projects-grid > *:nth-child(1) {
+  animation-delay: 0.04s;
+}
+.admin-projects-grid > *:nth-child(2) {
+  animation-delay: 0.1s;
+}
+.admin-projects-grid > *:nth-child(3) {
+  animation-delay: 0.16s;
+}
+.admin-projects-grid > *:nth-child(4) {
+  animation-delay: 0.22s;
+}
+.admin-projects-grid > *:nth-child(n + 5) {
+  animation-delay: 0.28s;
 }
 
 /* PageHead */
