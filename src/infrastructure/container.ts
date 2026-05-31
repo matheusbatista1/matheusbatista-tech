@@ -50,13 +50,17 @@ import { GetDashboardStats } from "@/application/use-cases/dashboard/GetDashboar
 import { GetSiteContent } from "@/application/use-cases/content/GetSiteContent";
 import { UpdateHeroContent } from "@/application/use-cases/content/UpdateHeroContent";
 import { UpdateAboutContent } from "@/application/use-cases/content/UpdateAboutContent";
-import { UpdateSiteSettings } from "@/application/use-cases/content/UpdateSiteSettings";
+import { UpdateSiteSettings as UpdateContentSettings } from "@/application/use-cases/content/UpdateSiteSettings";
 import { ListSocialLinks } from "@/application/use-cases/social/ListSocialLinks";
 import { ListAllSocialLinks } from "@/application/use-cases/social/ListAllSocialLinks";
 import { GetSocialLinkById } from "@/application/use-cases/social/GetSocialLinkById";
 import { CreateSocialLink } from "@/application/use-cases/social/CreateSocialLink";
 import { UpdateSocialLink } from "@/application/use-cases/social/UpdateSocialLink";
 import { DeleteSocialLink } from "@/application/use-cases/social/DeleteSocialLink";
+import { ReorderSocialLinks } from "@/application/use-cases/social/ReorderSocialLinks";
+import { GetSiteSettings } from "@/application/use-cases/settings/GetSiteSettings";
+import { UpdateSiteSettings } from "@/application/use-cases/settings/UpdateSiteSettings";
+import { ResetSeed } from "@/application/use-cases/settings/ResetSeed";
 import { BuildPromptContext } from "@/application/use-cases/ai/BuildPromptContext";
 import { ChatWithAssistant } from "@/application/use-cases/ai/ChatWithAssistant";
 import { AdaptPersonaCopy } from "@/application/use-cases/ai/AdaptPersonaCopy";
@@ -168,13 +172,28 @@ export const container = {
     getSiteContent: new GetSiteContent(contentRepo),
     updateHeroContent: new UpdateHeroContent(contentRepo),
     updateAboutContent: new UpdateAboutContent(contentRepo),
-    updateSiteSettings: new UpdateSiteSettings(contentRepo),
+    updateContentSettings: new UpdateContentSettings(contentRepo),
     listSocialLinks: new ListSocialLinks(socialRepo),
     listAllSocialLinks: new ListAllSocialLinks(socialRepo),
     getSocialLinkById: new GetSocialLinkById(socialRepo),
     createSocialLink: new CreateSocialLink(socialRepo),
     updateSocialLink: new UpdateSocialLink(socialRepo),
     deleteSocialLink: new DeleteSocialLink(socialRepo),
+    reorderSocialLinks: new ReorderSocialLinks(socialRepo, logActivity),
+    getSiteSettings: new GetSiteSettings(siteSettingsRepo),
+    updateSiteSettings: new UpdateSiteSettings(siteSettingsRepo, logActivity),
+    resetSeed: new ResetSeed(
+      projectRepo,
+      skillRepo,
+      socialRepo,
+      contentRepo,
+      siteSettingsRepo,
+      projectImageRepo,
+      cvAssetRepo,
+      activityRepo,
+      blobStorage,
+      logActivity,
+    ),
     buildPromptContext,
     chatWithAssistant: new ChatWithAssistant(aiProvider, buildPromptContext, aiCacheRepo),
     adaptPersonaCopy: new AdaptPersonaCopy(aiProvider, buildPromptContext, aiCacheRepo),

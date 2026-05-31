@@ -1,0 +1,27 @@
+.admin-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-settings-section {
+  /* Spacing handled by Card; this hook is kept for future overrides. */
+}
+
+.admin-danger-zone {
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.admin-danger-zone h4 {
+  color: var(--admin-red, #ef4444);
+  margin: 0 0 4px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.admin-danger-zone p {
+  color: var(--admin-text-mute, #b6bcc7);
+  margin: 0 0 16px;
+  font-size: 13px;
+  line-height: 1.5;
+}

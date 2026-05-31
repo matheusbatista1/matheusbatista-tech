@@ -11,6 +11,30 @@ const nextConfig: NextConfig = {
       // TODO: adicionar dominios de upload (Vercel Blob / S3) na fase de assets
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/admin/skills/new",
+        destination: "/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/skills/new",
+        destination: "/:locale/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/admin/skills/:id",
+        destination: "/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/skills/:id",
+        destination: "/:locale/admin/skills",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

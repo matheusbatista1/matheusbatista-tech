@@ -23,6 +23,7 @@ function toPrismaData(input: SocialLinkInput) {
     name: input.name,
     url: input.url,
     handle: input.handle,
+    iconKey: input.iconKey,
     visible: input.visible,
     order: input.order,
   };
