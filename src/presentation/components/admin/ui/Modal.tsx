@@ -30,6 +30,31 @@ const FOCUSABLE = [
   "[tabindex]:not([tabindex='-1'])",
 ].join(",");
 
+// Module-scope ref count so stacked modals don't fight over body.style.overflow.
+// The last modal to mount sets it, the last to unmount restores. Without this,
+// inner modals (e.g. confirm dialog opened from a form modal) would restore on
+// unmount and leave the body permanently locked.
+let __bodyLockCount = 0;
+let __bodyLockOriginalOverflow: string | null = null;
+
+function lockBody() {
+  if (typeof document === "undefined") return;
+  if (__bodyLockCount === 0) {
+    __bodyLockOriginalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+  }
+  __bodyLockCount++;
+}
+
+function unlockBody() {
+  if (typeof document === "undefined") return;
+  __bodyLockCount = Math.max(0, __bodyLockCount - 1);
+  if (__bodyLockCount === 0) {
+    document.body.style.overflow = __bodyLockOriginalOverflow ?? "";
+    __bodyLockOriginalOverflow = null;
+  }
+}
+
 export function Modal({
   open,
   onClose,
@@ -55,12 +80,10 @@ export function Modal({
       focusable?.focus();
     }
 
-    const { style } = document.body;
-    const prevOverflow = style.overflow;
-    style.overflow = "hidden";
+    lockBody();
 
     return () => {
-      style.overflow = prevOverflow;
+      unlockBody();
       const prev = previousActiveRef.current;
       if (prev instanceof HTMLElement) prev.focus();
     };

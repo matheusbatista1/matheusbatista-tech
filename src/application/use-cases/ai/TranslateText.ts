@@ -6,6 +6,7 @@ import { TranslateOutputSchema, type TranslateOutput } from "@/application/ai/sc
 import { buildTranslatePrompt } from "@/application/ai/prompts/translate";
 import { hashCacheKey } from "./cache-key";
 import type { LogActivity } from "../activity/LogActivity";
+import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "translate-text";
 const TTL_MS = 1000 * 60 * 60 * 24 * 30; // 30 dias
@@ -31,6 +32,7 @@ export class TranslateText {
     private readonly cacheRepo: IAICacheRepository,
     private readonly rateLimiter: IRateLimiter,
     private readonly logActivity: LogActivity,
+    private readonly logAIUsage?: LogAIUsage,
   ) {}
 
   async execute(input: TranslateTextInput): Promise<TranslateTextResult> {
@@ -48,10 +50,23 @@ export class TranslateText {
       query: normalizedText,
     });
 
+    const started = performance.now();
     const cached = await this.cacheRepo.findByHash(hash);
     if (cached) {
       await this.cacheRepo.incrementHits(hash);
       const response = cached.response as TranslateOutput;
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: cacheLocale,
+          ip: input.ip ?? "unknown",
+          cached: true,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
       return { translated: response.translated, cached: true };
     }
 
@@ -61,46 +76,75 @@ export class TranslateText {
       targets: uniqueTargets,
     });
 
-    const response = await this.aiProvider.generateJSON({
-      prompt,
-      schema: TranslateOutputSchema,
-      maxTokens: MAX_OUTPUT_TOKENS,
-    });
+    try {
+      const response = await this.aiProvider.generateJSON({
+        prompt,
+        schema: TranslateOutputSchema,
+        maxTokens: MAX_OUTPUT_TOKENS,
+      });
 
-    // Garante que só locales requisitados aparecem (defense-in-depth caso o modelo
-    // devolva chaves extras).
-    const translated: TranslateOutput["translated"] = {};
-    for (const target of uniqueTargets) {
-      const value = response.translated[target];
-      if (typeof value === "string" && value.trim().length > 0) {
-        translated[target] = value;
+      // Garante que só locales requisitados aparecem (defense-in-depth caso o modelo
+      // devolva chaves extras).
+      const translated: TranslateOutput["translated"] = {};
+      for (const target of uniqueTargets) {
+        const value = response.translated[target];
+        if (typeof value === "string" && value.trim().length > 0) {
+          translated[target] = value;
+        }
       }
-    }
 
-    await this.cacheRepo.save({
-      hash,
-      kind: KIND,
-      locale: cacheLocale,
-      prompt,
-      response: { translated },
-      expiresAt: new Date(Date.now() + TTL_MS),
-    });
-
-    await this.logActivity.execute({
-      actorId: input.actorId ?? null,
-      actorEmail: input.actorEmail ?? null,
-      action: "ai_apply",
-      entity: "settings",
-      entityId: KIND,
-      diff: {
+      await this.cacheRepo.save({
+        hash,
         kind: KIND,
-        from: input.from ?? null,
-        targets: uniqueTargets,
-        chars: normalizedText.length,
-      },
-      ip: input.ip ?? null,
-    });
+        locale: cacheLocale,
+        prompt,
+        response: { translated },
+        expiresAt: new Date(Date.now() + TTL_MS),
+      });
 
-    return { translated, cached: false };
+      await this.logActivity.execute({
+        actorId: input.actorId ?? null,
+        actorEmail: input.actorEmail ?? null,
+        action: "ai_apply",
+        entity: "settings",
+        entityId: KIND,
+        diff: {
+          kind: KIND,
+          from: input.from ?? null,
+          targets: uniqueTargets,
+          chars: normalizedText.length,
+        },
+        ip: input.ip ?? null,
+      });
+
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: cacheLocale,
+          ip: input.ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
+
+      return { translated, cached: false };
+    } catch (err) {
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale: cacheLocale,
+          ip: input.ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "error",
+        });
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   }
 }

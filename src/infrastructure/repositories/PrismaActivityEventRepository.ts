@@ -1,10 +1,14 @@
+import type { Prisma } from "@prisma/client";
 import type {
   ActivityEvent,
   ActivityAction,
   ActivityEntity,
   NewActivityEvent,
 } from "@/domain/entities/ActivityEvent";
-import type { IActivityEventRepository } from "@/domain/repositories/IActivityEventRepository";
+import type {
+  IActivityEventRepository,
+  ListFilteredActivityOptions,
+} from "@/domain/repositories/IActivityEventRepository";
 import { prisma } from "../db/prisma";
 
 function toActivityEvent(row: {
@@ -57,5 +61,51 @@ export class PrismaActivityEventRepository implements IActivityEventRepository {
       take: limit,
     });
     return rows.map(toActivityEvent);
+  }
+
+  async listFiltered(
+    opts: ListFilteredActivityOptions = {},
+  ): Promise<{ entries: ActivityEvent[]; total: number }> {
+    const { entity, action, actorEmail, search, since, until, limit = 50, offset = 0 } = opts;
+
+    const and: Prisma.ActivityEventWhereInput[] = [];
+
+    if (entity) {
+      and.push({ entity: Array.isArray(entity) ? { in: entity } : entity });
+    }
+    if (action) {
+      and.push({ action: Array.isArray(action) ? { in: action } : action });
+    }
+    if (actorEmail) {
+      and.push({ actorEmail });
+    }
+    if (since || until) {
+      const range: Prisma.DateTimeFilter = {};
+      if (since) range.gte = since;
+      if (until) range.lte = until;
+      and.push({ createdAt: range });
+    }
+    if (search && search.trim().length > 0) {
+      and.push({
+        OR: [
+          { actorEmail: { contains: search, mode: "insensitive" } },
+          { entityId: { contains: search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    const where: Prisma.ActivityEventWhereInput = and.length > 0 ? { AND: and } : {};
+
+    const [rows, total] = await Promise.all([
+      prisma.activityEvent.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.activityEvent.count({ where }),
+    ]);
+
+    return { entries: rows.map(toActivityEvent), total };
   }
 }

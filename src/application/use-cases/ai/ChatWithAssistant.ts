@@ -6,6 +6,7 @@ import type { IAIProvider } from "@/application/ports/IAIProvider";
 import type { IAICacheRepository } from "@/domain/repositories/IAICacheRepository";
 import { BuildPromptContext } from "./BuildPromptContext";
 import { computeContentFingerprint, hashCacheKey } from "./cache-key";
+import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "chat";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -60,6 +61,7 @@ export interface ChatWithAssistantInput {
   question: string;
   persona: PersonaId;
   locale: Locale;
+  ip?: string;
 }
 
 export interface ChatWithAssistantResult {
@@ -72,12 +74,14 @@ export class ChatWithAssistant {
     private readonly aiProvider: IAIProvider,
     private readonly buildContext: BuildPromptContext,
     private readonly cacheRepo: IAICacheRepository,
+    private readonly logAIUsage?: LogAIUsage,
   ) {}
 
   async execute({
     question,
     persona,
     locale,
+    ip,
   }: ChatWithAssistantInput): Promise<ChatWithAssistantResult> {
     const normalizedQuestion = question.trim();
     const context = await this.buildContext.execute(locale);
@@ -100,9 +104,23 @@ export class ChatWithAssistant {
       content: fingerprint,
     });
 
+    const started = performance.now();
     const cached = await this.cacheRepo.findByHash(hash);
     if (cached) {
       await this.cacheRepo.incrementHits(hash);
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona,
+          ip: ip ?? "unknown",
+          cached: true,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
       return { response: cached.response as ChatResponse, cached: true };
     }
 
@@ -125,21 +143,52 @@ export class ChatWithAssistant {
       `block.type is one of: "skills-chart" | "skill-chips" | "project" | "projects" | "contact" | "stats" | "timeline" | "text".`,
     ].join("\n");
 
-    const response = await this.aiProvider.generateJSON({
-      prompt,
-      schema: ChatResponseSchema,
-    });
+    try {
+      const response = await this.aiProvider.generateJSON({
+        prompt,
+        schema: ChatResponseSchema,
+      });
 
-    await this.cacheRepo.save({
-      hash,
-      kind: KIND,
-      locale,
-      persona,
-      prompt,
-      response,
-      expiresAt: new Date(Date.now() + TTL_MS),
-    });
+      await this.cacheRepo.save({
+        hash,
+        kind: KIND,
+        locale,
+        persona,
+        prompt,
+        response,
+        expiresAt: new Date(Date.now() + TTL_MS),
+      });
 
-    return { response, cached: false };
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona,
+          ip: ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
+
+      return { response, cached: false };
+    } catch (err) {
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona,
+          ip: ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "error",
+        });
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   }
 }

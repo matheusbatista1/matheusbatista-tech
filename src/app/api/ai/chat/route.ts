@@ -43,21 +43,35 @@ export async function POST(request: Request) {
     container.ai.rateLimits.daily.limit(ip),
   ]);
 
+  const persona = isPersonaId(parsed.data.persona) ? parsed.data.persona : DEFAULT_PERSONA;
+  const locale = isLocale(parsed.data.locale) ? parsed.data.locale : "en";
+
   if (!perMinute.success || !perDay.success) {
+    try {
+      await container.useCases.logAIUsage.execute({
+        kind: "chat",
+        locale,
+        persona,
+        ip,
+        cached: false,
+        durationMs: 0,
+        status: "rate_limited",
+      });
+    } catch {
+      /* best-effort */
+    }
     return NextResponse.json(
       { error: "Rate limit exceeded", retryAfter: Math.max(perMinute.reset, perDay.reset) },
       { status: 429 },
     );
   }
 
-  const persona = isPersonaId(parsed.data.persona) ? parsed.data.persona : DEFAULT_PERSONA;
-  const locale = isLocale(parsed.data.locale) ? parsed.data.locale : "en";
-
   try {
     const result = await container.useCases.chatWithAssistant.execute({
       question: parsed.data.question,
       persona,
       locale,
+      ip,
     });
     return NextResponse.json(
       { reply: result.response.reply, blocks: result.response.blocks, cached: result.cached },

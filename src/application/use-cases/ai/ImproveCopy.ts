@@ -10,6 +10,7 @@ import {
 import { buildImproveCopyPrompt } from "@/application/ai/prompts/improve-copy";
 import { LogActivity } from "@/application/use-cases/activity/LogActivity";
 import { hashCacheKey } from "./cache-key";
+import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "improve-copy";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -37,6 +38,7 @@ export class ImproveCopy {
     // hoje o gate fica no route handler. Recebido por contrato.
     private readonly _rateLimiter: IRateLimiter,
     private readonly logActivity: LogActivity,
+    private readonly logAIUsage?: LogAIUsage,
   ) {}
 
   async execute(input: ImproveCopyInput): Promise<ImproveCopyResult> {
@@ -50,6 +52,7 @@ export class ImproveCopy {
       query: normalizedText,
     });
 
+    const started = performance.now();
     const cached = await this.cacheRepo.findByHash(hash);
     if (cached) {
       await this.cacheRepo.incrementHits(hash);
@@ -61,35 +64,79 @@ export class ImproveCopy {
         diff: { feature: KIND, tone: tone ?? null, locale, cached: true },
         ip: ip ?? null,
       });
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona: tone ?? null,
+          ip: ip ?? "unknown",
+          cached: true,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
       return { improved: response.improved, notes: response.notes, cached: true };
     }
 
     const prompt = buildImproveCopyPrompt({ text: normalizedText, locale, tone });
 
-    const response = await this.aiProvider.generateJSON({
-      prompt,
-      schema: ImproveCopyOutputSchema,
-      maxTokens: MAX_OUTPUT_TOKENS,
-    });
+    try {
+      const response = await this.aiProvider.generateJSON({
+        prompt,
+        schema: ImproveCopyOutputSchema,
+        maxTokens: MAX_OUTPUT_TOKENS,
+      });
 
-    await this.cacheRepo.save({
-      hash,
-      kind: KIND,
-      locale,
-      persona: tone ?? null,
-      prompt,
-      response,
-      expiresAt: new Date(Date.now() + TTL_MS),
-    });
+      await this.cacheRepo.save({
+        hash,
+        kind: KIND,
+        locale,
+        persona: tone ?? null,
+        prompt,
+        response,
+        expiresAt: new Date(Date.now() + TTL_MS),
+      });
 
-    await this.logActivity.execute({
-      actorEmail: actorEmail ?? null,
-      action: "ai_apply",
-      entity: "about",
-      diff: { feature: KIND, tone: tone ?? null, locale, cached: false },
-      ip: ip ?? null,
-    });
+      await this.logActivity.execute({
+        actorEmail: actorEmail ?? null,
+        action: "ai_apply",
+        entity: "about",
+        diff: { feature: KIND, tone: tone ?? null, locale, cached: false },
+        ip: ip ?? null,
+      });
 
-    return { improved: response.improved, notes: response.notes, cached: false };
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona: tone ?? null,
+          ip: ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
+
+      return { improved: response.improved, notes: response.notes, cached: false };
+    } catch (err) {
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona: tone ?? null,
+          ip: ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "error",
+        });
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   }
 }
