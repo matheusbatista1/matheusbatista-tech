@@ -957,3 +957,171 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Signin / AccessDenied screens
+ * ─────────────────────────────────────────────────────────────────────────── */
+
+.admin-signin {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  position: relative;
+  z-index: 2;
+}
+
+.admin-signin-card {
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  border-radius: 16px;
+  padding: 48px 40px;
+  text-align: center;
+  width: min(440px, 100%);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 2;
+  animation: admin-signin-card-rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.admin-signin-mark {
+  margin: 0 auto 28px;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--admin-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 22px;
+  letter-spacing: -0.05em;
+  color: var(--admin-text);
+  animation: admin-signin-mark-pop 600ms cubic-bezier(0.34, 1.4, 0.64, 1) 0.15s both;
+}
+.admin-signin-mark::after {
+  content: "·";
+  margin-left: 2px;
+  color: var(--admin-text-mute);
+}
+.admin-signin-mark.is-danger {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--admin-red);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.admin-signin-mark.is-danger::after {
+  content: none;
+}
+
+.admin-signin-card h1 {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 0 0 8px;
+  color: var(--admin-text);
+}
+.admin-signin-card p {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--admin-text-mute);
+  margin: 0 0 36px;
+}
+.admin-signin-card p strong {
+  color: var(--admin-text);
+  font-weight: 500;
+}
+
+.admin-signin-google {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background: #fff;
+  color: #1a1a1f;
+  border: 0;
+  padding: 13px 16px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    opacity 140ms,
+    transform 120ms;
+}
+.admin-signin-google:hover {
+  opacity: 0.92;
+}
+.admin-signin-google:active {
+  transform: scale(0.99);
+}
+
+.admin-signin-foot {
+  margin-top: 28px;
+  font-size: 12px;
+  color: var(--admin-text-dim);
+  line-height: 1.6;
+}
+.admin-signin-foot a {
+  color: var(--admin-text-mute);
+  text-decoration: none;
+}
+.admin-signin-foot a:hover {
+  color: var(--admin-text);
+}
+
+.admin-signin-error {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  color: var(--admin-red);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.admin-signin-warn {
+  background: var(--admin-bg-2);
+  border: 1px dashed var(--admin-border-strong);
+  color: var(--admin-text-mute);
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.admin-glow {
+  position: fixed;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: screen;
+  top: 0;
+  left: 0;
+  transform: translate(calc(var(--glow-x, 50vw) - 240px), calc(var(--glow-y, 50vh) - 240px));
+}
+
+@keyframes admin-signin-card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes admin-signin-mark-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

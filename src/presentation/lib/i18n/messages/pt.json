@@ -202,10 +202,20 @@
       "saved": "Configurações salvas",
       "resetDone": "Reset concluído"
     },
+    "signin": {
+      "title": "Entrar no Admin",
+      "subtitle": "Gerencie o conteúdo, projetos e mensagens do seu portfólio.\nSomente o dono pode acessar este painel.",
+      "continueWithGoogle": "Continuar com Google",
+      "backToPortfolio": "Voltar ao portfólio",
+      "authNotConfigured": "Google OAuth não está configurado. Defina AUTH_GOOGLE_ID e AUTH_GOOGLE_SECRET no .env.local.",
+      "errorAccessDenied": "Conta não autorizada a acessar o painel admin.",
+      "errorGeneric": "Falha ao entrar. Tente novamente."
+    },
     "accessDenied": {
       "title": "Acesso negado",
-      "message": "A conta {email} não está autorizada a acessar este admin.",
-      "tryAnother": "Sair e tentar outra conta"
+      "message": "Você está conectado como <email></email>, mas esta conta não tem acesso ao painel admin.",
+      "tryAnother": "Sair e tentar com outra conta",
+      "backToPortfolio": "Voltar ao portfólio"
     },
     "common": {
       "save": "Salvar",

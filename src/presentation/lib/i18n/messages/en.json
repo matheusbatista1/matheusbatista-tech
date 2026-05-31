@@ -202,10 +202,20 @@
       "saved": "Settings saved",
       "resetDone": "Reset complete"
     },
+    "signin": {
+      "title": "Sign in to Admin",
+      "subtitle": "Manage your portfolio content, projects, and messages.\nOnly the owner can access this panel.",
+      "continueWithGoogle": "Continue with Google",
+      "backToPortfolio": "Back to portfolio",
+      "authNotConfigured": "Google OAuth is not configured. Set AUTH_GOOGLE_ID and AUTH_GOOGLE_SECRET in .env.local.",
+      "errorAccessDenied": "Account not authorized to access the admin panel.",
+      "errorGeneric": "Sign in failed. Please try again."
+    },
     "accessDenied": {
       "title": "Access denied",
-      "message": "The account {email} is not authorized to access this admin.",
-      "tryAnother": "Sign out and try another account"
+      "message": "You are signed in as <email></email>, but this account does not have access to the admin panel.",
+      "tryAnother": "Sign out and try another account",
+      "backToPortfolio": "Back to portfolio"
     },
     "common": {
       "save": "Save",
