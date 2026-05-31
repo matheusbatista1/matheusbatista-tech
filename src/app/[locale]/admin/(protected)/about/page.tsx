@@ -6,11 +6,6 @@ export default async function AdminAboutPage() {
 
   return (
     <div className="admin-dashboard">
-      <div className="admin-section-head">
-        <h1>About</h1>
-        <span className="admin-counter">Edits the About section copy</span>
-      </div>
-
       <AboutForm about={content.about} />
     </div>
   );

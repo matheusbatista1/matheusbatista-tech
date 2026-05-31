@@ -125,10 +125,13 @@
       "remove": "Remover",
       "download": "Baixar",
       "tips": "Dicas",
-      "tipsDesc": "Mantenha abaixo de 2MB. Use orientação retrato. Atualize anualmente.",
+      "tipsDesc": "Mantenha abaixo de 5MB. Use orientação retrato. Atualize anualmente.",
       "wrongFileType": "Por favor envie um PDF.",
       "uploaded_toast": "CV enviado",
-      "removed_toast": "CV removido"
+      "removed_toast": "CV removido",
+      "confirmRemove": "Remover este CV?",
+      "dropHint": "Solte um PDF ou clique para procurar",
+      "tooLarge": "Arquivo muito grande (máx 5MB)"
     },
     "social": {
       "title": "Social",

@@ -24,6 +24,14 @@ import { GetProjectById } from "@/application/use-cases/projects/GetProjectById"
 import { CreateProject } from "@/application/use-cases/projects/CreateProject";
 import { UpdateProject } from "@/application/use-cases/projects/UpdateProject";
 import { DeleteProject } from "@/application/use-cases/projects/DeleteProject";
+import { ReorderProjects } from "@/application/use-cases/projects/ReorderProjects";
+import { AttachProjectImage } from "@/application/use-cases/projects/AttachProjectImage";
+import { RemoveProjectImage } from "@/application/use-cases/projects/RemoveProjectImage";
+import { SetProjectCover } from "@/application/use-cases/projects/SetProjectCover";
+import { ReorderProjectImages } from "@/application/use-cases/projects/ReorderProjectImages";
+import { UploadCV } from "@/application/use-cases/cv/UploadCV";
+import { DeleteCV } from "@/application/use-cases/cv/DeleteCV";
+import { ListCVs } from "@/application/use-cases/cv/ListCVs";
 import { ListSkills } from "@/application/use-cases/skills/ListSkills";
 import { GetSkillById } from "@/application/use-cases/skills/GetSkillById";
 import { CreateSkill } from "@/application/use-cases/skills/CreateSkill";
@@ -93,6 +101,14 @@ const logActivity = new LogActivity(activityRepo);
 const listRecentActivity = new ListRecentActivity(activityRepo);
 const uploadAsset = new UploadAsset(blobStorage, logActivity);
 const deleteAsset = new DeleteAsset(blobStorage, logActivity);
+const reorderProjects = new ReorderProjects(projectRepo, logActivity);
+const attachProjectImage = new AttachProjectImage(projectImageRepo, logActivity);
+const removeProjectImage = new RemoveProjectImage(projectImageRepo, blobStorage, logActivity);
+const setProjectCover = new SetProjectCover(projectImageRepo, projectRepo, logActivity);
+const reorderProjectImages = new ReorderProjectImages(projectImageRepo, logActivity);
+const uploadCV = new UploadCV(cvAssetRepo, blobStorage, logActivity);
+const deleteCV = new DeleteCV(cvAssetRepo, blobStorage, logActivity);
+const listCVs = new ListCVs(cvAssetRepo);
 
 export const container = {
   // Repositories (raramente expor — preferir use cases)
@@ -126,6 +142,14 @@ export const container = {
     createProject: new CreateProject(projectRepo),
     updateProject: new UpdateProject(projectRepo),
     deleteProject: new DeleteProject(projectRepo),
+    reorderProjects,
+    attachProjectImage,
+    removeProjectImage,
+    setProjectCover,
+    reorderProjectImages,
+    uploadCV,
+    deleteCV,
+    listCVs,
     listSkills: new ListSkills(skillRepo),
     getSkillById: new GetSkillById(skillRepo),
     createSkill: new CreateSkill(skillRepo),

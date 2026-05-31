@@ -125,10 +125,13 @@
       "remove": "Remove",
       "download": "Download",
       "tips": "Tips",
-      "tipsDesc": "Keep it under 2MB. Use a portrait orientation. Update yearly.",
+      "tipsDesc": "Keep it under 5MB. Use a portrait orientation. Update yearly.",
       "wrongFileType": "Please upload a PDF.",
       "uploaded_toast": "CV uploaded",
-      "removed_toast": "CV removed"
+      "removed_toast": "CV removed",
+      "confirmRemove": "Remove this CV?",
+      "dropHint": "Drop a PDF or click to browse",
+      "tooLarge": "File too large (max 5MB)"
     },
     "social": {
       "title": "Social",
