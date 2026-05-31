@@ -55,6 +55,36 @@ function unlockBody() {
   }
 }
 
+export function getBodyLockCount(): number {
+  return __bodyLockCount;
+}
+
+// Idempotent module-level setup: registers safety nets for SPA navigation and
+// dev-only debug hooks. Guarded so HMR / repeat imports don't double-bind.
+let __adminSetupDone = false;
+if (typeof window !== "undefined" && !__adminSetupDone) {
+  __adminSetupDone = true;
+
+  const forceUnlock = () => {
+    if (typeof document !== "undefined" && __bodyLockCount > 0) {
+      __bodyLockCount = 0;
+      document.body.style.overflow = __bodyLockOriginalOverflow ?? "";
+      __bodyLockOriginalOverflow = null;
+    }
+  };
+
+  window.addEventListener("pagehide", forceUnlock);
+
+  if (process.env.NODE_ENV !== "production") {
+    interface AdminDebug {
+      unlockBody: () => void;
+      bodyLockCount: () => number;
+    }
+    const w = window as unknown as { __admin?: AdminDebug };
+    w.__admin = { unlockBody: forceUnlock, bodyLockCount: () => __bodyLockCount };
+  }
+}
+
 export function Modal({
   open,
   onClose,
@@ -87,6 +117,22 @@ export function Modal({
       const prev = previousActiveRef.current;
       if (prev instanceof HTMLElement) prev.focus();
     };
+  }, [open]);
+
+  // Dev-only watchdog: catches invalid state where the body remains locked but
+  // the ref count says nobody owns the lock (symptom of a leaked unmount path).
+  useEffect(() => {
+    if (process.env.NODE_ENV === "production") return;
+    if (!open) return;
+    const id = window.setInterval(() => {
+      if (typeof document === "undefined") return;
+      if (document.body.style.overflow === "hidden" && __bodyLockCount === 0) {
+        console.warn("[Modal] Detected stale body lock (overflow=hidden, count=0). Forcing reset.");
+        document.body.style.overflow = __bodyLockOriginalOverflow ?? "";
+        __bodyLockOriginalOverflow = null;
+      }
+    }, 5000);
+    return () => window.clearInterval(id);
   }, [open]);
 
   if (!open) return null;

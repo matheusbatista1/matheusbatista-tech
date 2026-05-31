@@ -8,6 +8,7 @@ import { auth, signOut } from "@/infrastructure/auth/auth";
 import { container } from "@/infrastructure/container";
 import { AccessDenied } from "@/presentation/components/admin/AccessDenied";
 import { AdminContent } from "@/presentation/components/admin/AdminContent";
+import { AdminScrollDiag } from "@/presentation/components/admin/AdminScrollDiag";
 import { AdminSidebar } from "@/presentation/components/admin/AdminSidebar";
 import { AdminTopbar } from "@/presentation/components/admin/AdminTopbar";
 import { AmbientBackground } from "@/presentation/components/admin/AmbientBackground";
@@ -50,6 +51,7 @@ export default async function AdminProtectedLayout({
 
   return (
     <ToastProvider>
+      {process.env.NODE_ENV !== "production" && <AdminScrollDiag />}
       <ConfirmProvider>
         <AdminShellProvider>
           <div className="admin-shell" data-theme="dark">
