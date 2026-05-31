@@ -14,6 +14,7 @@ import {
   FileText,
   Settings,
   LogOut,
+  BarChart3,
 } from "lucide-react";
 import type { ComponentType, ReactNode, SVGProps } from "react";
 import { useAdminShell } from "./AdminShellContext";
@@ -23,6 +24,7 @@ type IconComponent = ComponentType<SVGProps<SVGSVGElement>>;
 export type AdminNavItemKey =
   | "dashboard"
   | "inbox"
+  | "analytics"
   | "logs"
   | "hero"
   | "projects"
@@ -58,6 +60,7 @@ export type AdminSidebarUser = {
 const ICONS: Record<AdminNavItemKey, IconComponent> = {
   dashboard: LayoutGrid,
   inbox: Mail,
+  analytics: BarChart3,
   logs: ScrollText,
   hero: Home,
   projects: Folder,

@@ -15,7 +15,7 @@ export function PageHead({
         <h1>{title}</h1>
         {lead ? <p className="lead">{lead}</p> : null}
       </div>
-      {actions ? <div className="actions">{actions}</div> : null}
+      {actions ? <div className="page-actions">{actions}</div> : null}
     </div>
   );
 }

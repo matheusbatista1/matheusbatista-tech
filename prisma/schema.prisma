@@ -180,8 +180,44 @@ model PageView {
   country   String?
   createdAt DateTime @default(now())
 
+  // Geo (Vercel headers)
+  countryCode String?
+  countryName String?
+  city        String?
+  region      String?
+  lat         Float?
+  lon         Float?
+  serverTz    String?
+
+  // Client signals
+  clientTz  String?
+  screenW   Int?
+  screenH   Int?
+  viewportW Int?
+  viewportH Int?
+  language  String?
+
+  // UA parsed
+  browser     String?
+  browserVer  String?
+  os          String?
+  osVer       String?
+  device      String? // mobile | tablet | desktop | bot
+  deviceModel String?
+
+  // Bot detection
+  isBot   Boolean @default(false)
+  botName String?
+  botVer  String?
+
+  // Referrer parsed
+  refHost String?
+  refPath String?
+
   @@index([createdAt])
   @@index([path, createdAt])
+  @@index([isBot, createdAt])
+  @@index([countryCode, createdAt])
 }
 
 model CVDownload {
