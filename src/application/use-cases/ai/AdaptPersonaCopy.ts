@@ -6,6 +6,7 @@ import type { IAIProvider } from "@/application/ports/IAIProvider";
 import type { IAICacheRepository } from "@/domain/repositories/IAICacheRepository";
 import { BuildPromptContext } from "./BuildPromptContext";
 import { computeContentFingerprint, hashCacheKey } from "./cache-key";
+import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "persona-adapt";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
@@ -33,6 +34,7 @@ const PersonaCopySchema = z.object({
 export interface AdaptPersonaCopyInput {
   persona: PersonaId;
   locale: Locale;
+  ip?: string;
 }
 
 export interface AdaptPersonaCopyResult {
@@ -45,9 +47,10 @@ export class AdaptPersonaCopy {
     private readonly aiProvider: IAIProvider,
     private readonly buildContext: BuildPromptContext,
     private readonly cacheRepo: IAICacheRepository,
+    private readonly logAIUsage?: LogAIUsage,
   ) {}
 
-  async execute({ persona, locale }: AdaptPersonaCopyInput): Promise<AdaptPersonaCopyResult> {
+  async execute({ persona, locale, ip }: AdaptPersonaCopyInput): Promise<AdaptPersonaCopyResult> {
     if (persona === "default") {
       return { copy: null, cached: false };
     }
@@ -71,9 +74,23 @@ export class AdaptPersonaCopy {
       content: fingerprint,
     });
 
+    const started = performance.now();
     const cached = await this.cacheRepo.findByHash(hash);
     if (cached) {
       await this.cacheRepo.incrementHits(hash);
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona,
+          ip: ip ?? "unknown",
+          cached: true,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
       return { copy: cached.response as PersonaCopyOverride, cached: true };
     }
 
@@ -107,21 +124,52 @@ export class AdaptPersonaCopy {
       `Use project ids exactly as in FACTS.`,
     ].join("\n");
 
-    const copy = await this.aiProvider.generateJSON({
-      prompt,
-      schema: PersonaCopySchema,
-    });
+    try {
+      const copy = await this.aiProvider.generateJSON({
+        prompt,
+        schema: PersonaCopySchema,
+      });
 
-    await this.cacheRepo.save({
-      hash,
-      kind: KIND,
-      locale,
-      persona,
-      prompt,
-      response: copy,
-      expiresAt: new Date(Date.now() + TTL_MS),
-    });
+      await this.cacheRepo.save({
+        hash,
+        kind: KIND,
+        locale,
+        persona,
+        prompt,
+        response: copy,
+        expiresAt: new Date(Date.now() + TTL_MS),
+      });
 
-    return { copy, cached: false };
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona,
+          ip: ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "ok",
+        });
+      } catch {
+        /* best-effort */
+      }
+
+      return { copy, cached: false };
+    } catch (err) {
+      try {
+        await this.logAIUsage?.execute({
+          kind: KIND,
+          locale,
+          persona,
+          ip: ip ?? "unknown",
+          cached: false,
+          durationMs: Math.round(performance.now() - started),
+          status: "error",
+        });
+      } catch {
+        /* best-effort */
+      }
+      throw err;
+    }
   }
 }

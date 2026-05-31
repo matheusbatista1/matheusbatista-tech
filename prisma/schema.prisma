@@ -170,6 +170,33 @@ model AIUsageLog {
   @@index([kind, createdAt])
 }
 
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  locale    String?
+  referrer  String?
+  userAgent String?
+  ipHash    String
+  country   String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([path, createdAt])
+}
+
+model CVDownload {
+  id        String   @id @default(cuid())
+  locale    String
+  cvAssetId String?
+  ipHash    String
+  userAgent String?
+  referrer  String?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([locale, createdAt])
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Auth (NextAuth v5 / Auth.js)
 // ─────────────────────────────────────────────────────────────────────────────

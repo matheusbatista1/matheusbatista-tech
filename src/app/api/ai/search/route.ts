@@ -41,19 +41,32 @@ export async function POST(request: Request) {
     container.ai.rateLimits.daily.limit(ip),
   ]);
 
+  const locale = isLocale(parsed.data.locale) ? parsed.data.locale : "en";
+
   if (!perMinute.success || !perDay.success) {
+    try {
+      await container.useCases.logAIUsage.execute({
+        kind: "semantic-search",
+        locale,
+        ip,
+        cached: false,
+        durationMs: 0,
+        status: "rate_limited",
+      });
+    } catch {
+      /* best-effort */
+    }
     return NextResponse.json(
       { error: "Rate limit exceeded", retryAfter: Math.max(perMinute.reset, perDay.reset) },
       { status: 429 },
     );
   }
 
-  const locale = isLocale(parsed.data.locale) ? parsed.data.locale : "en";
-
   try {
     const result = await container.useCases.semanticSearchProjects.execute({
       query: parsed.data.query,
       locale,
+      ip,
     });
     return NextResponse.json(
       { ranked: result.ranked, cached: result.cached },
