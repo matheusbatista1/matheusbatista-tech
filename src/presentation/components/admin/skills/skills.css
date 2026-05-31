@@ -1,0 +1,77 @@
+.admin-skills-admin {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.admin-skill-cat-card {
+  padding: 16px 20px;
+}
+.admin-skill-cat-card h3 {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.admin-skill-cat-card .list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.admin-skill-admin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px 4px 4px;
+  background: var(--admin-surface-2);
+  border-radius: 16px;
+  cursor: pointer;
+  transition: background 140ms;
+}
+.admin-skill-admin-chip:hover {
+  background: var(--admin-surface-hover);
+}
+.admin-skill-admin-chip .sw {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 11px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+}
+.admin-skill-admin-chip .x {
+  all: unset;
+  cursor: pointer;
+  padding: 0 4px;
+  color: var(--admin-text-dim);
+  line-height: 1;
+}
+.admin-skill-admin-chip .x:hover {
+  color: var(--admin-red);
+}
+
+.admin-skill-empty {
+  color: var(--admin-text-dim);
+  font-size: 12px;
+  padding: 4px 0;
+}
+
+.admin-skill-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-skill-form-foot {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  width: 100%;
+}

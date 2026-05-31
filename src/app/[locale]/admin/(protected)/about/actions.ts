@@ -16,9 +16,9 @@ const aboutSchema = z.object({
   label: localizedSchema,
   body: localizedSchema,
   currently: localizedSchema,
-  role: z.string().min(1),
-  location: z.string().min(1),
-  years: z.string().min(1),
+  role: z.string().min(1, "Role required"),
+  location: z.string().min(1, "Location required"),
+  years: z.string().min(1, "Years required"),
 });
 
 export interface AboutActionState {
@@ -61,6 +61,11 @@ export async function updateAboutAction(
   const about: AboutContent = parsed.data;
   try {
     await container.useCases.updateAboutContent.execute(about);
+    await container.useCases.logActivity.execute({
+      action: "update",
+      entity: "about",
+      actorEmail: session.user.email ?? null,
+    });
   } catch (error) {
     console.error("updateAboutAction error", error);
     return { error: "Could not save. Try again." };

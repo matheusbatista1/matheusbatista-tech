@@ -14,11 +14,13 @@ export class GeminiProvider implements IAIProvider {
     prompt,
     schema,
     model = DEFAULT_MODEL,
+    maxTokens,
   }: GenerateJSONOptions<T>): Promise<T> {
     const { object } = await generateObject({
       model: google(model),
       prompt,
       schema,
+      ...(maxTokens ? { maxOutputTokens: maxTokens } : {}),
     });
     return object;
   }

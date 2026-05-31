@@ -1,108 +1,231 @@
 "use client";
 
-import { useActionState } from "react";
+import { useState, useTransition } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
+
+import "@/presentation/components/admin/forms/forms.css";
+
 import type { HeroContent } from "@/domain/entities/HeroContent";
-import { updateHeroAction, type HeroActionState } from "./actions";
+import type { Locale } from "@/domain/value-objects/Locale";
+import type { LocalizedText } from "@/domain/value-objects/LocalizedText";
+
+import { Button } from "@/presentation/components/admin/ui/Button";
+import { Input } from "@/presentation/components/admin/ui/Input";
+import { LocaleSwitcher } from "@/presentation/components/admin/ui/LocaleSwitcher";
+import { Toggle } from "@/presentation/components/admin/ui/Toggle";
+import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
+
+import { updateHeroAction, type HeroFormValues } from "./actions";
 
 interface HeroFormProps {
   hero: HeroContent;
 }
 
-const INITIAL_STATE: HeroActionState = {};
+function fallbackLocalized(value: LocalizedText | undefined, fallback = ""): LocalizedText {
+  return {
+    en: value?.en ?? fallback,
+    pt: value?.pt ?? fallback,
+    es: value?.es ?? fallback,
+  };
+}
+
+function deriveGreeting(hero: HeroContent): LocalizedText {
+  if (hero.greeting) return fallbackLocalized(hero.greeting);
+  // Back-compat: build initial i18n greeting from the legacy single string.
+  const legacy = hero.greetHello ?? "hello";
+  return { en: legacy, pt: legacy, es: legacy };
+}
 
 export function HeroForm({ hero }: HeroFormProps) {
-  const [state, formAction, pending] = useActionState(updateHeroAction, INITIAL_STATE);
+  const t = useTranslations("admin.hero");
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+  const [serverError, setServerError] = useState<string | null>(null);
+
+  const defaults: HeroFormValues = {
+    greeting: deriveGreeting(hero),
+    firstName: hero.firstName,
+    lastName: hero.lastName,
+    subtitle: fallbackLocalized(hero.subtitle),
+    tagline: fallbackLocalized(hero.tagline),
+    available: hero.available,
+    availabilityPre: hero.availabilityPre,
+    availabilityA: hero.availabilityA,
+    availabilityB: hero.availabilityB,
+  };
+
+  const form = useForm<HeroFormValues>({
+    defaultValues: defaults,
+    mode: "onSubmit",
+  });
+
+  const { register, handleSubmit, control, reset, formState } = form;
+
+  const [greetingLocale, setGreetingLocale] = useState<Locale>("en");
+  const [subtitleLocale, setSubtitleLocale] = useState<Locale>("en");
+  const [taglineLocale, setTaglineLocale] = useState<Locale>("en");
+
+  const onSubmit = handleSubmit((values) => {
+    setServerError(null);
+    startTransition(async () => {
+      const res = await updateHeroAction(values);
+      if (res.error) {
+        setServerError(res.error);
+        toast({ kind: "error", title: res.error });
+        return;
+      }
+      toast({ kind: "success", title: t("saved") });
+      reset(values);
+    });
+  });
 
   return (
-    <form action={formAction} className="admin-form">
-      <div className="admin-form-section">
-        <h2>Greeting</h2>
-        <div className="admin-form-grid">
-          <label>
-            <span>Hello word</span>
-            <input name="greetHello" defaultValue={hero.greetHello} required />
-          </label>
-          <label>
-            <span>I&apos;m word</span>
-            <input name="greetIm" defaultValue={hero.greetIm} required />
-          </label>
-          <label>
-            <span>First name</span>
-            <input name="firstName" defaultValue={hero.firstName} required />
-          </label>
-          <label>
-            <span>Last name</span>
-            <input name="lastName" defaultValue={hero.lastName} required />
-          </label>
+    <form onSubmit={onSubmit} className="admin-form" noValidate>
+      {/* Greeting (i18n, per-row LangTabs) */}
+      <div className="admin-form-row">
+        <div className="label-row">
+          <span className="label-text">{t("greeting")}</span>
+          <LocaleSwitcher
+            value={greetingLocale}
+            onValueChange={setGreetingLocale}
+            aria-label={`${t("greeting")} locale`}
+          />
+        </div>
+        <Controller
+          control={control}
+          name={`greeting.${greetingLocale}` as const}
+          rules={{ required: true }}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              key={greetingLocale}
+              error={fieldState.error ? `${greetingLocale.toUpperCase()} required` : undefined}
+            />
+          )}
+        />
+      </div>
+
+      {/* First / Last name */}
+      <div className="admin-form-grid">
+        <div className="admin-form-row">
+          <div className="label-row">
+            <span className="label-text">{t("firstName")}</span>
+          </div>
+          <Input
+            {...register("firstName", { required: true })}
+            error={formState.errors.firstName ? "Required" : undefined}
+          />
+        </div>
+        <div className="admin-form-row">
+          <div className="label-row">
+            <span className="label-text">{t("lastName")}</span>
+          </div>
+          <Input
+            {...register("lastName", { required: true })}
+            error={formState.errors.lastName ? "Required" : undefined}
+          />
         </div>
       </div>
 
-      <div className="admin-form-section">
-        <h2>Subtitle</h2>
-        <p className="admin-form-hint">One short sentence below the name, in all three locales.</p>
-        <div className="admin-form-grid">
-          <label>
-            <span>EN</span>
-            <input name="subtitle.en" defaultValue={hero.subtitle.en} required />
-          </label>
-          <label>
-            <span>PT</span>
-            <input name="subtitle.pt" defaultValue={hero.subtitle.pt} required />
-          </label>
-          <label>
-            <span>ES</span>
-            <input name="subtitle.es" defaultValue={hero.subtitle.es} required />
-          </label>
+      {/* Subtitle (i18n, per-row LangTabs) */}
+      <div className="admin-form-row">
+        <div className="label-row">
+          <span className="label-text">{t("subtitle")}</span>
+          <LocaleSwitcher
+            value={subtitleLocale}
+            onValueChange={setSubtitleLocale}
+            aria-label={`${t("subtitle")} locale`}
+          />
         </div>
+        <Controller
+          control={control}
+          name={`subtitle.${subtitleLocale}` as const}
+          rules={{ required: true }}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              key={subtitleLocale}
+              error={fieldState.error ? `${subtitleLocale.toUpperCase()} required` : undefined}
+            />
+          )}
+        />
       </div>
 
-      <div className="admin-form-section">
-        <h2>Tagline</h2>
-        <p className="admin-form-hint">Editorial sub-line under the lead.</p>
-        <div className="admin-form-grid">
-          <label>
-            <span>EN</span>
-            <textarea name="tagline.en" rows={2} defaultValue={hero.tagline.en} required />
-          </label>
-          <label>
-            <span>PT</span>
-            <textarea name="tagline.pt" rows={2} defaultValue={hero.tagline.pt} required />
-          </label>
-          <label>
-            <span>ES</span>
-            <textarea name="tagline.es" rows={2} defaultValue={hero.tagline.es} required />
-          </label>
+      {/* Tagline (i18n, per-row LangTabs) */}
+      <div className="admin-form-row">
+        <div className="label-row">
+          <span className="label-text">{t("tagline")}</span>
+          <LocaleSwitcher
+            value={taglineLocale}
+            onValueChange={setTaglineLocale}
+            aria-label={`${t("tagline")} locale`}
+          />
         </div>
+        <Controller
+          control={control}
+          name={`tagline.${taglineLocale}` as const}
+          rules={{ required: true }}
+          render={({ field, fieldState }) => (
+            <Input
+              {...field}
+              key={taglineLocale}
+              error={fieldState.error ? `${taglineLocale.toUpperCase()} required` : undefined}
+            />
+          )}
+        />
       </div>
 
-      <div className="admin-form-section">
-        <h2>Availability</h2>
-        <div className="admin-form-grid">
-          <label>
-            <span>Pre</span>
-            <input name="availabilityPre" defaultValue={hero.availabilityPre} required />
-          </label>
-          <label>
-            <span>Word A</span>
-            <input name="availabilityA" defaultValue={hero.availabilityA} required />
-          </label>
-          <label>
-            <span>Word B</span>
-            <input name="availabilityB" defaultValue={hero.availabilityB} required />
-          </label>
-          <label className="admin-form-toggle">
-            <input type="checkbox" name="available" defaultChecked={hero.available} />
-            <span>Show availability badge</span>
-          </label>
+      {/* Available toggle */}
+      <div className="admin-form-row">
+        <Controller
+          control={control}
+          name="available"
+          render={({ field }) => (
+            <Toggle checked={field.value} onCheckedChange={field.onChange} label={t("available")} />
+          )}
+        />
+      </div>
+
+      {/* Availability words (non-i18n) */}
+      <div className="admin-form-grid">
+        <div className="admin-form-row">
+          <div className="label-row">
+            <span className="label-text">{t("availabilityPre")}</span>
+          </div>
+          <Input
+            {...register("availabilityPre", { required: true })}
+            error={formState.errors.availabilityPre ? "Required" : undefined}
+          />
+        </div>
+        <div className="admin-form-row">
+          <div className="label-row">
+            <span className="label-text">{t("availabilityA")}</span>
+          </div>
+          <Input
+            {...register("availabilityA", { required: true })}
+            error={formState.errors.availabilityA ? "Required" : undefined}
+          />
+        </div>
+        <div className="admin-form-row">
+          <div className="label-row">
+            <span className="label-text">{t("availabilityB")}</span>
+          </div>
+          <Input
+            {...register("availabilityB", { required: true })}
+            error={formState.errors.availabilityB ? "Required" : undefined}
+          />
         </div>
       </div>
 
       <div className="admin-form-foot">
-        {state.error && <p className="admin-form-error">{state.error}</p>}
-        {state.ok && <p className="admin-form-ok">Saved.</p>}
-        <button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Save changes"}
-        </button>
+        {serverError && <p className="admin-form-error">{serverError}</p>}
+        <Button type="button" variant="ghost" onClick={() => reset(defaults)} disabled={isPending}>
+          Reset
+        </Button>
+        <Button type="submit" variant="primary" loading={isPending}>
+          Save changes
+        </Button>
       </div>
     </form>
   );

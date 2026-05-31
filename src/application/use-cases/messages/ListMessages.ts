@@ -4,7 +4,7 @@ import type { IMessageRepository } from "@/domain/repositories/IMessageRepositor
 export class ListMessages {
   constructor(private readonly messageRepo: IMessageRepository) {}
 
-  async execute(opts?: { unreadOnly?: boolean }): Promise<ContactMessage[]> {
+  async execute(opts?: { unreadOnly?: boolean; archived?: boolean }): Promise<ContactMessage[]> {
     return this.messageRepo.list(opts);
   }
 }

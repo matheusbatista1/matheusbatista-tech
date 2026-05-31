@@ -3,6 +3,7 @@ export interface SocialLink {
   name: string;
   url: string;
   handle: string | null;
+  iconKey: string | null;
   visible: boolean;
   order: number;
 }

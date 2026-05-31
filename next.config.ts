@@ -11,6 +11,70 @@ const nextConfig: NextConfig = {
       // TODO: adicionar dominios de upload (Vercel Blob / S3) na fase de assets
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/admin/projects/new",
+        destination: "/admin/projects",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/projects/new",
+        destination: "/:locale/admin/projects",
+        permanent: false,
+      },
+      {
+        source: "/admin/projects/:id",
+        destination: "/admin/projects",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/projects/:id",
+        destination: "/:locale/admin/projects",
+        permanent: false,
+      },
+      {
+        source: "/admin/skills/new",
+        destination: "/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/skills/new",
+        destination: "/:locale/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/admin/skills/:id",
+        destination: "/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/skills/:id",
+        destination: "/:locale/admin/skills",
+        permanent: false,
+      },
+      {
+        source: "/admin/social/new",
+        destination: "/admin/social",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/social/new",
+        destination: "/:locale/admin/social",
+        permanent: false,
+      },
+      {
+        source: "/admin/social/:id",
+        destination: "/admin/social",
+        permanent: false,
+      },
+      {
+        source: "/:locale(en|pt|es)/admin/social/:id",
+        destination: "/:locale/admin/social",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {
