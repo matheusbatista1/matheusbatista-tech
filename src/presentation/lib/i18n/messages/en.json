@@ -72,7 +72,8 @@
     "again": "Send another",
     "errTitle": "Couldn't send",
     "errBody": "Please add a valid email and subject, then try again. Or reach me at",
-    "tryAgain": "Try again"
+    "tryAgain": "Try again",
+    "waking": "Waking up server..."
   },
   "footer": {
     "tag": "Reach out for roles, collaborations, or just to say hello.",

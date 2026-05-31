@@ -72,7 +72,8 @@
     "again": "Enviar otro",
     "errTitle": "No se pudo enviar",
     "errBody": "Agrega un email y asunto válidos e intenta de nuevo. O contáctame en",
-    "tryAgain": "Intentar de nuevo"
+    "tryAgain": "Intentar de nuevo",
+    "waking": "Despertando el servidor..."
   },
   "footer": {
     "tag": "Contáctame para puestos, colaboraciones o solo para saludar.",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -41,6 +41,8 @@ export function Contact({ socials }: ContactProps) {
   const tNav = useTranslations("nav");
   const [state, setState] = useState<FormState>("form");
   const [submitting, setSubmitting] = useState(false);
+  const [retryHint, setRetryHint] = useState(false);
+  const wakingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     register,
@@ -59,24 +61,52 @@ export function Contact({ socials }: ContactProps) {
   const emailAddress = emailEntry?.handle ?? "matheus.sbatista@outlook.com";
   const otherSocials = socials.filter((s) => s.name !== "Email");
 
+  const postContact = async (values: ContactFormValues) => {
+    return fetch("/api/contact", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        from: values.name?.trim() || "Anonymous",
+        email: values.email,
+        subject: values.subject,
+        body: values.message,
+      }),
+    });
+  };
+
   const onSubmit = async (values: ContactFormValues) => {
     setSubmitting(true);
+    setRetryHint(false);
+    if (wakingTimerRef.current) clearTimeout(wakingTimerRef.current);
+    wakingTimerRef.current = setTimeout(() => setRetryHint(true), 3000);
+
     try {
-      const res = await fetch("/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          from: values.name?.trim() || "Anonymous",
-          email: values.email,
-          subject: values.subject,
-          body: values.message,
-        }),
-      });
+      let res = await postContact(values);
+
+      if (!res.ok) {
+        let payload: { error?: string; retryable?: boolean } = {};
+        try {
+          payload = await res.clone().json();
+        } catch {
+          // ignore parse failure
+        }
+
+        if (payload.retryable === true) {
+          await new Promise((r) => setTimeout(r, 1500));
+          res = await postContact(values);
+        }
+      }
+
       if (!res.ok) throw new Error(`Request failed: ${res.status}`);
       setState("ok");
     } catch {
       setState("err");
     } finally {
+      if (wakingTimerRef.current) {
+        clearTimeout(wakingTimerRef.current);
+        wakingTimerRef.current = null;
+      }
+      setRetryHint(false);
       setSubmitting(false);
     }
   };
@@ -180,10 +210,21 @@ export function Contact({ socials }: ContactProps) {
                   <textarea placeholder={t("messagePh")} {...register("message")} />
                 </div>
                 <div className="cf-foot">
-                  <span className="hint">{t("hint")}</span>
+                  <span className="hint">{submitting && retryHint ? t("waking") : t("hint")}</span>
                   <button type="submit" className="cf-send" disabled={submitting}>
-                    {t("send")}
-                    <ArrowUpRightIcon />
+                    {submitting ? (
+                      <>
+                        {t("send")}
+                        <span aria-hidden="true" className="cf-send-dots">
+                          ...
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        {t("send")}
+                        <ArrowUpRightIcon />
+                      </>
+                    )}
                   </button>
                 </div>
                 {Object.keys(errors).length > 0 && (
