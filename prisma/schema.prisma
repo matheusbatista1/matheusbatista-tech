@@ -12,20 +12,23 @@ datasource db {
 // ─────────────────────────────────────────────────────────────────────────────
 
 model Project {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  name        String
-  url         String?
-  liveUrl     String?
-  description Json     // LocalizedText { en, pt, es }
-  pill        String?  // FLAGSHIP | PRODUCTION | INTEGRATION | CASE_STUDY | AI
-  tags        String[]
-  images      Json     // { src, alt }[]
-  order       Int      @default(0)
-  deployed    Boolean  @default(false)
-  visible     Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  url           String?
+  liveUrl       String?
+  description   Json     // LocalizedText { en, pt, es }
+  pill          String?  // FLAGSHIP | PRODUCTION | INTEGRATION | CASE_STUDY | AI
+  tags          String[]
+  images        Json     // { src, alt }[]
+  coverImageUrl String?
+  order         Int      @default(0)
+  deployed      Boolean  @default(false)
+  visible       Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  gallery ProjectImage[]
 
   @@index([order])
   @@index([visible])
@@ -37,6 +40,8 @@ model Skill {
   key      String @unique
   category String // frontend | backend | database | devops | tools
   color    String?
+  fg       String?
+  iconUrl  String?
   order    Int    @default(0)
 
   @@index([category, order])
@@ -47,6 +52,7 @@ model SocialLink {
   name    String
   url     String
   handle  String?
+  iconKey String?
   visible Boolean @default(true)
   order   Int     @default(0)
 
@@ -68,9 +74,61 @@ model ContactMessage {
   subject   String?
   body      String
   read      Boolean  @default(false)
+  archived  Boolean  @default(false)
   createdAt DateTime @default(now())
 
   @@index([read, createdAt])
+}
+
+model ProjectImage {
+  id        String   @id @default(cuid())
+  projectId String
+  url       String
+  alt       String?
+  order     Int      @default(0)
+  isCover   Boolean  @default(false)
+  createdAt DateTime @default(now())
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, order])
+}
+
+model CVAsset {
+  id        String   @id @default(cuid())
+  locale    String
+  url       String
+  filename  String
+  sizeBytes Int
+  createdAt DateTime @default(now())
+
+  @@unique([locale])
+}
+
+model SiteSettings {
+  id                String   @id @default("singleton")
+  seoTitle          Json
+  seoDescription    Json
+  ogImageUrl        String?
+  analyticsEnabled  Boolean  @default(true)
+  aiFeaturesEnabled Boolean  @default(true)
+  maintenanceMode   Boolean  @default(false)
+  contactEmail      String?
+  updatedAt         DateTime @updatedAt
+}
+
+model ActivityEvent {
+  id         String   @id @default(cuid())
+  actorId    String?
+  actorEmail String?
+  action     String
+  entity     String
+  entityId   String?
+  diff       Json?
+  ip         String?
+  createdAt  DateTime @default(now())
+
+  @@index([createdAt])
+  @@index([entity, createdAt])
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

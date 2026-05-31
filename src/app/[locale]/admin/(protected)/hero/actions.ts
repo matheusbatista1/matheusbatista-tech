@@ -12,59 +12,64 @@ const localizedSchema = z.object({
   es: z.string().min(1, "ES required"),
 });
 
-const heroSchema = z.object({
-  greetHello: z.string().min(1),
-  greetIm: z.string().min(1),
+const heroInputSchema = z.object({
+  greeting: localizedSchema,
   firstName: z.string().min(1),
   lastName: z.string().min(1),
   subtitle: localizedSchema,
+  tagline: localizedSchema,
+  available: z.boolean(),
   availabilityPre: z.string().min(1),
   availabilityA: z.string().min(1),
   availabilityB: z.string().min(1),
-  available: z.boolean(),
-  tagline: localizedSchema,
 });
+
+export type HeroFormValues = z.infer<typeof heroInputSchema>;
 
 export interface HeroActionState {
   ok?: boolean;
   error?: string;
 }
 
-export async function updateHeroAction(
-  _prev: HeroActionState,
-  formData: FormData,
-): Promise<HeroActionState> {
+export async function updateHeroAction(input: HeroFormValues): Promise<HeroActionState> {
   const session = await auth();
   if (!session?.user) return { error: "Not authenticated" };
 
-  const parsed = heroSchema.safeParse({
-    greetHello: formData.get("greetHello"),
-    greetIm: formData.get("greetIm"),
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
-    subtitle: {
-      en: formData.get("subtitle.en"),
-      pt: formData.get("subtitle.pt"),
-      es: formData.get("subtitle.es"),
-    },
-    availabilityPre: formData.get("availabilityPre"),
-    availabilityA: formData.get("availabilityA"),
-    availabilityB: formData.get("availabilityB"),
-    available: formData.get("available") === "on",
-    tagline: {
-      en: formData.get("tagline.en"),
-      pt: formData.get("tagline.pt"),
-      es: formData.get("tagline.es"),
-    },
-  });
-
+  const parsed = heroInputSchema.safeParse(input);
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Validation failed" };
   }
 
-  const hero: HeroContent = parsed.data;
+  const data = parsed.data;
+
+  // Preserve legacy entity fields (greetHello / greetIm) consumed by Footer,
+  // BuildPromptContext and the seed. We mirror greeting.en into greetHello so
+  // back-compat readers stay fresh.
+  const current = await container.useCases.getSiteContent.execute();
+  const hero: HeroContent = {
+    ...current.hero,
+    greetHello: data.greeting.en,
+    greetIm: current.hero.greetIm,
+    greeting: data.greeting,
+    firstName: data.firstName,
+    lastName: data.lastName,
+    subtitle: data.subtitle,
+    tagline: data.tagline,
+    available: data.available,
+    availabilityPre: data.availabilityPre,
+    availabilityA: data.availabilityA,
+    availabilityB: data.availabilityB,
+  };
+
   try {
     await container.useCases.updateHeroContent.execute(hero);
+    await container.useCases.logActivity.execute({
+      actorId: session.user.id ?? null,
+      actorEmail: session.user.email ?? null,
+      action: "update",
+      entity: "hero",
+      entityId: "singleton",
+    });
   } catch (error) {
     console.error("updateHeroAction error", error);
     return { error: "Could not save. Try again." };

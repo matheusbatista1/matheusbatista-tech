@@ -12,6 +12,7 @@ function toSocial(row: PrismaSocialLink): SocialLink {
     name: row.name,
     url: row.url,
     handle: row.handle,
+    iconKey: row.iconKey,
     visible: row.visible,
     order: row.order,
   };
@@ -22,6 +23,7 @@ function toPrismaData(input: SocialLinkInput) {
     name: input.name,
     url: input.url,
     handle: input.handle,
+    iconKey: input.iconKey,
     visible: input.visible,
     order: input.order,
   };

@@ -1,0 +1,92 @@
+.admin-cv-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 880px) {
+  .admin-cv-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-cv-slot {
+  padding: 20px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-cv-slot .locale-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--admin-text-dim);
+}
+
+.admin-cv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.admin-cv-info .filename {
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.admin-cv-info .meta {
+  font-size: 12px;
+  color: var(--admin-text-dim);
+}
+
+.admin-cv-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.admin-cv-dropzone {
+  flex: 1;
+  border: 2px dashed var(--admin-border-strong);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--admin-text-mute);
+  cursor: pointer;
+  transition: all 140ms;
+}
+
+.admin-cv-dropzone:hover,
+.admin-cv-dropzone[data-active="true"] {
+  border-color: var(--admin-accent);
+  color: var(--admin-text);
+  background: var(--admin-surface-2);
+}
+
+.admin-cv-dropzone svg {
+  width: 24px;
+  height: 24px;
+}
+
+.admin-cv-dropzone-hint {
+  font-size: 12px;
+  color: var(--admin-text-dim);
+}
+
+.admin-cv-dropzone-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.admin-cv-tips {
+  margin-top: 24px;
+}

@@ -6,5 +6,7 @@ export interface Skill {
   key: string;
   category: SkillCategory;
   color: string | null;
+  fg: string | null;
+  iconUrl: string | null;
   order: number;
 }

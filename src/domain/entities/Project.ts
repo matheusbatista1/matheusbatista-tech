@@ -1,8 +1,9 @@
 import type { LocalizedText } from "../value-objects/LocalizedText";
+import type { ProjectImage } from "./ProjectImage";
 
 export type ProjectPill = "FLAGSHIP" | "PRODUCTION" | "INTEGRATION" | "CASE_STUDY" | "AI";
 
-export interface ProjectImage {
+export interface ProjectImageLegacy {
   src: string;
   alt: string;
 }
@@ -16,7 +17,9 @@ export interface Project {
   description: LocalizedText;
   pill: ProjectPill | null;
   tags: string[];
-  images: ProjectImage[];
+  images: ProjectImageLegacy[];
+  coverImageUrl?: string | null;
+  gallery?: ProjectImage[];
   order: number;
   deployed: boolean;
   visible: boolean;

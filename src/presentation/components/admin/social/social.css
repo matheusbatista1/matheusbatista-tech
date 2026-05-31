@@ -1,0 +1,109 @@
+.admin-social-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+.admin-social-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-social-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--admin-surface);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: move;
+  transition:
+    background 120ms ease,
+    border-color 120ms ease,
+    opacity 120ms ease;
+}
+.admin-social-row:hover {
+  background: var(--admin-surface-2);
+}
+.admin-social-row[data-dragging="true"] {
+  opacity: 0.5;
+}
+.admin-social-row[data-drop-target="true"] {
+  border-color: var(--admin-accent-blue);
+  background: var(--admin-accent-blue-soft);
+}
+
+.admin-social-row .drag-handle {
+  color: var(--admin-text-dim);
+  cursor: grab;
+  display: inline-flex;
+  align-items: center;
+}
+.admin-social-row .drag-handle:active {
+  cursor: grabbing;
+}
+
+.admin-social-row .icon {
+  width: 18px;
+  height: 18px;
+  color: var(--admin-text-mute);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.admin-social-row .name {
+  font-weight: 500;
+  min-width: 100px;
+  color: var(--admin-text);
+}
+
+.admin-social-row .url {
+  color: var(--admin-text-mute);
+  font-size: 13px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.admin-social-row .url:hover {
+  color: var(--admin-accent-blue);
+  text-decoration: underline;
+}
+
+.admin-social-row .actions {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-social-empty {
+  border: 1px dashed var(--admin-border-strong);
+  border-radius: 10px;
+  padding: 32px;
+  text-align: center;
+  color: var(--admin-text-mute);
+}
+
+.admin-social-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.admin-social-modal-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+.admin-social-modal-foot .spacer {
+  flex: 1;
+}
