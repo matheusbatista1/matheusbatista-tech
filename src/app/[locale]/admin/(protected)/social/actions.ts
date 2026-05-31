@@ -9,29 +9,30 @@ import type { SocialLinkInput } from "@/domain/repositories/ISocialLinkRepositor
 const SOCIAL_NETWORKS = [
   "GitHub",
   "LinkedIn",
+  "Behance",
+  "Email",
   "X",
   "Instagram",
-  "YouTube",
-  "Email",
-  "Behance",
   "Dribbble",
+  "YouTube",
   "Other",
 ] as const;
 
-const SOCIAL_ICON_KEYS = [
-  "github",
-  "linkedin",
-  "x",
-  "instagram",
-  "youtube",
-  "mail",
-  "behance",
-  "dribbble",
-  "web",
-] as const;
+type SocialNetwork = (typeof SOCIAL_NETWORKS)[number];
+
+const NETWORK_TO_ICON: Record<SocialNetwork, string> = {
+  GitHub: "github",
+  LinkedIn: "linkedin",
+  Behance: "behance",
+  Email: "mail",
+  X: "x",
+  Instagram: "instagram",
+  Dribbble: "dribbble",
+  YouTube: "youtube",
+  Other: "web",
+};
 
 const socialPayloadSchema = z.object({
-  name: z.string().trim().min(1, "Name is required").max(40, "Name too long"),
   network: z.enum(SOCIAL_NETWORKS),
   url: z
     .string()
@@ -44,7 +45,6 @@ const socialPayloadSchema = z.object({
     .max(120, "Handle too long")
     .nullable()
     .transform((value) => (value && value.trim() !== "" ? value.trim() : null)),
-  iconKey: z.enum(SOCIAL_ICON_KEYS),
   visible: z.boolean(),
 });
 
@@ -84,10 +84,10 @@ export async function createSocialAction(raw: SocialPayloadInput): Promise<Socia
   const order = all.length;
 
   const input: SocialLinkInput = {
-    name: parsed.data.name,
+    name: parsed.data.network,
     url: parsed.data.url,
     handle: parsed.data.handle,
-    iconKey: parsed.data.iconKey,
+    iconKey: NETWORK_TO_ICON[parsed.data.network],
     visible: parsed.data.visible,
     order,
   };
@@ -125,10 +125,10 @@ export async function updateSocialAction(
   if (!existing) return { error: "Social link not found" };
 
   const input: SocialLinkInput = {
-    name: parsed.data.name,
+    name: parsed.data.network,
     url: parsed.data.url,
     handle: parsed.data.handle,
-    iconKey: parsed.data.iconKey,
+    iconKey: NETWORK_TO_ICON[parsed.data.network],
     visible: parsed.data.visible,
     order: existing.order,
   };

@@ -1,82 +1,238 @@
-.admin-cv-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* ------------------------------------------------------------------
+ * CV admin — manager, overview cards, current bar, dropzone, tips.
+ * Tokens (`--admin-*`) come from admin.css via the `.admin-shell` ancestor.
+ * ------------------------------------------------------------------ */
+
+.admin-cv-manager {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
-@media (max-width: 880px) {
-  .admin-cv-grid {
+.admin-cv-manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* ------------------------------------------------------------------
+ * Overview grid (3 cards, EN / PT / ES)
+ * ------------------------------------------------------------------ */
+
+.admin-cv-overview {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 720px) {
+  .admin-cv-overview {
     grid-template-columns: 1fr;
   }
 }
 
-.admin-cv-slot {
-  padding: 20px;
-  min-height: 220px;
+.admin-cv-overview-card {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 12px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: var(--admin-text);
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease,
+    transform 120ms ease;
 }
 
-.admin-cv-slot .locale-label {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--admin-text-dim);
+.admin-cv-overview-card:hover {
+  background: var(--admin-surface-hover, var(--admin-surface-2));
 }
 
-.admin-cv-info {
+.admin-cv-overview-card:active {
+  transform: scale(0.99);
+}
+
+.admin-cv-overview-card.is-active {
+  border-color: var(--admin-accent);
+}
+
+.admin-cv-overview-card:focus-visible {
+  outline: 2px solid var(--admin-accent);
+  outline-offset: 2px;
+}
+
+.admin-cv-overview-info {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
+  min-width: 0;
   flex: 1;
 }
 
-.admin-cv-info .filename {
-  font-weight: 600;
-  word-break: break-all;
+.admin-cv-overview-locale {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--admin-text-dim);
 }
 
-.admin-cv-info .meta {
+.admin-cv-overview-filename {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--admin-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-cv-overview-filename.is-empty {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--admin-text-mute);
+}
+
+/* ------------------------------------------------------------------
+ * PDF file icon (used in overview cards + current bar)
+ * ------------------------------------------------------------------ */
+
+.admin-cv-ficon {
+  display: inline-grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--admin-surface-2);
+  color: var(--admin-text-dim);
+  flex-shrink: 0;
+}
+
+.admin-cv-ficon.is-uploaded {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--admin-red);
+}
+
+.admin-cv-ficon.is-large {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+}
+
+/* ------------------------------------------------------------------
+ * Current CV bar (filename + download + remove)
+ * ------------------------------------------------------------------ */
+
+.admin-cv-current {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: var(--admin-surface);
+  border: 1px solid var(--admin-border);
+}
+
+.admin-cv-current-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+
+.admin-cv-current-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--admin-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-cv-current-meta {
   font-size: 12px;
   color: var(--admin-text-dim);
 }
 
-.admin-cv-actions {
-  display: flex;
-  gap: 8px;
-  margin-top: auto;
+.admin-cv-current-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
 }
 
+@media (max-width: 720px) {
+  .admin-cv-current {
+    flex-wrap: wrap;
+  }
+  .admin-cv-current-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Dropzone
+ * ------------------------------------------------------------------ */
+
 .admin-cv-dropzone {
-  flex: 1;
-  border: 2px dashed var(--admin-border-strong);
-  border-radius: 8px;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  color: var(--admin-text-mute);
+  gap: 10px;
+  padding: 36px;
+  border-radius: 12px;
+  border: 1.5px dashed var(--admin-border-soft);
+  background: var(--admin-bg-2);
+  text-align: center;
   cursor: pointer;
-  transition: all 140ms;
+  transition:
+    border-color 140ms ease,
+    background-color 140ms ease;
 }
 
 .admin-cv-dropzone:hover,
-.admin-cv-dropzone[data-active="true"] {
+.admin-cv-dropzone:focus-visible {
   border-color: var(--admin-accent);
+  background: var(--admin-surface);
+  outline: none;
+}
+
+.admin-cv-dropzone.is-drop-target {
+  border-color: var(--admin-accent);
+  background: var(--admin-surface);
+}
+
+.admin-cv-dropzone.is-pending {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.admin-cv-dropzone-icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--admin-surface);
   color: var(--admin-text);
-  background: var(--admin-surface-2);
 }
 
-.admin-cv-dropzone svg {
-  width: 24px;
-  height: 24px;
+.admin-cv-dropzone-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--admin-text);
 }
 
-.admin-cv-dropzone-hint {
+.admin-cv-dropzone-sub {
   font-size: 12px;
-  color: var(--admin-text-dim);
+  color: var(--admin-text-mute);
 }
 
 .admin-cv-dropzone-input {
@@ -87,6 +243,41 @@
   pointer-events: none;
 }
 
+/* ------------------------------------------------------------------
+ * Tips card
+ * ------------------------------------------------------------------ */
+
 .admin-cv-tips {
-  margin-top: 24px;
+  margin-top: 8px;
+}
+
+.admin-cv-tips-title {
+  margin: 0 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--admin-text-dim);
+}
+
+.admin-cv-tips-list {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--admin-text-mute);
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.admin-cv-tips-list li + li {
+  margin-top: 2px;
+}
+
+.admin-cv-tips-code {
+  font-family: var(--admin-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-size: 12px;
+  color: var(--admin-text);
+  background: var(--admin-surface-2);
+  border: 1px solid var(--admin-border);
+  padding: 1px 6px;
+  border-radius: 4px;
 }

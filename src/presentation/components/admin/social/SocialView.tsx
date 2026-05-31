@@ -2,9 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import type { SocialLink } from "@/domain/entities/SocialLink";
 import { Button } from "@/presentation/components/admin/ui/Button";
+import { PageHead } from "@/presentation/components/admin/shell/PageHead";
 
 import { SocialModal } from "./SocialModal";
 import { SocialTable } from "./SocialTable";
@@ -17,34 +19,33 @@ interface SocialViewProps {
 }
 
 export function SocialView({ links, actions }: SocialViewProps) {
+  const t = useTranslations("admin.social");
   const [items, setItems] = useState<SocialLink[]>(links);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<SocialLink | null>(null);
 
-  // Re-sync when the server reloads (after revalidation)
   useEffect(() => {
     setItems(links);
   }, [links]);
 
   return (
     <>
-      <div className="admin-social-toolbar">
-        <Button variant="primary" icon={<Plus size={14} />} onClick={() => setCreating(true)}>
-          New link
-        </Button>
-      </div>
+      <PageHead
+        title={t("title")}
+        lead={t("lead")}
+        actions={
+          <Button variant="primary" icon={<Plus size={14} />} onClick={() => setCreating(true)}>
+            {t("new")}
+          </Button>
+        }
+      />
 
       {items.length === 0 ? (
         <div className="admin-social-empty">
-          No social links yet. Click “New link” to add the first one.
+          No social links yet. Click “{t("new")}” to add the first one.
         </div>
       ) : (
-        <SocialTable
-          links={items}
-          actions={actions}
-          onEdit={(link) => setEditing(link)}
-          onReorder={setItems}
-        />
+        <SocialTable links={items} actions={actions} onEdit={(link) => setEditing(link)} />
       )}
 
       {creating && (

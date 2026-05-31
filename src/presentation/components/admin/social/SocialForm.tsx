@@ -2,6 +2,7 @@
 
 import { forwardRef, useImperativeHandle, useMemo, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { useTranslations } from "next-intl";
 import { z } from "zod";
 
 import type { SocialLink } from "@/domain/entities/SocialLink";
@@ -10,24 +11,18 @@ import { Select } from "@/presentation/components/admin/ui/Select";
 import { Toggle } from "@/presentation/components/admin/ui/Toggle";
 
 import {
-  ICON_TO_NETWORK,
-  NETWORK_TO_ICON,
-  SOCIAL_ICON_KEYS,
   SOCIAL_NETWORKS,
   inferNetwork,
   type SocialActionResult,
   type SocialActions,
-  type SocialIconKey,
   type SocialNetwork,
   type SocialPayload,
 } from "./types";
 
 export interface SocialFormValues {
-  name: string;
-  network: SocialNetwork;
+  network: SocialNetwork | "";
   url: string;
   handle: string;
-  iconKey: SocialIconKey;
   visible: boolean;
 }
 
@@ -51,15 +46,14 @@ const urlSchema = z
   .url("Enter a valid URL");
 
 function defaultsFor(social?: SocialLink): SocialFormValues {
-  const inferredNetwork = inferNetwork(social?.name ?? "", social?.iconKey ?? null);
-  const fallbackIcon = NETWORK_TO_ICON[inferredNetwork];
+  if (!social) {
+    return { network: "", url: "", handle: "", visible: true };
+  }
   return {
-    name: social?.name ?? "",
-    network: inferredNetwork,
-    url: social?.url ?? "",
-    handle: social?.handle ?? "",
-    iconKey: (social?.iconKey as SocialIconKey | undefined) ?? fallbackIcon,
-    visible: social?.visible ?? true,
+    network: inferNetwork(social.name, social.iconKey),
+    url: social.url,
+    handle: social.handle ?? "",
+    visible: social.visible,
   };
 }
 
@@ -67,6 +61,7 @@ export const SocialForm = forwardRef<SocialFormHandle, SocialFormProps>(function
   { mode, social, actions, onSubmittingChange, onResult },
   ref,
 ) {
+  const t = useTranslations("admin.social");
   const [, startSubmit] = useTransition();
   const defaults = useMemo(() => defaultsFor(social), [social]);
 
@@ -74,8 +69,6 @@ export const SocialForm = forwardRef<SocialFormHandle, SocialFormProps>(function
     register,
     handleSubmit,
     control,
-    setValue,
-    getValues,
     formState: { errors },
   } = useForm<SocialFormValues>({ defaultValues: defaults });
 
@@ -86,13 +79,16 @@ export const SocialForm = forwardRef<SocialFormHandle, SocialFormProps>(function
   }));
 
   function onValid(values: SocialFormValues) {
+    if (!values.network) {
+      onResult({ error: t("networkPlaceholder") });
+      return;
+    }
+
     const trimmedHandle = values.handle.trim();
     const payload: SocialPayload = {
-      name: values.name.trim(),
       network: values.network,
       url: values.url.trim(),
       handle: trimmedHandle === "" ? null : trimmedHandle,
-      iconKey: values.iconKey,
       visible: values.visible,
     };
 
@@ -109,34 +105,20 @@ export const SocialForm = forwardRef<SocialFormHandle, SocialFormProps>(function
 
   return (
     <form onSubmit={handleSubmit(onValid)} className="admin-social-form" noValidate>
-      <Input
-        label="Name"
-        placeholder="GitHub"
-        {...register("name", {
-          required: "Name is required",
-          maxLength: { value: 40, message: "Name too long" },
-        })}
-        error={errors.name?.message}
-      />
-
       <Controller
         name="network"
         control={control}
+        rules={{ required: t("networkPlaceholder") }}
         render={({ field }) => (
           <Select
-            label="Network"
+            label={t("network")}
             value={field.value}
-            onChange={(event) => {
-              const next = event.target.value as SocialNetwork;
-              field.onChange(next);
-              // Auto-fill iconKey when network changes (user can still edit)
-              const currentIcon = getValues("iconKey");
-              const currentNetworkIcon = NETWORK_TO_ICON[field.value as SocialNetwork];
-              if (currentIcon === currentNetworkIcon) {
-                setValue("iconKey", NETWORK_TO_ICON[next], { shouldDirty: true });
-              }
-            }}
+            onChange={(event) => field.onChange(event.target.value as SocialNetwork | "")}
+            error={errors.network?.message}
           >
+            <option value="" disabled>
+              {t("networkPlaceholder")}
+            </option>
             {SOCIAL_NETWORKS.map((network) => (
               <option key={network} value={network}>
                 {network}
@@ -147,9 +129,9 @@ export const SocialForm = forwardRef<SocialFormHandle, SocialFormProps>(function
       />
 
       <Input
-        label="URL"
+        label={t("url")}
         type="url"
-        placeholder="https://github.com/matheusbatista1"
+        placeholder="https://..."
         {...register("url", {
           required: "URL is required",
           validate: (value) => {
@@ -161,43 +143,20 @@ export const SocialForm = forwardRef<SocialFormHandle, SocialFormProps>(function
       />
 
       <Input
-        label="Handle (optional)"
-        placeholder="@matheusbatista1"
+        label={t("handle")}
+        placeholder="@matheusbatista or matheus@..."
         {...register("handle", {
           maxLength: { value: 120, message: "Handle too long" },
         })}
-        hint="Shown next to the link on the portfolio."
+        hint={t("handleHelp")}
         error={errors.handle?.message}
-      />
-
-      <Controller
-        name="iconKey"
-        control={control}
-        render={({ field }) => (
-          <Select
-            label="Icon"
-            value={field.value}
-            onChange={(event) => field.onChange(event.target.value as SocialIconKey)}
-            hint="Auto-filled from network; override if needed."
-          >
-            {SOCIAL_ICON_KEYS.map((key) => (
-              <option key={key} value={key}>
-                {key} ({ICON_TO_NETWORK[key]})
-              </option>
-            ))}
-          </Select>
-        )}
       />
 
       <Controller
         name="visible"
         control={control}
         render={({ field }) => (
-          <Toggle
-            checked={field.value}
-            onCheckedChange={field.onChange}
-            label="Visible on the portfolio"
-          />
+          <Toggle checked={field.value} onCheckedChange={field.onChange} label={t("visible")} />
         )}
       />
     </form>

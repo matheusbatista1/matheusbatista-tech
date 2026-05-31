@@ -1,56 +1,81 @@
 .admin-skills-admin {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+}
+@media (max-width: 880px) {
+  .admin-skills-admin {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 .admin-skill-cat-card {
-  padding: 16px 20px;
+  padding: 20px;
 }
 .admin-skill-cat-card h3 {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  font-size: 14px;
+  align-items: center;
+  font-size: 13px;
   font-weight: 600;
-  margin: 0 0 12px;
+  color: var(--admin-text);
+  margin: 0 0 16px;
+  text-transform: capitalize;
 }
 .admin-skill-cat-card .list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .admin-skill-admin-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 4px 10px 4px 4px;
+  gap: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--admin-border-soft);
+  padding: 6px 10px 6px 6px;
+  font-size: 12.5px;
   background: var(--admin-surface-2);
-  border-radius: 16px;
+  transition:
+    transform 200ms,
+    border-color 180ms,
+    background 180ms;
   cursor: pointer;
-  transition: background 140ms;
 }
 .admin-skill-admin-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--admin-border-strong);
   background: var(--admin-surface-hover);
 }
 .admin-skill-admin-chip .sw {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.admin-skill-admin-chip .name {
+  font-weight: 500;
+  color: var(--admin-text);
+}
+.admin-skill-admin-chip .x {
+  background: transparent;
+  border: 0;
+  color: var(--admin-text-dim);
+  cursor: pointer;
+  padding: 2px;
+  transition: color 140ms;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 22px;
-  height: 22px;
-  padding: 0 6px;
-  border-radius: 11px;
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 700;
-}
-.admin-skill-admin-chip .x {
-  all: unset;
-  cursor: pointer;
-  padding: 0 4px;
-  color: var(--admin-text-dim);
   line-height: 1;
 }
 .admin-skill-admin-chip .x:hover {

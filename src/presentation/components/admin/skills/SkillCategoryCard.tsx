@@ -4,8 +4,8 @@ import { Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import type { Skill, SkillCategory } from "@/domain/entities/Skill";
+import { Button } from "@/presentation/components/admin/ui/Button";
 import { Card } from "@/presentation/components/admin/ui/Card";
-import { IconButton } from "@/presentation/components/admin/ui/IconButton";
 
 import { SkillChip } from "./SkillChip";
 
@@ -29,13 +29,10 @@ export function SkillCategoryCard({
   return (
     <Card className="admin-skill-cat-card">
       <h3>
-        {t(`categories.${category}`)}
-        <IconButton
-          aria-label={t("add")}
-          tooltip={t("add")}
-          onClick={onAdd}
-          icon={<Plus size={14} />}
-        />
+        <span>{t(`categories.${category}`)}</span>
+        <Button variant="ghost" size="sm" onClick={onAdd} icon={<Plus size={12} />}>
+          {t("add")}
+        </Button>
       </h3>
       {skills.length === 0 ? (
         <span className="admin-skill-empty">{t("noSkillsYet")}</span>

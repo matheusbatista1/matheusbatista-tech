@@ -1,5 +1,4 @@
 import { container } from "@/infrastructure/container";
-import { PageHead } from "@/presentation/components/admin/shell/PageHead";
 import { SocialView } from "@/presentation/components/admin/social/SocialView";
 
 import {
@@ -16,10 +15,6 @@ export default async function AdminSocialListPage() {
 
   return (
     <div className="admin-dashboard">
-      <PageHead
-        title="Social links"
-        lead="Manage the social profiles and contact links surfaced across the portfolio. Drag rows to reorder."
-      />
       <SocialView
         links={sorted}
         actions={{

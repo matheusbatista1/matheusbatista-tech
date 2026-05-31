@@ -5,11 +5,9 @@ export interface SocialActionResult {
 }
 
 export interface SocialPayload {
-  name: string;
   network: SocialNetwork;
   url: string;
   handle: string | null;
-  iconKey: SocialIconKey;
   visible: boolean;
 }
 
@@ -24,12 +22,12 @@ export interface SocialActions {
 export const SOCIAL_NETWORKS = [
   "GitHub",
   "LinkedIn",
+  "Behance",
+  "Email",
   "X",
   "Instagram",
-  "YouTube",
-  "Email",
-  "Behance",
   "Dribbble",
+  "YouTube",
   "Other",
 ] as const;
 
@@ -52,24 +50,24 @@ export type SocialIconKey = (typeof SOCIAL_ICON_KEYS)[number];
 export const NETWORK_TO_ICON: Record<SocialNetwork, SocialIconKey> = {
   GitHub: "github",
   LinkedIn: "linkedin",
+  Behance: "behance",
+  Email: "mail",
   X: "x",
   Instagram: "instagram",
-  YouTube: "youtube",
-  Email: "mail",
-  Behance: "behance",
   Dribbble: "dribbble",
+  YouTube: "youtube",
   Other: "web",
 };
 
 export const ICON_TO_NETWORK: Record<SocialIconKey, SocialNetwork> = {
   github: "GitHub",
   linkedin: "LinkedIn",
+  behance: "Behance",
+  mail: "Email",
   x: "X",
   instagram: "Instagram",
-  youtube: "YouTube",
-  mail: "Email",
-  behance: "Behance",
   dribbble: "Dribbble",
+  youtube: "YouTube",
   web: "Other",
 };
 

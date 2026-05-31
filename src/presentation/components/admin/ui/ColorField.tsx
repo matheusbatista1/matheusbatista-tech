@@ -56,7 +56,7 @@ export function ColorField({
       )}
       <div className="admin-color-row">
         <span className="admin-color-preview" style={{ background: safeColor }} aria-hidden="true">
-          {previewKey && <span className="admin-color-key">{previewKey}</span>}
+          {previewKey && <span className="admin-color-key">{previewKey.toUpperCase()}</span>}
         </span>
         <input
           id={colorId}
