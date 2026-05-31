@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
+import { usePersona } from "@/presentation/providers/PersonaProvider";
 
-const LOAD_MS = 2500;
 const FADE_MS = 700;
 
 function MbPaths({ solid = false }: { solid?: boolean }) {
@@ -31,35 +31,27 @@ function MbPaths({ solid = false }: { solid?: boolean }) {
 }
 
 export function LoadingScreen() {
-  const [done, setDone] = useState(false);
-  const [hidden, setHidden] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const { phase } = usePersona();
+  const [leaving, setLeaving] = useState(false);
+  const [mounted, setMounted] = useState(true);
 
   useEffect(() => {
-    const id = window.setTimeout(() => setDone(true), LOAD_MS);
-    return () => window.clearTimeout(id);
-  }, []);
+    if (phase !== "splash" && !leaving && mounted) {
+      setLeaving(true);
+      const t = window.setTimeout(() => setMounted(false), FADE_MS);
+      return () => window.clearTimeout(t);
+    }
+  }, [phase, leaving, mounted]);
 
-  useEffect(() => {
-    if (!done) return;
-    const el = rootRef.current;
-    if (!el) return;
-    const start = performance.now();
-    let raf = 0;
-    const tick = (t: number) => {
-      const k = Math.min(1, (t - start) / FADE_MS);
-      el.style.opacity = String(1 - k);
-      if (k < 1) raf = requestAnimationFrame(tick);
-      else setHidden(true);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [done]);
-
-  if (hidden) return null;
+  if (!mounted) return null;
 
   return (
-    <div className="loading-root" ref={rootRef} aria-hidden="true" role="presentation">
+    <div
+      className="loading-root"
+      data-leaving={leaving ? "true" : undefined}
+      aria-hidden={leaving ? "true" : "false"}
+      role="presentation"
+    >
       <div className="loading-stage">
         <div className="loading-mb">
           <svg viewBox="0 0 540 240" preserveAspectRatio="xMidYMid meet" aria-hidden="true">

@@ -22,19 +22,6 @@ export async function POST(request: Request) {
     );
   }
 
-  const ip = getHashedIp(request);
-  const [perMinute, perDay] = await Promise.all([
-    container.ai.rateLimits.chat.limit(ip),
-    container.ai.rateLimits.daily.limit(ip),
-  ]);
-
-  if (!perMinute.success || !perDay.success) {
-    return NextResponse.json(
-      { error: "Rate limit exceeded", retryAfter: Math.max(perMinute.reset, perDay.reset) },
-      { status: 429 },
-    );
-  }
-
   let body: unknown;
   try {
     body = await request.json();
@@ -47,6 +34,19 @@ export async function POST(request: Request) {
     return NextResponse.json(
       { error: "Validation failed", details: parsed.error.flatten() },
       { status: 422 },
+    );
+  }
+
+  const ip = getHashedIp(request);
+  const [perMinute, perDay] = await Promise.all([
+    container.ai.rateLimits.chat.limit(ip),
+    container.ai.rateLimits.daily.limit(ip),
+  ]);
+
+  if (!perMinute.success || !perDay.success) {
+    return NextResponse.json(
+      { error: "Rate limit exceeded", retryAfter: Math.max(perMinute.reset, perDay.reset) },
+      { status: 429 },
     );
   }
 

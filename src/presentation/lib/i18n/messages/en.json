@@ -111,19 +111,18 @@
     "skip": "Just browsing — show me everything",
     "viewingAs": "Viewing as",
     "apply": "Personalizing…",
-    "default.label": "Just exploring",
-    "default.hint": "A balanced overview of everything.",
-    "recruiter.label": "Recruiter",
-    "recruiter.hint": "Impact, soft skills & availability.",
-    "techlead.label": "Tech Lead",
-    "techlead.hint": "Architecture, stack & delivery.",
-    "cto.label": "CTO / Founder",
-    "cto.hint": "Business value, scale & ownership.",
-    "designer.label": "Designer",
-    "designer.hint": "Craft, UX sensibility & collaboration."
+    "default": { "label": "Just exploring", "hint": "A balanced overview of everything." },
+    "recruiter": { "label": "Recruiter", "hint": "Impact, soft skills & availability." },
+    "techlead": { "label": "Tech Lead", "hint": "Architecture, stack & delivery." },
+    "cto": { "label": "CTO / Founder", "hint": "Business value, scale & ownership." },
+    "designer": { "label": "Designer", "hint": "Craft, UX sensibility & collaboration." }
   },
   "notfound": {
     "btn": "GO BACK HOME",
     "sub": "NOTHING IS HERE"
+  },
+  "seo": {
+    "title": "Matheus Batista — Software Engineer",
+    "description": "Backend-focused software engineer specializing in .NET, Node.js, APIs, integrations, and scalable systems."
   }
 }
