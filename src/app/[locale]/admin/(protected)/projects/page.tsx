@@ -1,5 +1,4 @@
 import { container } from "@/infrastructure/container";
-import { PageHead } from "@/presentation/components/admin/shell/PageHead";
 import { ProjectsView } from "@/presentation/components/admin/projects/ProjectsView";
 import {
   attachProjectImageAction,
@@ -18,10 +17,6 @@ export default async function AdminProjectsListPage() {
 
   return (
     <div className="admin-dashboard">
-      <PageHead
-        title="Projects"
-        lead="Manage portfolio entries — name, description, gallery and ordering. Drafts stay hidden from the public site."
-      />
       <ProjectsView
         projects={sorted}
         actions={{
