@@ -127,24 +127,46 @@
       "lastName": "Last name",
       "subtitle": "Subtitle",
       "tagline": "Tagline",
-      "available": "Available",
+      "available": "Availability",
       "availabilityPre": "Available for",
       "availabilityA": "First word",
       "availabilityB": "Second word",
-      "saved": "Hero saved"
+      "showAvailability": "Show availability badge",
+      "saved": "Hero saved",
+      "savedMessage": "Changes are live on your portfolio.",
+      "help": {
+        "greeting": "Script word + label shown above the name.",
+        "name": "Displayed stacked on the hero.",
+        "subtitle": "Sentence under the name. Per language.",
+        "tagline": "Short editorial line (right column).",
+        "availability": "Green-dot status badge."
+      }
     },
     "about": {
-      "title": "About",
-      "lead": "Your story.",
+      "title": "About section",
+      "lead": "Personal bio. Edit each language independently.",
       "label": "Label",
       "body": "Body",
       "currently": "Currently",
+      "profileFacts": "Profile facts",
       "role": "Role",
       "location": "Location",
       "years": "Years of experience",
+      "help": {
+        "label": "Section heading (e.g. ABOUT ME).",
+        "body": "Bio paragraph displayed in the about section.",
+        "currently": "What you are doing now (1-2 sentences).",
+        "profileFacts": "Static facts shown on the sidebar."
+      },
       "improve": "Improve copy",
       "translateAll": "Translate to all langs",
-      "saved": "About saved"
+      "improving": "Improving...",
+      "translating": "Translating...",
+      "improveDone": "Body improved",
+      "improveDoneMessage": "Locale: {locale}",
+      "translateDone": "Translated to all langs",
+      "saved": "About saved",
+      "savedMessage": "Your bio is updated."
     },
     "projects": {
       "title": "Projects",

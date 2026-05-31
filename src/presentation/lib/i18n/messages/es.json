@@ -127,24 +127,46 @@
       "lastName": "Apellido",
       "subtitle": "Subtítulo",
       "tagline": "Tagline",
-      "available": "Disponible",
+      "available": "Disponibilidad",
       "availabilityPre": "Disponible para",
       "availabilityA": "Primera palabra",
       "availabilityB": "Segunda palabra",
-      "saved": "Hero guardado"
+      "showAvailability": "Mostrar badge de disponibilidad",
+      "saved": "Hero guardado",
+      "savedMessage": "Los cambios están publicados en tu portafolio.",
+      "help": {
+        "greeting": "Palabra en script + etiqueta mostrada sobre el nombre.",
+        "name": "Mostrado apilado en el hero.",
+        "subtitle": "Frase bajo el nombre. Por idioma.",
+        "tagline": "Línea editorial breve (columna derecha).",
+        "availability": "Badge de estado con punto verde."
+      }
     },
     "about": {
-      "title": "Acerca",
-      "lead": "Tu historia.",
+      "title": "Sección Acerca",
+      "lead": "Biografía personal. Edita cada idioma de forma independiente.",
       "label": "Etiqueta",
       "body": "Cuerpo",
       "currently": "Actualmente",
+      "profileFacts": "Datos del perfil",
       "role": "Rol",
       "location": "Ubicación",
       "years": "Años de experiencia",
+      "help": {
+        "label": "Encabezado de la sección (ej.: ACERCA DE MÍ).",
+        "body": "Párrafo de biografía mostrado en la sección acerca.",
+        "currently": "Lo que estás haciendo ahora (1-2 frases).",
+        "profileFacts": "Datos fijos mostrados en la barra lateral."
+      },
       "improve": "Mejorar texto",
       "translateAll": "Traducir a todos los idiomas",
-      "saved": "Acerca guardado"
+      "improving": "Mejorando...",
+      "translating": "Traduciendo...",
+      "improveDone": "Texto mejorado",
+      "improveDoneMessage": "Idioma: {locale}",
+      "translateDone": "Traducido a todos los idiomas",
+      "saved": "Acerca guardado",
+      "savedMessage": "Tu biografía está actualizada."
     },
     "projects": {
       "title": "Proyectos",

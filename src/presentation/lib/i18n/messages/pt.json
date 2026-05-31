@@ -127,24 +127,46 @@
       "lastName": "Sobrenome",
       "subtitle": "Subtítulo",
       "tagline": "Tagline",
-      "available": "Disponível",
+      "available": "Disponibilidade",
       "availabilityPre": "Disponível para",
       "availabilityA": "Primeira palavra",
       "availabilityB": "Segunda palavra",
-      "saved": "Hero salvo"
+      "showAvailability": "Mostrar badge de disponibilidade",
+      "saved": "Hero salvo",
+      "savedMessage": "As alterações já estão no ar no seu portfolio.",
+      "help": {
+        "greeting": "Palavra em script + rótulo exibido acima do nome.",
+        "name": "Exibido empilhado no hero.",
+        "subtitle": "Frase sob o nome. Por idioma.",
+        "tagline": "Linha editorial curta (coluna da direita).",
+        "availability": "Badge de status com ponto verde."
+      }
     },
     "about": {
-      "title": "Sobre",
-      "lead": "Sua história.",
+      "title": "Seção Sobre",
+      "lead": "Biografia pessoal. Edite cada idioma de forma independente.",
       "label": "Rótulo",
       "body": "Corpo",
       "currently": "Atualmente",
+      "profileFacts": "Fatos do perfil",
       "role": "Cargo",
       "location": "Localização",
       "years": "Anos de experiência",
+      "help": {
+        "label": "Título da seção (ex.: SOBRE MIM).",
+        "body": "Parágrafo de biografia exibido na seção sobre.",
+        "currently": "O que você está fazendo agora (1-2 frases).",
+        "profileFacts": "Fatos fixos exibidos na barra lateral."
+      },
       "improve": "Melhorar texto",
       "translateAll": "Traduzir para todos os idiomas",
-      "saved": "Sobre salvo"
+      "improving": "Melhorando...",
+      "translating": "Traduzindo...",
+      "improveDone": "Texto melhorado",
+      "improveDoneMessage": "Idioma: {locale}",
+      "translateDone": "Traduzido para todos os idiomas",
+      "saved": "Sobre salvo",
+      "savedMessage": "Sua biografia foi atualizada."
     },
     "projects": {
       "title": "Projetos",
