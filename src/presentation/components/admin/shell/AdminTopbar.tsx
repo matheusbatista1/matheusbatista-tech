@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { AdminTopbarBreadcrumb } from "./AdminTopbarBreadcrumb";
+import { AdminMobileNavButton } from "./AdminMobileNav";
 
 export async function AdminTopbar({
   hasNotifications = false,
@@ -28,6 +29,7 @@ export async function AdminTopbar({
 
   return (
     <header className="admin-topbar" role="banner">
+      <AdminMobileNavButton label={tShell("title")} />
       <AdminTopbarBreadcrumb
         rootLabel={tShell("title")}
         dashboardLabel={tNav("dashboard")}
