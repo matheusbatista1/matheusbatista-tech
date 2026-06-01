@@ -10,6 +10,10 @@ export interface SkillPayload {
   name: string;
   key: string;
   color: string | null;
+  iconUrl: string | null;
+  iconScale: number | null;
+  iconX: number | null;
+  iconY: number | null;
 }
 
 export interface SkillActions {

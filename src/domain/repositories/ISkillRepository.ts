@@ -5,6 +5,10 @@ export interface SkillInput {
   key: string;
   category: SkillCategory;
   color: string | null;
+  iconUrl: string | null;
+  iconScale: number | null;
+  iconX: number | null;
+  iconY: number | null;
   order: number;
 }
 

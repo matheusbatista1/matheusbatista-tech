@@ -35,7 +35,18 @@ export function SkillChip({ skill, onOpen, onDelete }: SkillChipProps) {
       aria-label={`Edit ${skill.name}`}
     >
       <span className="sw" style={{ background: swatchBg, color: swatchFg }} aria-hidden="true">
-        {skill.key.toUpperCase()}
+        {skill.iconUrl ? (
+          <img
+            src={skill.iconUrl}
+            alt=""
+            className="sw-img"
+            style={{
+              transform: `translate(${skill.iconX ?? 0}px, ${skill.iconY ?? 0}px) scale(${skill.iconScale ?? 1})`,
+            }}
+          />
+        ) : (
+          skill.key.toUpperCase()
+        )}
       </span>
       <span className="name">{skill.name}</span>
       <button

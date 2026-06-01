@@ -8,5 +8,8 @@ export interface Skill {
   color: string | null;
   fg: string | null;
   iconUrl: string | null;
+  iconScale: number | null;
+  iconX: number | null;
+  iconY: number | null;
   order: number;
 }

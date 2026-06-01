@@ -28,17 +28,13 @@ const contactSchema = z.object({
 type ContactFormValues = z.infer<typeof contactSchema>;
 type FormState = "form" | "ok" | "err";
 
-const SUBJECT_PHRASES = [
-  "Freelance project",
-  "Senior backend role",
-  "Collaboration idea",
-  "Quick question",
-  "Just saying hi",
-];
-
 export function Contact({ socials }: ContactProps) {
   const t = useTranslations("contact");
   const tNav = useTranslations("nav");
+  const rawSuggestions = t.raw("subjectSuggestions");
+  const subjectPhrases: string[] = Array.isArray(rawSuggestions)
+    ? rawSuggestions.filter((p): p is string => typeof p === "string")
+    : [];
   const [state, setState] = useState<FormState>("form");
   const [submitting, setSubmitting] = useState(false);
   const [retryHint, setRetryHint] = useState(false);
@@ -200,7 +196,7 @@ export function Contact({ socials }: ContactProps) {
                       />
                       {!subjectValue && (
                         <div className="cf-subject-ph" aria-hidden="true">
-                          <Typewriter phrases={SUBJECT_PHRASES} />
+                          <Typewriter phrases={subjectPhrases} />
                         </div>
                       )}
                     </div>

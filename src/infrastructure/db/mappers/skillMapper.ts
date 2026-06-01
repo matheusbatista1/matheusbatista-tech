@@ -20,6 +20,9 @@ export function toSkill(row: PrismaSkill): Skill {
     color: row.color,
     fg: row.fg,
     iconUrl: row.iconUrl,
+    iconScale: row.iconScale,
+    iconX: row.iconX,
+    iconY: row.iconY,
     order: row.order,
   };
 }
