@@ -31,13 +31,24 @@ function SkillCard({ skill }: { skill: Skill }) {
     el.style.setProperty("--my", `${e.clientY - rect.top}px`);
   };
 
+  const abbreviation = skill.key.toUpperCase();
+  const transform = `translate(${skill.iconX ?? 0}px, ${skill.iconY ?? 0}px) scale(${skill.iconScale ?? 1})`;
+
   return (
     <div className="skill-card" ref={ref} onPointerMove={onPointerMove}>
-      <span className="sw" style={{ background: skill.color ?? "#1f1f24" }}>
-        {skill.key}
-      </span>
+      {skill.iconUrl ? (
+        <span className="sw sw-img" style={{ background: skill.color ?? "#1f1f24" }}>
+          <img src={skill.iconUrl} alt="" style={{ transform }} />
+        </span>
+      ) : (
+        <span className="sw" style={{ background: skill.color ?? "#1f1f24" }}>
+          {abbreviation}
+        </span>
+      )}
       <div className="info">
-        <div className="nm">{skill.name}</div>
+        <div className="nm" title={skill.name}>
+          {abbreviation}
+        </div>
         <div className="cat">{skill.category}</div>
       </div>
     </div>

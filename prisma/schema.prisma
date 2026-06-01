@@ -35,14 +35,17 @@ model Project {
 }
 
 model Skill {
-  id       String @id @default(cuid())
-  name     String
-  key      String @unique
-  category String // frontend | backend | database | devops | tools
-  color    String?
-  fg       String?
-  iconUrl  String?
-  order    Int    @default(0)
+  id        String  @id @default(cuid())
+  name      String
+  key       String  @unique
+  category  String // frontend | backend | database | devops | tools
+  color     String?
+  fg        String?
+  iconUrl   String?
+  iconScale Float?  @default(1.0)
+  iconX     Float?  @default(0)
+  iconY     Float?  @default(0)
+  order     Int     @default(0)
 
   @@index([category, order])
 }

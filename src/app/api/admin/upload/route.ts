@@ -6,8 +6,8 @@ import { getHashedIp } from "@/presentation/lib/ip";
 export const runtime = "nodejs";
 
 const MAX_BYTES = 5 * 1024 * 1024;
-const ALLOWED_SCOPES = new Set(["project", "og", "misc"] as const);
-type Scope = "project" | "og" | "misc";
+const ALLOWED_SCOPES = new Set(["project", "og", "misc", "skill-icon"] as const);
+type Scope = "project" | "og" | "misc" | "skill-icon";
 
 function sanitizeFilename(name: string): string {
   const trimmed = name.trim().toLowerCase();

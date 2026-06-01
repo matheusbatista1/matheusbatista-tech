@@ -11,6 +11,10 @@ function toPrismaData(input: SkillInput) {
     key: input.key,
     category: input.category,
     color: input.color,
+    iconUrl: input.iconUrl,
+    iconScale: input.iconScale,
+    iconX: input.iconX,
+    iconY: input.iconY,
     order: input.order,
   };
 }

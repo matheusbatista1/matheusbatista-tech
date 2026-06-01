@@ -17,6 +17,7 @@ import { ColorField } from "@/presentation/components/admin/ui/ColorField";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 
 import type { SkillActionResult, SkillActions, SkillPayload } from "./types";
+import { IconEditor, type IconEditorValue } from "./IconEditor";
 
 export interface SkillFormValues {
   name: string;
@@ -55,6 +56,12 @@ export const SkillForm = forwardRef<SkillFormHandle, SkillFormProps>(function Sk
   const { toast } = useToast();
   const [, startSubmit] = useTransition();
   const [colorValue, setColorValue] = useState<string>(skill?.color ?? DEFAULT_COLOR);
+  const [iconState, setIconState] = useState<IconEditorValue>({
+    iconUrl: skill?.iconUrl ?? null,
+    iconScale: skill?.iconScale ?? 1,
+    iconX: skill?.iconX ?? 0,
+    iconY: skill?.iconY ?? 0,
+  });
 
   const defaults = useMemo(() => defaultsFor(skill), [skill]);
 
@@ -90,6 +97,10 @@ export const SkillForm = forwardRef<SkillFormHandle, SkillFormProps>(function Sk
       name: trimmedName,
       key: (values.key ?? "").trim(),
       color: colorValue && colorValue.trim() ? colorValue.trim() : null,
+      iconUrl: iconState.iconUrl,
+      iconScale: iconState.iconUrl ? iconState.iconScale : null,
+      iconX: iconState.iconUrl ? iconState.iconX : null,
+      iconY: iconState.iconUrl ? iconState.iconY : null,
     };
 
     onSubmittingChange(true);
@@ -107,6 +118,19 @@ export const SkillForm = forwardRef<SkillFormHandle, SkillFormProps>(function Sk
 
   function onKeyChange(event: ChangeEvent<HTMLInputElement>) {
     void keyRegister.onChange(event);
+  }
+
+  async function uploadIcon(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("scope", "skill-icon");
+    const res = await fetch("/api/admin/upload", { method: "POST", body: formData });
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(data?.error ?? "Upload failed");
+    }
+    const data = (await res.json()) as { url: string };
+    return data.url;
   }
 
   return (
@@ -131,6 +155,13 @@ export const SkillForm = forwardRef<SkillFormHandle, SkillFormProps>(function Sk
         value={colorValue}
         onChange={setColorValue}
         previewKey={watchedKey || skill?.key || ""}
+      />
+      <IconEditor
+        value={iconState}
+        swatchColor={colorValue}
+        fallbackKey={watchedKey || skill?.key || ""}
+        onChange={setIconState}
+        onUpload={uploadIcon}
       />
     </form>
   );
