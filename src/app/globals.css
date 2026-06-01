@@ -2903,9 +2903,12 @@ a {
   position: fixed;
   inset: 0;
   z-index: 800;
-  display: grid;
-  place-items: center;
-  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+  overflow-y: auto;
   background: radial-gradient(ellipse 70% 50% at 50% 40%, #14141a 0%, #08080a 70%);
 }
 .persona-gate.leaving {
@@ -4078,12 +4081,24 @@ a {
     top: auto;
     bottom: 76px;
   }
+  .persona-gate {
+    justify-content: flex-start;
+    padding: 24px 20px;
+  }
   .pg-grid {
     grid-template-columns: 1fr;
     gap: 10px;
   }
   .pg-card {
     padding: 18px;
+  }
+  .showcase {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .sw-list {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
   .contact-shell {
     grid-template-columns: 1fr;
@@ -4201,6 +4216,47 @@ a {
   .cf-foot {
     padding-left: 16px;
     padding-right: 16px;
+  }
+  .persona-gate {
+    padding: 20px 14px;
+  }
+  .pg-mark {
+    margin-bottom: 18px;
+  }
+  .pg-sub {
+    margin-bottom: 24px;
+  }
+  .pg-card {
+    padding: 14px;
+  }
+  .persona-bar {
+    bottom: 14px;
+  }
+  .persona-trigger {
+    font-size: 11.5px;
+    padding: 6px 11px;
+    gap: 7px;
+  }
+  .persona-menu {
+    width: min(280px, calc(100vw - 24px));
+  }
+  .ai-launcher {
+    bottom: 14px;
+    left: 14px;
+    padding: 7px 12px 7px 9px;
+    font-size: 12px;
+    gap: 8px;
+  }
+  .ai-launcher kbd {
+    display: none;
+  }
+  .ai-launcher-orb {
+    width: 22px;
+    height: 22px;
+  }
+  .ai-launcher-orb svg {
+    width: 13px;
+    height: 13px;
   }
 }
 
