@@ -486,6 +486,13 @@
     "emailPh": "tu@email.com",
     "namePh": "Tu nombre",
     "subjectPh": "¿De qué se trata?",
+    "subjectSuggestions": [
+      "Proyecto freelance",
+      "Puesto sénior backend",
+      "Idea de colaboración",
+      "Pregunta rápida",
+      "Solo saludando"
+    ],
     "messagePh": "Escribe tu mensaje…",
     "hint": "Presiona ⏎ para enviar",
     "send": "Enviar mensaje",

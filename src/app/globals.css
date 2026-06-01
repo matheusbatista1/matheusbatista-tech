@@ -1017,6 +1017,18 @@ a {
   position: relative;
   z-index: 1;
 }
+.skill-card .sw.sw-img {
+  overflow: hidden;
+  padding: 0;
+}
+.skill-card .sw.sw-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+  transition: transform 200ms ease;
+  pointer-events: none;
+}
 .skill-card .info {
   flex: 1;
   min-width: 0;
@@ -1024,10 +1036,15 @@ a {
   z-index: 1;
 }
 .skill-card .nm {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--color-text);
-  letter-spacing: -0.005em;
+  letter-spacing: 0.04em;
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 .skill-card .cat {
   font-family: var(--font-mono);

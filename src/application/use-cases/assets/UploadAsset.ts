@@ -2,7 +2,7 @@ import type { IBlobStorage, BlobPutResult } from "@/domain/services/IBlobStorage
 import type { LogActivity } from "../activity/LogActivity";
 
 export interface UploadAssetInput {
-  scope: "project" | "cv" | "og" | "misc";
+  scope: "project" | "cv" | "og" | "misc" | "skill-icon";
   pathname: string;
   body: Blob | ArrayBuffer | Buffer | ReadableStream;
   contentType?: string;

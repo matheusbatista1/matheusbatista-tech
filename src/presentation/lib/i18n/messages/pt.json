@@ -486,6 +486,13 @@
     "emailPh": "seu@email.com",
     "namePh": "Seu nome",
     "subjectPh": "Sobre o que é?",
+    "subjectSuggestions": [
+      "Projeto freelance",
+      "Vaga sênior de backend",
+      "Ideia de colaboração",
+      "Pergunta rápida",
+      "Só dando um oi"
+    ],
     "messagePh": "Escreva sua mensagem…",
     "hint": "Pressione ⏎ para enviar",
     "send": "Enviar mensagem",

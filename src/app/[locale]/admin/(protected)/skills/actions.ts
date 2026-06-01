@@ -13,6 +13,10 @@ const payloadSchema = z.object({
   name: z.string().min(1).max(80),
   key: z.string().max(4),
   color: z.string().nullable(),
+  iconUrl: z.string().url().max(2048).nullable(),
+  iconScale: z.number().min(0.3).max(2.5).nullable(),
+  iconX: z.number().min(-100).max(100).nullable(),
+  iconY: z.number().min(-100).max(100).nullable(),
 });
 
 export interface SkillActionResult {
@@ -25,6 +29,10 @@ export interface SkillPayload {
   name: string;
   key: string;
   color: string | null;
+  iconUrl: string | null;
+  iconScale: number | null;
+  iconX: number | null;
+  iconY: number | null;
 }
 
 interface ActiveSession {
@@ -43,10 +51,15 @@ function bumpRevalidation() {
 }
 
 function normalizePayload(raw: SkillPayload): SkillPayload {
+  const hasIcon = raw.iconUrl != null && raw.iconUrl.trim().length > 0;
   return {
     name: raw.name.trim(),
     key: raw.key.trim(),
     color: raw.color && raw.color.trim() ? raw.color.trim() : null,
+    iconUrl: hasIcon ? (raw.iconUrl as string).trim() : null,
+    iconScale: hasIcon ? (raw.iconScale ?? 1) : null,
+    iconX: hasIcon ? (raw.iconX ?? 0) : null,
+    iconY: hasIcon ? (raw.iconY ?? 0) : null,
   };
 }
 
@@ -72,6 +85,10 @@ export async function createSkillAction(
     key: parsed.data.key,
     category,
     color: parsed.data.color,
+    iconUrl: parsed.data.iconUrl,
+    iconScale: parsed.data.iconScale,
+    iconX: parsed.data.iconX,
+    iconY: parsed.data.iconY,
     order,
   };
 
@@ -109,6 +126,10 @@ export async function updateSkillAction(id: string, raw: SkillPayload): Promise<
     key: parsed.data.key,
     category: existing.category,
     color: parsed.data.color,
+    iconUrl: parsed.data.iconUrl,
+    iconScale: parsed.data.iconScale,
+    iconX: parsed.data.iconX,
+    iconY: parsed.data.iconY,
     order: existing.order,
   };
 
