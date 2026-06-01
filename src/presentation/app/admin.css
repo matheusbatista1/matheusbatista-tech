@@ -360,13 +360,57 @@
   box-shadow: 0 0 0 1.5px var(--admin-bg);
 }
 
+.admin-topbar-menu {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--admin-text);
+  transition:
+    background 140ms,
+    border-color 140ms;
+}
+.admin-topbar-menu:hover {
+  background: var(--admin-surface);
+  border-color: var(--admin-border-soft);
+}
+
+.admin-scrim {
+  display: none;
+}
+
 @media (max-width: 980px) {
   .admin-topbar {
     padding: 0 18px;
+    gap: 8px;
   }
   .admin-topbar-search,
   .admin-topbar-breadcrumb .crumb-dim {
     display: none;
+  }
+  .admin-topbar-menu {
+    display: inline-flex;
+  }
+  .admin-scrim {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    background: rgba(0, 0, 0, 0.5);
+    animation: admin-scrim-fade 200ms ease;
+  }
+  @keyframes admin-scrim-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 
