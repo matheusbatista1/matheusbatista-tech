@@ -169,6 +169,13 @@ export function PersonaProvider({ aiEnabled, children }: PersonaProviderProps) {
   );
 
   const skipGate = useCallback(() => {
+    setPersonaState("default");
+    setCopy(null);
+    try {
+      window.localStorage.setItem(PERSONA_KEY, "default");
+    } catch {
+      /* noop */
+    }
     setPhase("ready");
   }, []);
 
