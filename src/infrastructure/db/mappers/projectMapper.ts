@@ -14,6 +14,10 @@ const VALID_PILLS: readonly ProjectPill[] = [
 type PrismaProjectWithGallery = PrismaProject & {
   coverImageUrl?: string | null;
   gallery?: PrismaProjectImage[];
+  employerName?: string | null;
+  employerUrl?: string | null;
+  clientName?: string | null;
+  clientUrl?: string | null;
 };
 
 function toGalleryImage(row: PrismaProjectImage): ProjectImage {
@@ -56,6 +60,10 @@ export function toProject(row: PrismaProjectWithGallery): Project {
     images: deriveLegacyImages(row),
     coverImageUrl: row.coverImageUrl ?? null,
     gallery: row.gallery?.map(toGalleryImage),
+    employerName: row.employerName ?? null,
+    employerUrl: row.employerUrl ?? null,
+    clientName: row.clientName ?? null,
+    clientUrl: row.clientUrl ?? null,
     order: row.order,
     deployed: row.deployed,
     visible: row.visible,

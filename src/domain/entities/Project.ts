@@ -20,6 +20,10 @@ export interface Project {
   images: ProjectImageLegacy[];
   coverImageUrl?: string | null;
   gallery?: ProjectImage[];
+  employerName: string | null;
+  employerUrl: string | null;
+  clientName: string | null;
+  clientUrl: string | null;
   order: number;
   deployed: boolean;
   visible: boolean;
