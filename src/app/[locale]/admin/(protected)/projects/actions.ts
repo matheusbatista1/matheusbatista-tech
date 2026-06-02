@@ -19,6 +19,10 @@ const projectSchema = z.object({
   description: localizedSchema,
   pill: z.string().max(40).nullable(),
   tags: z.array(z.string().min(1).max(40)).max(20),
+  employerName: z.string().max(120).nullable(),
+  employerUrl: z.string().max(300).nullable(),
+  clientName: z.string().max(120).nullable(),
+  clientUrl: z.string().max(300).nullable(),
   deployed: z.boolean(),
   visible: z.boolean(),
 });

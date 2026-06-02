@@ -11,6 +11,10 @@ export interface ProjectPayload {
   description: { en: string; pt: string; es: string };
   pill: string | null;
   tags: string[];
+  employerName: string | null;
+  employerUrl: string | null;
+  clientName: string | null;
+  clientUrl: string | null;
   deployed: boolean;
   visible: boolean;
 }

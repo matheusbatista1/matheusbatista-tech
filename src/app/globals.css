@@ -1372,6 +1372,64 @@ a {
   margin: 4px 0 6px;
   color: var(--color-text);
 }
+
+.workplace-badge {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 14px;
+}
+.workplace-badge .wb-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.workplace-badge .wb-sep {
+  color: var(--color-text-dim);
+  font-size: 12px;
+  opacity: 0.6;
+}
+.workplace-badge .wb-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11.5px;
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+  color: var(--color-text-mute);
+  padding: 4px 10px;
+  border: 1px solid var(--line-soft);
+  border-radius: 9999px;
+  background: var(--surface);
+  text-decoration: none;
+  transition:
+    border-color 160ms,
+    color 160ms,
+    background 160ms;
+}
+a.workplace-badge .wb-pill,
+.workplace-badge a.wb-pill {
+  cursor: pointer;
+}
+.workplace-badge a.wb-pill:hover {
+  border-color: var(--line-strong);
+  color: var(--color-text);
+  background: var(--surface-2);
+}
+.workplace-badge .wb-pill.wb-client {
+  color: var(--color-text);
+  border-color: var(--line);
+}
+.workplace-badge .wb-ico {
+  width: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+.workplace-badge .wb-text {
+  white-space: nowrap;
+}
+
 .meta-desc {
   font-size: 16px;
   line-height: 1.65;

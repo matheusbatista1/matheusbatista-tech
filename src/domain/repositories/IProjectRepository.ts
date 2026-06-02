@@ -10,6 +10,10 @@ export interface ProjectInput {
   pill: ProjectPill | null;
   tags: string[];
   images: ProjectImageLegacy[];
+  employerName: string | null;
+  employerUrl: string | null;
+  clientName: string | null;
+  clientUrl: string | null;
   order: number;
   deployed: boolean;
   visible: boolean;
