@@ -28,6 +28,21 @@ function toGalleryImage(row: PrismaProjectImage): ProjectImage {
   };
 }
 
+function deriveLegacyImages(row: PrismaProjectWithGallery): ProjectImageLegacy[] {
+  if (row.gallery && row.gallery.length > 0) {
+    const sorted = [...row.gallery].sort((a, b) => a.order - b.order);
+    if (row.coverImageUrl) {
+      const idx = sorted.findIndex((g) => g.url === row.coverImageUrl);
+      if (idx > 0) {
+        const [cover] = sorted.splice(idx, 1);
+        if (cover) sorted.unshift(cover);
+      }
+    }
+    return sorted.map((g) => ({ src: g.url, alt: g.alt ?? "" }));
+  }
+  return (row.images as unknown as ProjectImageLegacy[]) ?? [];
+}
+
 export function toProject(row: PrismaProjectWithGallery): Project {
   return {
     id: row.id,
@@ -38,7 +53,7 @@ export function toProject(row: PrismaProjectWithGallery): Project {
     description: row.description as unknown as LocalizedText,
     pill: VALID_PILLS.includes(row.pill as ProjectPill) ? (row.pill as ProjectPill) : null,
     tags: row.tags,
-    images: row.images as unknown as ProjectImageLegacy[],
+    images: deriveLegacyImages(row),
     coverImageUrl: row.coverImageUrl ?? null,
     gallery: row.gallery?.map(toGalleryImage),
     order: row.order,
