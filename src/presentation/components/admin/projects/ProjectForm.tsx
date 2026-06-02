@@ -23,6 +23,10 @@ export interface ProjectFormValues {
   liveUrl: string;
   pill: string;
   tagsCsv: string;
+  employerName: string;
+  employerUrl: string;
+  clientName: string;
+  clientUrl: string;
   deployed: boolean;
   description: { en: string; pt: string; es: string };
 }
@@ -46,6 +50,10 @@ function defaultsFor(project?: Project): ProjectFormValues {
     liveUrl: project?.liveUrl ?? "",
     pill: project?.pill ?? "",
     tagsCsv: project?.tags.join(", ") ?? "",
+    employerName: project?.employerName ?? "",
+    employerUrl: project?.employerUrl ?? "",
+    clientName: project?.clientName ?? "",
+    clientUrl: project?.clientUrl ?? "",
     deployed: project?.deployed ?? false,
     description: {
       en: project?.description.en ?? "",
@@ -99,6 +107,10 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
       description: values.description,
       pill: values.pill.trim() || null,
       tags,
+      employerName: values.employerName.trim() || null,
+      employerUrl: values.employerUrl.trim() || null,
+      clientName: values.clientName.trim() || null,
+      clientUrl: values.clientUrl.trim() || null,
       deployed: values.deployed,
       visible: true,
     };
@@ -334,6 +346,39 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
         </div>
         <div className="admin-form-row-field">
           <Input placeholder="FLAGSHIP" {...register("pill")} maxLength={40} />
+        </div>
+      </div>
+
+      {/* Employer */}
+      <div className="admin-form-row">
+        <div className="admin-form-row-label-col">
+          <span className="label-text">Employer</span>
+          <div className="help">
+            Company that hired me for this project. Leave blank for personal/freelance work.
+          </div>
+        </div>
+        <div className="admin-form-row-field">
+          <Input placeholder="Cubos Tecnologia" {...register("employerName")} maxLength={120} />
+          <Input placeholder="https://cubos.io/" {...register("employerUrl")} maxLength={300} />
+        </div>
+      </div>
+
+      {/* Client */}
+      <div className="admin-form-row">
+        <div className="admin-form-row-label-col">
+          <span className="label-text">Client</span>
+          <div className="help">
+            Separate company where I was outsourced (e.g., Dietbox under Cubos). Leave blank if the
+            project belongs to the employer itself.
+          </div>
+        </div>
+        <div className="admin-form-row-field">
+          <Input placeholder="Dietbox" {...register("clientName")} maxLength={120} />
+          <Input
+            placeholder="https://dietbox.me/pt-BR"
+            {...register("clientUrl")}
+            maxLength={300}
+          />
         </div>
       </div>
 

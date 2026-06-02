@@ -22,6 +22,11 @@ model Project {
   tags          String[]
   images        Json     // { src, alt }[]
   coverImageUrl String?
+  // Workplace context
+  employerName  String?  // who employed me (e.g., "Cubos Tecnologia", "Linked Tech", null for personal/freelance)
+  employerUrl   String?
+  clientName    String?  // when employer outsourced me to a client company (e.g., "Dietbox" under Cubos)
+  clientUrl     String?
   order         Int      @default(0)
   deployed      Boolean  @default(false)
   visible       Boolean  @default(true)

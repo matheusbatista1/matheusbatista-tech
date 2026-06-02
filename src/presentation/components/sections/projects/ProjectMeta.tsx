@@ -6,6 +6,7 @@ import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
 import { AIMark, ArrowUpRightIcon } from "@/presentation/components/icons/Icons";
 import { usePersona } from "@/presentation/providers/PersonaProvider";
+import { WorkplaceBadge } from "./WorkplaceBadge";
 
 interface ProjectMetaProps {
   project: Project;
@@ -40,6 +41,8 @@ export function ProjectMeta({ project, locale, matchReason }: ProjectMetaProps) 
       </div>
 
       <h3 className="meta-name">{project.name}</h3>
+
+      <WorkplaceBadge project={project} />
 
       {showPersona ? (
         <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
