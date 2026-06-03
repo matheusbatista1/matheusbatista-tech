@@ -1,6 +1,6 @@
 "use client";
 
-import { Languages, RotateCcw, Save, Sparkles } from "lucide-react";
+import { RotateCcw, Save, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useMemo, useState, useTransition } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
@@ -8,12 +8,13 @@ import { useForm, type SubmitHandler } from "react-hook-form";
 import "@/presentation/components/admin/forms/forms.css";
 
 import type { AboutContent } from "@/domain/entities/AboutContent";
-import { LOCALES, type Locale } from "@/domain/value-objects/Locale";
+import { type Locale } from "@/domain/value-objects/Locale";
 import { AIButton } from "@/presentation/components/admin/ai/AIButton";
 import { Button } from "@/presentation/components/admin/ui/Button";
 import { Input } from "@/presentation/components/admin/ui/Input";
 import { LocaleSwitcher } from "@/presentation/components/admin/ui/LocaleSwitcher";
 import { Textarea } from "@/presentation/components/admin/ui/Textarea";
+import { TranslateAllButton } from "@/presentation/components/admin/ui/TranslateAllButton";
 import { PageHead } from "@/presentation/components/admin/shell/PageHead";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 
@@ -121,37 +122,6 @@ export function AboutForm({ about }: AboutFormProps) {
     });
   }, [activeLocale, getValues, setValue, toast, t]);
 
-  const runTranslateAll = useCallback(async () => {
-    const current = getValues(`body.${activeLocale}` as const);
-    if (!current || current.trim().length === 0) {
-      toast({ title: "Nothing to translate", message: "Write some copy first.", kind: "info" });
-      return;
-    }
-
-    const targets = LOCALES.filter((l) => l !== activeLocale);
-
-    const response = await fetch("/api/ai/translate", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ text: current, from: activeLocale, targets }),
-    });
-
-    if (!response.ok) {
-      const data = (await response.json().catch(() => ({}))) as { error?: string };
-      throw new Error(data.error ?? `Request failed (${response.status})`);
-    }
-
-    const data = (await response.json()) as { translated: Record<string, string> };
-    for (const target of targets) {
-      const value = data.translated?.[target];
-      if (typeof value === "string" && value.length > 0) {
-        setValue(`body.${target}` as const, value, { shouldDirty: true });
-      }
-    }
-
-    toast({ title: t("translateDone"), kind: "success" });
-  }, [activeLocale, getValues, setValue, toast, t]);
-
   return (
     <form className="admin-form" onSubmit={handleSubmit(onSubmit)} noValidate>
       <PageHead
@@ -201,11 +171,12 @@ export function AboutForm({ about }: AboutFormProps) {
               icon={<Sparkles size={14} />}
               title={t("improve")}
             />
-            <AIButton
-              onRun={runTranslateAll}
-              label={t("translateAll")}
-              icon={<Languages size={14} />}
-              title={t("translateAll")}
+            <TranslateAllButton
+              sourceLocale={activeLocale}
+              getSourceText={() => getValues(`body.${activeLocale}` as const)}
+              onTranslated={(target, value) =>
+                setValue(`body.${target}` as const, value, { shouldDirty: true })
+              }
             />
           </div>
         </div>

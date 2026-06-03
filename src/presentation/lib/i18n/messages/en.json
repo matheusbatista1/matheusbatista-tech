@@ -1,5 +1,7 @@
 {
   "admin": {
+    "translateAll": "Translate to all langs",
+    "translateDone": "Translated to all langs",
     "shell": {
       "title": "Admin",
       "search": "Search...",

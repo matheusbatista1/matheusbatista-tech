@@ -7,6 +7,13 @@
   border-bottom: 1px solid var(--admin-border, var(--admin-line, rgba(255, 255, 255, 0.08)));
 }
 
+.admin-form-ai-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
 .admin-form-row:last-child {
   border-bottom: 0;
 }

@@ -12,6 +12,7 @@ import { Input } from "@/presentation/components/admin/ui/Input";
 import { Textarea } from "@/presentation/components/admin/ui/Textarea";
 import { Toggle } from "@/presentation/components/admin/ui/Toggle";
 import { LocaleSwitcher } from "@/presentation/components/admin/ui/LocaleSwitcher";
+import { TranslateAllButton } from "@/presentation/components/admin/ui/TranslateAllButton";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 
 import { GalleryEditor } from "./GalleryEditor";
@@ -319,6 +320,13 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
               onRun={runGenerateDescription}
               label={t("admin.projects.generate")}
               size="sm"
+            />
+            <TranslateAllButton
+              sourceLocale={descLocale}
+              getSourceText={() => getValues(`description.${descLocale}` as const)}
+              onTranslated={(target, value) =>
+                setValue(`description.${target}` as const, value, { shouldDirty: true })
+              }
             />
           </div>
         </div>
