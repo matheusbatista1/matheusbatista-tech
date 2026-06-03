@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import type { SocialLink } from "@/domain/entities/SocialLink";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { useMenu } from "@/presentation/providers/MenuProvider";
+import { useSmoothScrollTo } from "@/presentation/hooks/useSmoothScrollTo";
 import { ArrowUpRightIcon, CloseIcon, DownloadIcon } from "@/presentation/components/icons/Icons";
 import { usePathname, useRouter } from "@/presentation/lib/i18n/routing";
 
@@ -48,17 +49,11 @@ export function FullscreenMenu({ socials }: FullscreenMenuProps) {
     };
   }, [isOpen, close]);
 
+  const scrollTo = useSmoothScrollTo();
+
   const navigate = (sectionId: string) => {
     close();
-    if (sectionId === "top") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-      return;
-    }
-    const el = document.getElementById(sectionId);
-    if (el) {
-      const top = el.getBoundingClientRect().top + window.scrollY - 40;
-      window.scrollTo({ top, behavior: "smooth" });
-    }
+    scrollTo(sectionId);
   };
 
   const switchLocale = (next: Locale) => {

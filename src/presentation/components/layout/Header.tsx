@@ -1,8 +1,9 @@
 "use client";
 
 import { useLocale } from "next-intl";
-import { useTransition } from "react";
+import { useTransition, type MouseEvent } from "react";
 import { useScrolled } from "@/presentation/hooks/useScrolled";
+import { useSmoothScrollTo } from "@/presentation/hooks/useSmoothScrollTo";
 import { useTheme } from "@/presentation/providers/ThemeProvider";
 import { useMenu } from "@/presentation/providers/MenuProvider";
 import { BrandMark } from "@/presentation/components/icons/Icons";
@@ -20,9 +21,16 @@ export function Header() {
   const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
 
+  const scrollTo = useSmoothScrollTo();
+
   const switchLocale = (next: Locale) => {
     if (next === currentLocale) return;
     startTransition(() => router.replace(pathname, { locale: next }));
+  };
+
+  const onBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    scrollTo("top");
   };
 
   return (
@@ -46,7 +54,7 @@ export function Header() {
         ))}
       </div>
 
-      <a className="brand" href="#top" aria-label="Home">
+      <a className="brand" href="#top" aria-label="Home" onClick={onBrandClick}>
         <BrandMark />
       </a>
 
