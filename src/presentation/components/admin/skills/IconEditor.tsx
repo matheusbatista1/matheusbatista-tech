@@ -177,37 +177,41 @@ export function IconEditor({
         {helpText ? <span className="admin-icon-editor-help">{helpText}</span> : null}
       </div>
       <div className="admin-icon-editor-body">
-        <div
-          ref={stageRef}
-          className={`admin-icon-editor-stage${hasIcon ? "has-icon" : ""}${isOver ? "is-over" : ""}${dragging ? "is-dragging" : ""}`}
-          style={{ background: stageBg }}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
-          onDragLeave={onDragLeave}
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={endDrag}
-          onPointerCancel={endDrag}
-        >
-          {hasIcon ? (
-            <img
-              src={value.iconUrl ?? ""}
-              alt=""
-              className="admin-icon-editor-img"
-              style={{ transform }}
-              draggable={false}
-            />
-          ) : (
-            <button
-              type="button"
-              className="admin-icon-editor-dropbtn"
-              onClick={() => inputRef.current?.click()}
-              disabled={uploading}
-            >
-              <ImagePlus size={18} aria-hidden="true" />
-              <span>{uploading ? "Uploading…" : fallbackKey.toUpperCase() || "ICON"}</span>
-            </button>
-          )}
+        <div className="admin-icon-editor-stage-wrap">
+          <div
+            ref={stageRef}
+            className={`admin-icon-editor-stage${hasIcon ? "has-icon" : ""}${isOver ? "is-over" : ""}${dragging ? "is-dragging" : ""}`}
+            style={{ background: stageBg }}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            onDragLeave={onDragLeave}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+          >
+            {hasIcon ? (
+              <img
+                src={value.iconUrl ?? ""}
+                alt=""
+                className="admin-icon-editor-img"
+                style={{ transform }}
+                draggable={false}
+              />
+            ) : (
+              <button
+                type="button"
+                className="admin-icon-editor-dropbtn"
+                onClick={() => inputRef.current?.click()}
+                disabled={uploading}
+              >
+                <ImagePlus size={18} aria-hidden="true" />
+                <span>{uploading ? "Uploading…" : fallbackKey.toUpperCase() || "ICON"}</span>
+              </button>
+            )}
+            <div className="admin-icon-editor-frame" aria-hidden="true" />
+          </div>
+          <span className="admin-icon-editor-caption">Preview = chip on the live site</span>
         </div>
 
         <div className="admin-icon-editor-controls">
