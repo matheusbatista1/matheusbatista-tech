@@ -290,3 +290,20 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Admin notifications
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Per-(email,source) "read up to" marker for the admin notification bell.
+// One row per admin user per source — updated when the user opens the
+// notifications panel. Unread counts compare `createdAt > lastReadAt`.
+model AdminReadMarker {
+  id         String   @id @default(cuid())
+  email      String
+  source     String // "message" | "cv" | "error"
+  lastReadAt DateTime @default(now())
+
+  @@unique([email, source])
+  @@index([email])
+}
