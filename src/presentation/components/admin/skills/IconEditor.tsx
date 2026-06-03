@@ -180,7 +180,14 @@ export function IconEditor({
         <div className="admin-icon-editor-stage-wrap">
           <div
             ref={stageRef}
-            className={`admin-icon-editor-stage${hasIcon ? "has-icon" : ""}${isOver ? "is-over" : ""}${dragging ? "is-dragging" : ""}`}
+            className={[
+              "admin-icon-editor-stage",
+              hasIcon ? "has-icon" : "",
+              isOver ? "is-over" : "",
+              dragging ? "is-dragging" : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
             style={{ background: stageBg }}
             onDrop={onDrop}
             onDragOver={onDragOver}
