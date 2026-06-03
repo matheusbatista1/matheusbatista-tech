@@ -1072,16 +1072,6 @@ a {
 
 .showcase-wrap {
   position: relative;
-  /* FIXED height (not min-) so layout is fully stable across projects:
-     the side arrows (top:50% of wrap) and the bottom switcher (sibling
-     of wrap) never bounce, regardless of how long/short a project's
-     description happens to be. Flex centers the motion.div content
-     vertically inside the reserved space. The clamp scales the height
-     to viewport width on smaller desktops/tablets. */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: clamp(440px, 50vw, 560px);
 }
 .proj-nav {
   position: absolute;
@@ -1143,10 +1133,6 @@ a {
 @media (max-width: 640px) {
   .proj-nav {
     display: none;
-  }
-  .showcase-wrap {
-    display: block;
-    height: auto;
   }
 }
 
@@ -1463,6 +1449,10 @@ a {
   line-height: 1.02;
   margin: 4px 0 6px;
   color: var(--color-text);
+  /* Reserve room for up to 3 lines so 1-line vs 3-line titles keep
+     the description (and everything below it) at the same vertical
+     position across projects. */
+  min-height: calc(3lh);
 }
 
 .workplace-badge {
@@ -1528,6 +1518,28 @@ a.workplace-badge .wb-pill,
   color: var(--color-text-mute);
   margin: 0;
   max-width: 460px;
+  /* Fixed scrollable box: short descriptions don't push tags+CTA up, long
+     ones scroll internally. Keeps every project's vertical footprint the
+     same without truncating content. */
+  max-height: calc(8lh);
+  overflow-y: auto;
+  padding-right: 8px;
+  /* Subtle scrollbar */
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+.meta-desc::-webkit-scrollbar {
+  width: 4px;
+}
+.meta-desc::-webkit-scrollbar-track {
+  background: transparent;
+}
+.meta-desc::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 2px;
+}
+.meta-desc:hover::-webkit-scrollbar-thumb {
+  background: var(--line-strong);
 }
 .meta-persona-tag {
   display: inline-flex;
@@ -4317,6 +4329,18 @@ a.workplace-badge .wb-pill,
   .pg-grid {
     grid-template-columns: 1fr;
     gap: 10px;
+  }
+  .meta-name {
+    /* On stacked mobile layout, drop the 3-line reservation since the
+       meta column no longer competes vertically with a sibling stage. */
+    min-height: 0;
+  }
+  .meta-desc {
+    /* Let descriptions flow naturally on mobile — scrollable boxes inside
+       an already scrolling page just create a nested-scroll trap. */
+    max-height: none;
+    overflow-y: visible;
+    padding-right: 0;
   }
   .pg-card {
     padding: 18px;
