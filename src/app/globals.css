@@ -4330,18 +4330,10 @@ a.workplace-badge .wb-pill,
     grid-template-columns: 1fr;
     gap: 10px;
   }
-  .meta-name {
-    /* On stacked mobile layout, drop the 3-line reservation since the
-       meta column no longer competes vertically with a sibling stage. */
-    min-height: 0;
-  }
-  .meta-desc {
-    /* Let descriptions flow naturally on mobile — scrollable boxes inside
-       an already scrolling page just create a nested-scroll trap. */
-    max-height: none;
-    overflow-y: visible;
-    padding-right: 0;
-  }
+  /* Keep the same desktop treatment on mobile: title reserves 3 lines,
+     description scrolls inside a fixed box — so swiping between projects
+     never makes the meta block grow or shrink, every "slide" has the
+     same vertical footprint. */
   .pg-card {
     padding: 18px;
   }
@@ -4352,6 +4344,12 @@ a.workplace-badge .wb-pill,
   .sw-list {
     grid-template-columns: 1fr;
     gap: 8px;
+  }
+  .stage-dots {
+    /* Hidden on mobile — gets in the way of the cover image without
+       adding much value (the bottom switcher and the active image
+       thumbnails already convey position). */
+    display: none;
   }
   .contact-shell {
     grid-template-columns: 1fr;
