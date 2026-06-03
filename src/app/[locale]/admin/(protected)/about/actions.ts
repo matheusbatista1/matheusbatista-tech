@@ -19,6 +19,7 @@ const aboutSchema = z.object({
   role: z.string().min(1, "Role required"),
   location: z.string().min(1, "Location required"),
   years: z.string().min(1, "Years required"),
+  languages: z.string().max(120).optional().default(""),
 });
 
 export interface AboutActionState {
@@ -52,13 +53,17 @@ export async function updateAboutAction(
     role: formData.get("role"),
     location: formData.get("location"),
     years: formData.get("years"),
+    languages: formData.get("languages") ?? "",
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Validation failed" };
   }
 
-  const about: AboutContent = parsed.data;
+  const about: AboutContent = {
+    ...parsed.data,
+    languages: parsed.data.languages?.trim() || undefined,
+  };
   try {
     await container.useCases.updateAboutContent.execute(about);
     await container.useCases.logActivity.execute({

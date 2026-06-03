@@ -1,17 +1,13 @@
-import { Bell, Eye, Search } from "lucide-react";
+import { Eye } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getTranslations } from "next-intl/server";
 import { AdminTopbarBreadcrumb } from "./AdminTopbarBreadcrumb";
 import { AdminMobileNavButton } from "./AdminMobileNav";
+import { AdminCommandPalette } from "./AdminCommandPalette";
+import { NotificationsDropdown } from "./NotificationsDropdown";
 
-export async function AdminTopbar({
-  hasNotifications = false,
-  actionsRight,
-}: {
-  hasNotifications?: boolean;
-  actionsRight?: ReactNode;
-}) {
+export async function AdminTopbar({ actionsRight }: { actionsRight?: ReactNode }) {
   const tShell = await getTranslations("admin.shell");
   const tNav = await getTranslations("admin.nav");
 
@@ -27,6 +23,20 @@ export async function AdminTopbar({
     settings: tNav("settings"),
   };
 
+  const paletteItems = [
+    { key: "dashboard", href: "/admin", label: tNav("dashboard") },
+    { key: "inbox", href: "/admin/inbox", label: tNav("inbox") },
+    { key: "analytics", href: "/admin/analytics", label: tNav("analytics") },
+    { key: "logs", href: "/admin/logs", label: tNav("logs") },
+    { key: "hero", href: "/admin/hero", label: tNav("hero") },
+    { key: "about", href: "/admin/about", label: tNav("about") },
+    { key: "projects", href: "/admin/projects", label: tNav("projects") },
+    { key: "skills", href: "/admin/skills", label: tNav("skills") },
+    { key: "social", href: "/admin/social", label: tNav("social") },
+    { key: "cv", href: "/admin/cv", label: tNav("cv") },
+    { key: "settings", href: "/admin/settings", label: tNav("settings") },
+  ];
+
   return (
     <header className="admin-topbar" role="banner">
       <AdminMobileNavButton label={tShell("title")} />
@@ -38,21 +48,9 @@ export async function AdminTopbar({
 
       <div className="admin-topbar-spacer" />
 
-      <div className="admin-topbar-search" role="search">
-        <Search aria-hidden="true" />
-        <input
-          type="search"
-          placeholder={tShell("search")}
-          aria-label={tShell("search")}
-          disabled
-        />
-        <kbd aria-hidden="true">{"⌘K"}</kbd>
-      </div>
+      <AdminCommandPalette items={paletteItems} placeholder={tShell("search")} />
 
-      <button type="button" className="admin-topbar-bell" aria-label="Notifications">
-        <Bell aria-hidden="true" width={16} height={16} />
-        {hasNotifications ? <span className="dot" aria-hidden="true" /> : null}
-      </button>
+      <NotificationsDropdown />
 
       <Link
         href="/"

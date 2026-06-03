@@ -4,6 +4,7 @@ import type { HeroContent } from "@/domain/entities/HeroContent";
 import type { SocialLink } from "@/domain/entities/SocialLink";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
+import { FooterNav } from "./FooterNav";
 
 interface FooterProps {
   hero: HeroContent;
@@ -14,6 +15,7 @@ interface FooterProps {
 export async function Footer({ hero, socials, locale }: FooterProps) {
   const t = await getTranslations("footer");
   const tNav = await getTranslations("nav");
+  const tPrivacy = await getTranslations("privacy");
 
   const subtitle = pickLocalized(hero.subtitle, locale);
 
@@ -28,14 +30,16 @@ export async function Footer({ hero, socials, locale }: FooterProps) {
             {subtitle}. {t("tag")}
           </p>
         </div>
-        <div className="footer-col">
-          <h5>{t("navigate")}</h5>
-          <a href="#top">{tNav("home")}</a>
-          <a href="#about">{tNav("about")}</a>
-          <a href="#projects">{tNav("projects")}</a>
-          <a href="#skills">{tNav("skills")}</a>
-          <a href="#contact">{tNav("contact")}</a>
-        </div>
+        <FooterNav
+          heading={t("navigate")}
+          items={[
+            { href: "#top", section: "top", label: tNav("home") },
+            { href: "#about", section: "about", label: tNav("about") },
+            { href: "#projects", section: "projects", label: tNav("projects") },
+            { href: "#skills", section: "skills", label: tNav("skills") },
+            { href: "#contact", section: "contact", label: tNav("contact") },
+          ]}
+        />
         <div className="footer-col">
           <h5>{t("elsewhere")}</h5>
           {socials.map((s) => (
@@ -53,6 +57,9 @@ export async function Footer({ hero, socials, locale }: FooterProps) {
       </div>
       <div className="footer-meta">
         <span>© 2026 MATHEUS BATISTA · {t("rights")}</span>
+        <Link href={`/${locale}/privacy`} className="footer-privacy">
+          {tPrivacy("footerLink")}
+        </Link>
         <span>v2 · {t("updated")}</span>
       </div>
     </footer>

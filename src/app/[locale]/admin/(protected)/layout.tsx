@@ -67,7 +67,7 @@ export default async function AdminProtectedLayout({
                 signOutAction={signOutAction}
               />
               <div className="admin-main">
-                <AdminTopbar title="Admin" hasNotifications={unreadCount > 0} />
+                <AdminTopbar title="Admin" />
                 <AdminContent>{children}</AdminContent>
               </div>
             </div>

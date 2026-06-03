@@ -135,11 +135,27 @@
   gap: 12px;
   align-items: flex-start;
 }
+.admin-icon-editor-stage-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.admin-icon-editor-caption {
+  font-family: var(--font-mono, "JetBrains Mono", monospace);
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--admin-text-dim);
+  text-align: center;
+  max-width: 96px;
+  line-height: 1.3;
+}
 .admin-icon-editor-stage {
   width: 80px;
   height: 80px;
-  border-radius: 12px;
-  border: 1px dashed var(--admin-border);
+  border-radius: 9px;
+  border: 1px solid var(--admin-border);
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -150,6 +166,20 @@
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
+}
+.admin-icon-editor-frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 9px;
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 0 0 2px rgba(0, 0, 0, 0.25);
+}
+[data-theme="light"] .admin-icon-editor-frame {
+  box-shadow:
+    inset 0 0 0 1px rgba(0, 0, 0, 0.22),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.35);
 }
 .admin-icon-editor-stage.has-icon {
   border-style: solid;

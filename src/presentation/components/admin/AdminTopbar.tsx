@@ -1,13 +1,6 @@
 import type { ReactNode } from "react";
 import { AdminTopbar as ShellAdminTopbar } from "@/presentation/components/admin/shell/AdminTopbar";
 
-export async function AdminTopbar({
-  hasNotifications = false,
-  actionsRight,
-}: {
-  title?: string;
-  hasNotifications?: boolean;
-  actionsRight?: ReactNode;
-}) {
-  return <ShellAdminTopbar hasNotifications={hasNotifications} actionsRight={actionsRight} />;
+export async function AdminTopbar({ actionsRight }: { title?: string; actionsRight?: ReactNode }) {
+  return <ShellAdminTopbar actionsRight={actionsRight} />;
 }
