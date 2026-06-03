@@ -8,8 +8,33 @@ import { isLocale } from "@/domain/value-objects/Locale";
 
 export const runtime = "nodejs";
 
-const BOT_UA_REGEX = /bot|crawl|spider|slurp|bingbot|googlebot|baidu|yandex|duckduck/i;
+const BOT_UA_REGEX =
+  /bot|crawl|spider|slurp|bingbot|googlebot|baidu|yandex|duckduck|headless|phantom|puppeteer|selenium|playwright|lighthouse|chrome-lighthouse|gtmetrix|pingdom|uptimerobot|prerender|chromedriver|webdriver|curl|wget|httpclient|axios|node-fetch|python-requests|libwww|okhttp|java\/\d/i;
 const DEFAULT_SALT = "matheusbatista-tech-analytics-salt";
+
+/**
+ * Major-version floor by browser, below which a UA is almost certainly
+ * automation, not a real human. Values reflect releases that are at least
+ * a few years old in 2026: Mobile Safari 10 = 2016, Chrome <100 = 2022,
+ * Firefox <100 = 2022, Edge <100 = 2022.
+ */
+const STALE_VERSION_FLOORS: Record<string, number> = {
+  "mobile safari": 14,
+  safari: 14,
+  chrome: 100,
+  firefox: 100,
+  edge: 100,
+  opera: 80,
+};
+
+function isStaleUserAgent(browserName?: string, browserVersion?: string): boolean {
+  if (!browserName || !browserVersion) return false;
+  const floor = STALE_VERSION_FLOORS[browserName.toLowerCase()];
+  if (typeof floor !== "number") return false;
+  const major = Number.parseInt(browserVersion.split(".")[0] ?? "", 10);
+  if (!Number.isFinite(major)) return false;
+  return major < floor;
+}
 
 const bodySchema = z.object({
   path: z.string().min(1).max(2048),
@@ -102,12 +127,16 @@ export async function POST(request: Request) {
   // ua-parser-js returns undefined device.type for desktop browsers
   const deviceType = device.type || "desktop";
 
-  // Bot detection: union of regex + ua-parser-js signals
+  // Bot detection: regex + ua-parser-js signals + stale-UA heuristic.
+  // The stale heuristic catches real automation tools (esp. older Mobile
+  // Safari 10.x / Chrome <100) that don't include "bot" anywhere in their
+  // UA but are years out of date.
   const regexIsBot = BOT_UA_REGEX.test(userAgent);
   const parserIsBot =
     (device.type as string | undefined) === "bot" ||
     (browser.name?.toLowerCase().includes("bot") ?? false);
-  const isBot = regexIsBot || parserIsBot;
+  const staleIsBot = isStaleUserAgent(browser.name, browser.version);
+  const isBot = regexIsBot || parserIsBot || staleIsBot;
 
   let botName: string | null = null;
   let botVer: string | null = null;
@@ -115,6 +144,9 @@ export async function POST(request: Request) {
     const m = parseBotFromUA(userAgent);
     botName = m.name ?? browser.name ?? null;
     botVer = m.version ?? browser.version ?? null;
+    if (!regexIsBot && !parserIsBot && staleIsBot) {
+      botName = `stale-${browser.name?.toLowerCase().replace(/\s+/g, "-") ?? "ua"}`;
+    }
   }
 
   // Referrer parsing
