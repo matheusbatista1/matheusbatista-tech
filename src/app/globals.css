@@ -1072,6 +1072,10 @@ a {
 
 .showcase-wrap {
   position: relative;
+  /* Reserve vertical pan to the browser so the page still scrolls
+     naturally; the JS pointer handlers in Projects.tsx own horizontal
+     gestures to switch between projects (mobile gallery swipe). */
+  touch-action: pan-y;
 }
 .proj-nav {
   position: absolute;
