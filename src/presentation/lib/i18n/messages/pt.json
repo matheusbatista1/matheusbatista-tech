@@ -1,5 +1,7 @@
 {
   "admin": {
+    "translateAll": "Traduzir para todos os idiomas",
+    "translateDone": "Traduzido para todos os idiomas",
     "shell": {
       "title": "Admin",
       "search": "Buscar...",

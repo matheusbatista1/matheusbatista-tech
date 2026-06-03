@@ -15,6 +15,7 @@ import { Button } from "@/presentation/components/admin/ui/Button";
 import { Input } from "@/presentation/components/admin/ui/Input";
 import { LocaleSwitcher } from "@/presentation/components/admin/ui/LocaleSwitcher";
 import { Toggle } from "@/presentation/components/admin/ui/Toggle";
+import { TranslateAllButton } from "@/presentation/components/admin/ui/TranslateAllButton";
 import { useToast } from "@/presentation/components/admin/providers/ToastProvider";
 
 import { updateHeroAction, type HeroFormValues } from "./actions";
@@ -65,6 +66,8 @@ export function HeroForm({ hero }: HeroFormProps) {
     control,
     reset,
     watch,
+    getValues,
+    setValue,
     formState: { errors, isDirty },
   } = useForm<HeroFormValues>({
     defaultValues: defaults,
@@ -124,6 +127,15 @@ export function HeroForm({ hero }: HeroFormProps) {
               />
             )}
           />
+          <div className="admin-form-ai-row">
+            <TranslateAllButton
+              sourceLocale={greetingLocale}
+              getSourceText={() => getValues(`greeting.${greetingLocale}` as const)}
+              onTranslated={(target, value) =>
+                setValue(`greeting.${target}` as const, value, { shouldDirty: true })
+              }
+            />
+          </div>
         </div>
       </div>
 
@@ -174,6 +186,15 @@ export function HeroForm({ hero }: HeroFormProps) {
               />
             )}
           />
+          <div className="admin-form-ai-row">
+            <TranslateAllButton
+              sourceLocale={subtitleLocale}
+              getSourceText={() => getValues(`subtitle.${subtitleLocale}` as const)}
+              onTranslated={(target, value) =>
+                setValue(`subtitle.${target}` as const, value, { shouldDirty: true })
+              }
+            />
+          </div>
         </div>
       </div>
 
@@ -202,6 +223,15 @@ export function HeroForm({ hero }: HeroFormProps) {
               />
             )}
           />
+          <div className="admin-form-ai-row">
+            <TranslateAllButton
+              sourceLocale={taglineLocale}
+              getSourceText={() => getValues(`tagline.${taglineLocale}` as const)}
+              onTranslated={(target, value) =>
+                setValue(`tagline.${target}` as const, value, { shouldDirty: true })
+              }
+            />
+          </div>
         </div>
       </div>
 
