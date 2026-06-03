@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { useTranslations } from "next-intl";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -128,6 +129,57 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
     setImgIdx((i) => (i + 1) % activeProject.images.length);
   }, [activeProject]);
 
+  // Touch swipe nav — mobile gallery feel.
+  // The handlers also run on mouse/pen pointers, but desktop already has
+  // arrow buttons + keyboard so they're a harmless bonus.
+  const SWIPE_THRESHOLD = 60;
+  const VERTICAL_TOLERANCE = 12;
+  const swipeStartRef = useRef<{ x: number; y: number; pointerId: number } | null>(null);
+  const swipeActiveRef = useRef(false);
+
+  function onSwipeDown(event: ReactPointerEvent<HTMLDivElement>) {
+    swipeStartRef.current = {
+      x: event.clientX,
+      y: event.clientY,
+      pointerId: event.pointerId,
+    };
+    swipeActiveRef.current = false;
+  }
+
+  function onSwipeMove(event: ReactPointerEvent<HTMLDivElement>) {
+    const start = swipeStartRef.current;
+    if (!start || start.pointerId !== event.pointerId) return;
+    const dx = event.clientX - start.x;
+    const dy = event.clientY - start.y;
+    if (!swipeActiveRef.current) {
+      // Wait for movement to disambiguate horizontal swipe from vertical scroll.
+      if (Math.abs(dx) < VERTICAL_TOLERANCE && Math.abs(dy) < VERTICAL_TOLERANCE) return;
+      if (Math.abs(dy) > Math.abs(dx)) {
+        // It's a vertical pan — let the page scroll, bail out.
+        swipeStartRef.current = null;
+        return;
+      }
+      swipeActiveRef.current = true;
+    }
+  }
+
+  function onSwipeUp(event: ReactPointerEvent<HTMLDivElement>) {
+    const start = swipeStartRef.current;
+    swipeStartRef.current = null;
+    if (!start || start.pointerId !== event.pointerId) return;
+    if (!swipeActiveRef.current) return;
+    swipeActiveRef.current = false;
+    const dx = event.clientX - start.x;
+    if (Math.abs(dx) < SWIPE_THRESHOLD) return;
+    if (dx > 0) goPrev();
+    else goNext();
+  }
+
+  function onSwipeCancel() {
+    swipeStartRef.current = null;
+    swipeActiveRef.current = false;
+  }
+
   return (
     <section className="section reveal" id="projects" ref={sectionRef}>
       <div className="shell">
@@ -164,7 +216,13 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
           <p className="text-text-mute text-sm">No projects yet.</p>
         ) : (
           <>
-            <div className="showcase-wrap">
+            <div
+              className="showcase-wrap"
+              onPointerDown={onSwipeDown}
+              onPointerMove={onSwipeMove}
+              onPointerUp={onSwipeUp}
+              onPointerCancel={onSwipeCancel}
+            >
               <button
                 type="button"
                 className="proj-nav prev"
