@@ -1072,10 +1072,16 @@ a {
 
 .showcase-wrap {
   position: relative;
-  /* Stabilize layout: reserves vertical space so projects with longer or
-     shorter copy don't shift the side arrows or the bottom switcher list
-     up/down between transitions. */
-  min-height: clamp(420px, 48vw, 520px);
+  /* FIXED height (not min-) so layout is fully stable across projects:
+     the side arrows (top:50% of wrap) and the bottom switcher (sibling
+     of wrap) never bounce, regardless of how long/short a project's
+     description happens to be. Flex centers the motion.div content
+     vertically inside the reserved space. The clamp scales the height
+     to viewport width on smaller desktops/tablets. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: clamp(440px, 50vw, 560px);
 }
 .proj-nav {
   position: absolute;
@@ -1098,13 +1104,15 @@ a {
     opacity 180ms;
   transform: translateY(-50%);
 }
-/* Pulled fully outside the content (button width + 12px gap) so they sit in
-   the shell padding gutter instead of overlapping image/meta. */
+/* The image's own prev/next buttons (.stage-nav) sit at left:-18px/right:-18px
+   inside .showcase-stage, so they extend from roughly -18 to +24 of the wrap.
+   We push the project-level arrows to -80px so there's a clear 18px gap and
+   nothing visually overlaps even when both buttons are visible at once. */
 .proj-nav.prev {
-  left: -56px;
+  left: -80px;
 }
 .proj-nav.next {
-  right: -56px;
+  right: -80px;
 }
 .proj-nav:hover:not(:disabled) {
   border-color: var(--line-strong);
@@ -1116,7 +1124,15 @@ a {
   opacity: 0.25;
   cursor: not-allowed;
 }
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
+  .proj-nav.prev {
+    left: -56px;
+  }
+  .proj-nav.next {
+    right: -56px;
+  }
+}
+@media (max-width: 980px) {
   .proj-nav.prev {
     left: 0;
   }
@@ -1129,7 +1145,8 @@ a {
     display: none;
   }
   .showcase-wrap {
-    min-height: 0;
+    display: block;
+    height: auto;
   }
 }
 
@@ -1139,12 +1156,7 @@ a {
   gap: 56px;
   align-items: center;
   margin-bottom: 56px;
-  min-height: clamp(420px, 48vw, 520px);
-}
-@media (max-width: 640px) {
-  .showcase {
-    min-height: 0;
-  }
+  width: 100%;
 }
 
 /* === Stage === */
