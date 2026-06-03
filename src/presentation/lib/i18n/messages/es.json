@@ -447,6 +447,8 @@
     "notDeployed": "Aún no publicado",
     "tailored": "personalizado",
     "navHint": "↑↓→← para navegar",
+    "prev": "Proyecto anterior",
+    "next": "Siguiente proyecto",
     "ranked": "La IA ordenó",
     "byRelevance": "por relevancia",
     "noMatch": "Sin coincidencias fuertes — mostrando todos",
@@ -556,5 +558,30 @@
   "seo": {
     "title": "Matheus Batista — Ingeniero de Software",
     "description": "Ingeniero de software con enfoque en backend: .NET, Node.js, APIs, integraciones y sistemas escalables."
+  },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "footerLink": "Privacidad",
+    "lastUpdated": "Última actualización: 3 de junio de 2026",
+    "intro": "Este sitio es un portafolio personal operado por Matheus Batista (el controlador de los datos). Tu privacidad importa — esta página describe qué se recopila, por qué, cuánto tiempo se conserva y qué derechos tienes bajo la Ley General de Protección de Datos de Brasil (LGPD, Ley 13.709/2018).",
+    "controllerHeading": "Controlador de los datos",
+    "controllerBody": "Matheus Batista, persona física, contactable en el correo listado en la sección de Contacto de este sitio. No hay DPO designado — el controlador responde directamente a las solicitudes.",
+    "collectedHeading": "Datos que recopilamos",
+    "collectedContactHeading": "Formulario de contacto",
+    "collectedContact": "Cuando envías el formulario de contacto, almacenamos el correo, nombre (opcional), asunto y mensaje que proporcionaste para poder responder. Estos registros viven en la base de datos hasta que pidas su eliminación.",
+    "collectedAnalyticsHeading": "Analytics",
+    "collectedAnalytics": "Cada visita registra una pageview con: IP hasheada (sha256 irreversible), cadena de user-agent, geolocalización aproximada (país, región, ciudad) derivada del edge de Vercel, dimensiones de pantalla y viewport, idioma del navegador y la URL de referencia. El IP en bruto nunca se almacena.",
+    "collectedCookiesHeading": "Cookies y localStorage",
+    "collectedCookies": "Usamos cookies propias para preferencia de tema, idioma y el sistema de persona. También usamos localStorage del navegador para recordar qué persona elegiste. No se establecen cookies de rastreo de terceros.",
+    "purposeHeading": "Finalidad",
+    "purposeBody": "Los datos de contacto se usan únicamente para responder tu mensaje. Los datos de analytics se usan de forma agregada para entender patrones de tráfico y mejorar el contenido. No vendemos, alquilamos ni compartimos tus datos con terceros para marketing.",
+    "retentionHeading": "Retención",
+    "retentionBody": "Los mensajes de contacto se conservan hasta 24 meses, salvo que pidas su eliminación antes. Las pageviews se conservan indefinidamente en forma agregada (la IP hasheada impide la re-identificación).",
+    "rightsHeading": "Tus derechos (Art. 18 LGPD)",
+    "rightsBody": "Puedes solicitar: confirmación de tratamiento, acceso a tus datos, corrección de datos incompletos o desactualizados, anonimización o eliminación, portabilidad de los datos a otro servicio, información sobre con quién compartimos los datos y revocación del consentimiento. Envía cualquiera de estas solicitudes al correo en la sección de Contacto — respondemos en hasta 15 días.",
+    "thirdPartyHeading": "Servicios de terceros",
+    "thirdPartyBody": "El sitio corre en Vercel (edge US/Brasil), usa Neon (US) para la base de datos, Upstash Redis (US) para rate limits, Google Gemini (US) para el asistente de IA y Vercel Blob (US) para los archivos cargados. Cada proveedor tiene su propia política de privacidad — compartimos solo el mínimo necesario con cada uno (por ejemplo, el asistente de IA recibe el texto de tu mensaje pero no tu IP).",
+    "contactHeading": "Contacto sobre tus datos",
+    "contactBody": "Usa el formulario de Contacto en la página principal o escribe directamente al correo listado allí. Asunto: \"Solicitud LGPD\" agiliza el ruteo."
   }
 }

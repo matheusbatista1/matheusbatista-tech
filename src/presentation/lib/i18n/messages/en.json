@@ -447,6 +447,8 @@
     "notDeployed": "Not deployed yet",
     "tailored": "tailored",
     "navHint": "↑↓→← to navigate",
+    "prev": "Previous project",
+    "next": "Next project",
     "ranked": "AI ranked",
     "byRelevance": "by relevance",
     "noMatch": "No strong matches — showing all",
@@ -556,5 +558,30 @@
   "seo": {
     "title": "Matheus Batista — Software Engineer",
     "description": "Backend-focused software engineer specializing in .NET, Node.js, APIs, integrations, and scalable systems."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "footerLink": "Privacy",
+    "lastUpdated": "Last updated: June 3, 2026",
+    "intro": "This site is a personal portfolio operated by Matheus Batista (the data controller). Your privacy matters — this page describes what we collect, why we collect it, how long we keep it, and what rights you have under Brazil's General Data Protection Law (LGPD, Law 13.709/2018).",
+    "controllerHeading": "Data controller",
+    "controllerBody": "Matheus Batista, individual person, reachable at the email address listed in the Contact section of this site. There is no DPO appointed — the controller responds directly to data requests.",
+    "collectedHeading": "Data we collect",
+    "collectedContactHeading": "Contact form",
+    "collectedContact": "When you submit the contact form, we store the email, name (optional), subject and message you provided so we can reply. These rows live in the database until you ask for deletion.",
+    "collectedAnalyticsHeading": "Analytics",
+    "collectedAnalytics": "Every visit records a pageview with: hashed IP (irreversible sha256), user-agent string, approximate geolocation (country, region, city) derived from the Vercel edge, screen and viewport dimensions, browser language, and the referring URL. The raw IP is never stored.",
+    "collectedCookiesHeading": "Cookies & local storage",
+    "collectedCookies": "We use first-party cookies for theme preference, locale, and the persona system. We also use browser localStorage to remember which persona you chose. No third-party tracking cookies are set.",
+    "purposeHeading": "Purpose",
+    "purposeBody": "Contact data is used solely to reply to your message. Analytics data is used in aggregate to understand traffic patterns and improve content. We do not sell, rent or share your data with third parties for marketing.",
+    "retentionHeading": "Retention",
+    "retentionBody": "Contact messages are kept for up to 24 months unless you ask for earlier deletion. Pageview rows are kept indefinitely in aggregate form (the hashed IP prevents re-identification).",
+    "rightsHeading": "Your rights (LGPD Art. 18)",
+    "rightsBody": "You can request: confirmation of processing, access to your data, correction of incomplete or outdated data, anonymization or deletion, portability of data to another service, information about with whom we share data, and revocation of consent. Send any of these requests to the email in the Contact section — we reply within 15 days.",
+    "thirdPartyHeading": "Third-party services",
+    "thirdPartyBody": "The site runs on Vercel (US/Brazil edge), uses Neon (US) for the database, Upstash Redis (US) for rate limits, Google Gemini (US) for the AI assistant, and Vercel Blob (US) for uploaded assets. Each provider has its own privacy policy — we share only the minimum necessary data with each one (e.g., the AI assistant receives your message text but not your IP).",
+    "contactHeading": "Contact about your data",
+    "contactBody": "Use the Contact form on the homepage or write directly to the email listed there. Subject: \"LGPD request\" speeds up routing."
   }
 }
