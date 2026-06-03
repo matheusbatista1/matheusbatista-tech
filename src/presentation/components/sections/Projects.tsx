@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { Project } from "@/domain/entities/Project";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { SemanticSearch } from "@/presentation/components/ai/SemanticSearch";
@@ -28,8 +30,35 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
   const sectionRef = useRef<HTMLElement>(null);
 
   const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
   const [imgIdx, setImgIdx] = useState(0);
   const [ranked, setRanked] = useState<RankedProject[] | null>(null);
+  const projectsLengthRef = useRef(0);
+
+  const goTo = useCallback((next: number) => {
+    setActiveIndex((current) => {
+      if (next === current) return current;
+      setDirection(next > current ? 1 : -1);
+      return next;
+    });
+  }, []);
+
+  const goPrev = useCallback(() => {
+    setActiveIndex((current) => {
+      if (current <= 0) return current;
+      setDirection(-1);
+      return current - 1;
+    });
+  }, []);
+
+  const goNext = useCallback(() => {
+    setActiveIndex((current) => {
+      const last = projectsLengthRef.current - 1;
+      if (current >= last) return current;
+      setDirection(1);
+      return current + 1;
+    });
+  }, []);
 
   const { projects, reasons } = useMemo(() => {
     if (!ranked || ranked.length === 0) {
@@ -42,11 +71,16 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
   }, [ranked, allProjects]);
 
   useEffect(() => {
+    projectsLengthRef.current = projects.length;
+  }, [projects.length]);
+
+  useEffect(() => {
     setImgIdx(0);
   }, [activeIndex]);
 
   useEffect(() => {
     setActiveIndex(0);
+    setDirection(0);
   }, [ranked]);
 
   useEffect(() => {
@@ -54,13 +88,13 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
       const detail = (event as CustomEvent<string>).detail;
       const idx = projects.findIndex((p) => p.id === detail);
       if (idx >= 0) {
-        setActiveIndex(idx);
+        goTo(idx);
         sectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
     };
     window.addEventListener("open-project", onOpenProject);
     return () => window.removeEventListener("open-project", onOpenProject);
-  }, [projects]);
+  }, [projects, goTo]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -72,14 +106,14 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
         rect.bottom > window.innerHeight * IN_VIEW_LOWER;
       if (!inView) return;
       if (e.key === "ArrowRight") {
-        setActiveIndex((i) => Math.min(projects.length - 1, i + 1));
+        goNext();
       } else {
-        setActiveIndex((i) => Math.max(0, i - 1));
+        goPrev();
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [projects.length]);
+  }, [goNext, goPrev]);
 
   const activeProject = projects[activeIndex];
   const matchReason = activeProject ? reasons[activeProject.id] : undefined;
@@ -130,21 +164,56 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
           <p className="text-text-mute text-sm">No projects yet.</p>
         ) : (
           <>
-            <div className="showcase">
-              <ProjectStage
-                project={activeProject}
-                imgIdx={imgIdx}
-                onPrev={handlePrevImage}
-                onNext={handleNextImage}
-                onSelectImage={setImgIdx}
-              />
-              <ProjectMeta project={activeProject} locale={locale} matchReason={matchReason} />
+            <div className="showcase-wrap">
+              <button
+                type="button"
+                className="proj-nav prev"
+                onClick={goPrev}
+                disabled={activeIndex <= 0}
+                aria-label={t("prev")}
+              >
+                <ChevronLeft width={20} height={20} aria-hidden="true" />
+              </button>
+              <AnimatePresence mode="wait" initial={false} custom={direction}>
+                <motion.div
+                  key={activeProject.id}
+                  className="showcase"
+                  custom={direction}
+                  variants={{
+                    enter: (dir: number) => ({ opacity: 0, x: dir >= 0 ? 28 : -28 }),
+                    center: { opacity: 1, x: 0 },
+                    exit: (dir: number) => ({ opacity: 0, x: dir >= 0 ? -28 : 28 }),
+                  }}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <ProjectStage
+                    project={activeProject}
+                    imgIdx={imgIdx}
+                    onPrev={handlePrevImage}
+                    onNext={handleNextImage}
+                    onSelectImage={setImgIdx}
+                  />
+                  <ProjectMeta project={activeProject} locale={locale} matchReason={matchReason} />
+                </motion.div>
+              </AnimatePresence>
+              <button
+                type="button"
+                className="proj-nav next"
+                onClick={goNext}
+                disabled={activeIndex >= projects.length - 1}
+                aria-label={t("next")}
+              >
+                <ChevronRight width={20} height={20} aria-hidden="true" />
+              </button>
             </div>
 
             <ProjectSwitcher
               projects={projects}
               activeIndex={activeIndex}
-              onSelect={setActiveIndex}
+              onSelect={goTo}
               reasons={reasons}
             />
           </>

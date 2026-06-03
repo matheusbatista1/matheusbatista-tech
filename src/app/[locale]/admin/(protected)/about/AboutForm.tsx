@@ -30,6 +30,7 @@ interface AboutFormValues {
   role: string;
   location: string;
   years: string;
+  languages: string;
 }
 
 function toFormValues(about: AboutContent): AboutFormValues {
@@ -40,6 +41,7 @@ function toFormValues(about: AboutContent): AboutFormValues {
     role: about.role,
     location: about.location,
     years: about.years,
+    languages: about.languages ?? "",
   };
 }
 
@@ -77,6 +79,7 @@ export function AboutForm({ about }: AboutFormProps) {
       formData.set("role", values.role);
       formData.set("location", values.location);
       formData.set("years", values.years);
+      formData.set("languages", values.languages);
 
       startTransition(async () => {
         const result = await updateAboutAction({}, formData);
@@ -229,7 +232,7 @@ export function AboutForm({ about }: AboutFormProps) {
           {t("profileFacts")}
           <div className="help">{t("help.profileFacts")}</div>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 12 }}>
           <Input
             {...register("role", { required: "Required" })}
             placeholder="Software Engineer"
@@ -244,6 +247,11 @@ export function AboutForm({ about }: AboutFormProps) {
             {...register("years", { required: "Required" })}
             placeholder="2+ years"
             error={errors.years?.message}
+          />
+          <Input
+            {...register("languages")}
+            placeholder="PT · EN · ES"
+            error={errors.languages?.message}
           />
         </div>
       </div>
