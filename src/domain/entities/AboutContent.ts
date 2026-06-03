@@ -7,4 +7,5 @@ export interface AboutContent {
   role: string;
   location: string;
   years: string;
+  languages?: string;
 }

@@ -62,7 +62,7 @@ export async function About({
               </div>
               <div className="row">
                 <span>{t("languages")}</span>
-                <b>PT · EN · ES</b>
+                <b>{about.languages?.trim() || "PT · EN · ES"}</b>
               </div>
             </div>
 

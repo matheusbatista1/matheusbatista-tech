@@ -45,6 +45,7 @@ async function main() {
         role: "Software Engineer",
         location: "Jandira, São Paulo, BR",
         years: "2+ years",
+        languages: "PT · EN · ES",
       },
       settings: {
         defaultLang: "en",
