@@ -7,7 +7,6 @@ import { auth } from "@/infrastructure/auth/auth";
 import { container } from "@/infrastructure/container";
 
 const settingsSchema = z.object({
-  defaultLang: z.enum(["en", "pt", "es"]),
   defaultTheme: z.enum(["dark", "light"]),
 });
 
@@ -35,8 +34,11 @@ export async function updateSettingsAction(
   const actorEmail = session.user.email ?? null;
 
   try {
+    // defaultLang is no longer user-configurable (PT is the fixed site default),
+    // so preserve whatever is stored instead of overwriting it.
+    const current = await container.useCases.getSiteContent.execute();
     await container.useCases.updateContentSettings.execute({
-      defaultLang: data.defaultLang,
+      defaultLang: current.settings.defaultLang,
       defaultTheme: data.defaultTheme,
     });
 

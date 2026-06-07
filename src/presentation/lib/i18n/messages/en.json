@@ -441,6 +441,7 @@
     "projects": "projects",
     "scroll": "SCROLL",
     "explore": "EXPLORE",
+    "downloadCv": "Download CV",
     "currentFocus": "CURRENT FOCUS"
   },
   "projects": {
@@ -461,6 +462,7 @@
   "about": {
     "label": "ABOUT",
     "send": "Send me a message",
+    "downloadCv": "Download CV",
     "tailoredForYou": "tailored for you",
     "role": "Role",
     "basedIn": "Based in",

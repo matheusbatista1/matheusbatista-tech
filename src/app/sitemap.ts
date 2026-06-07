@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { env } from "@/infrastructure/config/env";
 import { locales } from "@/presentation/lib/i18n/config";
+import { DEFAULT_LOCALE } from "@/domain/value-objects/Locale";
 
 const SECTIONS = ["", "#about", "#projects", "#skills", "#contact"] as const;
 
@@ -11,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];
 
   for (const locale of locales) {
-    const prefix = locale === "en" ? "" : `/${locale}`;
+    const prefix = locale === DEFAULT_LOCALE ? "" : `/${locale}`;
     for (const section of SECTIONS) {
       entries.push({
         url: `${base}${prefix}${section}`,

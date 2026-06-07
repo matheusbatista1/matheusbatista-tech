@@ -6,24 +6,16 @@ import type { IAIProvider } from "@/application/ports/IAIProvider";
 import type { IAICacheRepository } from "@/domain/repositories/IAICacheRepository";
 import { BuildPromptContext } from "./BuildPromptContext";
 import { computeContentFingerprint, hashCacheKey } from "./cache-key";
+import {
+  PERSONA_VOICE,
+  PROMPT_VERSION,
+  globalStyle,
+  sanitizeAIText,
+} from "@/application/ai/prompts/voice";
 import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "persona-adapt";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
-
-const PERSONA_DESCRIPTIONS: Record<PersonaId, { label: string; hint: string }> = {
-  default: { label: "Visitor", hint: "Balanced overview" },
-  recruiter: { label: "Recruiter", hint: "Soft skills, impact, availability" },
-  techlead: { label: "Tech Lead", hint: "Hard skills, architecture, delivery" },
-  cto: { label: "CTO / Founder", hint: "Business impact, scale, ownership" },
-  designer: { label: "Designer", hint: "Craft, UX sensibility, collaboration" },
-};
-
-const LANG_LABEL: Record<Locale, string> = {
-  en: "English",
-  pt: "Brazilian Portuguese",
-  es: "Spanish",
-};
 
 const PersonaCopySchema = z.object({
   tagline: z.string(),
@@ -72,6 +64,7 @@ export class AdaptPersonaCopy {
       persona,
       locale,
       content: fingerprint,
+      v: PROMPT_VERSION,
     });
 
     const started = performance.now();
@@ -94,8 +87,7 @@ export class AdaptPersonaCopy {
       return { copy: cached.response as PersonaCopyOverride, cached: true };
     }
 
-    const personaInfo = PERSONA_DESCRIPTIONS[persona];
-    const langName = LANG_LABEL[locale];
+    const personaInfo = PERSONA_VOICE[persona];
 
     const facts = {
       name: context.name,
@@ -111,24 +103,35 @@ export class AdaptPersonaCopy {
     };
 
     const prompt = [
-      `Rewrite this engineer's portfolio copy for a specific reader.`,
-      `Reader: "${personaInfo.label}" — ${personaInfo.hint}.`,
-      `Keep it truthful to the facts; only shift emphasis & tone. Keep lengths similar.`,
-      `WRITE IN ${langName}.`,
+      `Rewrite ${context.name}'s portfolio copy for a specific reader, without losing any depth.`,
+      `Reader: ${personaInfo.label}. ${personaInfo.focus}`,
+      ``,
+      globalStyle(locale),
+      `- Keep the SAME depth and length as each source field. Reframe the emphasis for this reader, never summarize or shorten.`,
+      `- Rewrite every project description with at least as much detail as the original.`,
       ``,
       `FACTS (JSON):`,
       JSON.stringify(facts),
       ``,
-      `Return COMPACT JSON only:`,
-      `{"tagline":"one punchy line","about":"1 short paragraph (2-3 sentences)","projects":[{"id":"<id>","description":"reframed 1-2 sentence description"}]}`,
-      `Use project ids exactly as in FACTS.`,
+      `Return JSON only with this shape, using the same project ids as in FACTS:`,
+      `{"tagline": string, "about": string, "projects": [{"id": string, "description": string}]}`,
     ].join("\n");
 
     try {
-      const copy = await this.aiProvider.generateJSON({
+      const raw = await this.aiProvider.generateJSON({
         prompt,
         schema: PersonaCopySchema,
+        temperature: 0.85,
       });
+
+      const copy: PersonaCopyOverride = {
+        tagline: sanitizeAIText(raw.tagline),
+        about: sanitizeAIText(raw.about),
+        projects: raw.projects.map((p) => ({
+          id: p.id,
+          description: sanitizeAIText(p.description),
+        })),
+      };
 
       await this.cacheRepo.save({
         hash,

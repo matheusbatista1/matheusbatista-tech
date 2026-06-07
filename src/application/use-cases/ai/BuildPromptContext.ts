@@ -6,7 +6,7 @@ import type { ISkillRepository } from "@/domain/repositories/ISkillRepository";
 import type { ISocialLinkRepository } from "@/domain/repositories/ISocialLinkRepository";
 import type { PromptContext } from "@/domain/entities/ai/PromptContext";
 
-const DESCRIPTION_MAX_CHARS = 150;
+const DESCRIPTION_MAX_CHARS = 600;
 
 export class BuildPromptContext {
   constructor(

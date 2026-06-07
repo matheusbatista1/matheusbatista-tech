@@ -7,6 +7,7 @@ import { DraftReplySchema, type DraftReplySchemaType } from "@/application/ai/sc
 import { buildDraftReplyPrompt, type DraftReplyTone } from "@/application/ai/prompts/draft-reply";
 import { BuildPromptContext } from "./BuildPromptContext";
 import { hashCacheKey } from "./cache-key";
+import { PROMPT_VERSION, sanitizeAIText } from "@/application/ai/prompts/voice";
 import { LogActivity } from "../activity/LogActivity";
 import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
@@ -81,6 +82,7 @@ export class DraftReplyToMessage {
       locale,
       persona: tone,
       query: queryNormalized,
+      v: PROMPT_VERSION,
     });
 
     const started = performance.now();
@@ -131,11 +133,14 @@ export class DraftReplyToMessage {
     });
 
     try {
-      const draft = await this.aiProvider.generateJSON({
+      const raw = await this.aiProvider.generateJSON({
         prompt,
         schema: DraftReplySchema,
         maxTokens: MAX_OUTPUT_TOKENS,
+        temperature: 0.8,
       });
+
+      const draft: DraftReplySchemaType = { ...raw, body: sanitizeAIText(raw.body) };
 
       await this.cacheRepo.save({
         hash,

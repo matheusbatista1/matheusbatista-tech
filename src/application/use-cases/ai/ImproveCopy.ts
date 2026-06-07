@@ -10,6 +10,7 @@ import {
 import { buildImproveCopyPrompt } from "@/application/ai/prompts/improve-copy";
 import { LogActivity } from "@/application/use-cases/activity/LogActivity";
 import { hashCacheKey } from "./cache-key";
+import { PROMPT_VERSION, sanitizeAIText } from "@/application/ai/prompts/voice";
 import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "improve-copy";
@@ -50,6 +51,7 @@ export class ImproveCopy {
       locale,
       persona: tone ?? "neutral",
       query: normalizedText,
+      v: PROMPT_VERSION,
     });
 
     const started = performance.now();
@@ -83,11 +85,17 @@ export class ImproveCopy {
     const prompt = buildImproveCopyPrompt({ text: normalizedText, locale, tone });
 
     try {
-      const response = await this.aiProvider.generateJSON({
+      const raw = await this.aiProvider.generateJSON({
         prompt,
         schema: ImproveCopyOutputSchema,
         maxTokens: MAX_OUTPUT_TOKENS,
+        temperature: 0.7,
       });
+
+      const response: ImproveCopyOutputSchemaType = {
+        ...raw,
+        improved: sanitizeAIText(raw.improved),
+      };
 
       await this.cacheRepo.save({
         hash,

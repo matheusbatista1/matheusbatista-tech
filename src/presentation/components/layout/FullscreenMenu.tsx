@@ -3,14 +3,17 @@
 import { useEffect } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import type { SocialLink } from "@/domain/entities/SocialLink";
+import type { CVAsset } from "@/domain/entities/CVAsset";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { useMenu } from "@/presentation/providers/MenuProvider";
 import { useSmoothScrollTo } from "@/presentation/hooks/useSmoothScrollTo";
 import { ArrowUpRightIcon, CloseIcon, DownloadIcon } from "@/presentation/components/icons/Icons";
+import { getCvForLocale } from "@/presentation/lib/cv";
 import { usePathname, useRouter } from "@/presentation/lib/i18n/routing";
 
 interface FullscreenMenuProps {
   socials: SocialLink[];
+  cvs: CVAsset[];
 }
 
 const NAV_ITEMS = [
@@ -23,11 +26,12 @@ const NAV_ITEMS = [
 
 const LANG_ORDER: readonly Locale[] = ["pt", "en", "es"];
 
-export function FullscreenMenu({ socials }: FullscreenMenuProps) {
+export function FullscreenMenu({ socials, cvs }: FullscreenMenuProps) {
   const { isOpen, close } = useMenu();
   const tMenu = useTranslations("menu");
   const tNav = useTranslations("nav");
   const currentLocale = useLocale() as Locale;
+  const cv = getCvForLocale(cvs, currentLocale);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -87,14 +91,21 @@ export function FullscreenMenu({ socials }: FullscreenMenuProps) {
               <ArrowUpRightIcon />
             </a>
           )}
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
-            style={{ opacity: 0.4, pointerEvents: "none" }}
-          >
-            <span>{tMenu("notUploaded")}</span>
-            <DownloadIcon />
-          </a>
+          {cv ? (
+            <a href={`/api/cv/${currentLocale}`} download>
+              <span>{tMenu("download")}</span>
+              <DownloadIcon />
+            </a>
+          ) : (
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
+              style={{ opacity: 0.4, pointerEvents: "none" }}
+            >
+              <span>{tMenu("notUploaded")}</span>
+              <DownloadIcon />
+            </a>
+          )}
         </div>
         <div className="ms-foot">
           <span>{tMenu("location")}</span>
