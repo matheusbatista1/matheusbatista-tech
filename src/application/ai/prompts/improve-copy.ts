@@ -31,14 +31,15 @@ export function buildImproveCopyPrompt(params: {
 
   return [
     `You are a senior copy editor improving a portfolio's UI copy.`,
-    `Goal: rewrite the TEXT to read better while preserving meaning, facts, and intent.`,
+    `Goal: rewrite the TEXT so it reads sharper and more confident while preserving meaning, facts, and intent.`,
     `Constraints:`,
     `- WRITE the "improved" field IN ${langName} (same language as the input).`,
-    `- Target tone: "${toneLabel}" — ${toneHint}.`,
+    `- Target tone "${toneLabel}": ${toneHint}.`,
     `- Keep approximately the same length (±20% characters).`,
     `- Do NOT invent facts, names, numbers, links, or product details.`,
     `- Preserve markdown, code, URLs, and proper nouns exactly as given.`,
-    `- Fix grammar, rhythm, and word choice; do not editorialize.`,
+    `- Sharpen rhythm, word choice, and impact while keeping the author's authentic voice.`,
+    `- NEVER use an em dash (—) or en dash (–). Use commas, periods, or parentheses instead.`,
     ``,
     `TEXT:`,
     JSON.stringify(text),

@@ -5,13 +5,15 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { Inter, JetBrains_Mono, Caveat, Instrument_Serif } from "next/font/google";
 import { locales } from "@/presentation/lib/i18n/config";
-import { isLocale } from "@/domain/value-objects/Locale";
+import { DEFAULT_LOCALE, isLocale } from "@/domain/value-objects/Locale";
 import { ThemeProvider } from "@/presentation/providers/ThemeProvider";
 import { PersonaProvider } from "@/presentation/providers/PersonaProvider";
 import { MenuProvider } from "@/presentation/providers/MenuProvider";
 import { LoadingScreen } from "@/presentation/components/interactions/LoadingScreen";
 import { PageViewTracker } from "@/presentation/components/analytics/PageViewTracker";
 import { env, isAIEnabled } from "@/infrastructure/config/env";
+import { container } from "@/infrastructure/container";
+import { DEFAULT_THEME, type Theme } from "@/domain/value-objects/Theme";
 
 const siteName = "Matheus Batista";
 
@@ -31,14 +33,15 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }): Promise<Metadata> {
   const { locale } = await params;
-  const safeLocale = isLocale(locale) ? locale : "en";
+  const safeLocale = isLocale(locale) ? locale : DEFAULT_LOCALE;
 
   const t = await getTranslations({ locale: safeLocale, namespace: "seo" });
   const title = t("title");
   const description = t("description");
 
   const siteUrl = env.NEXT_PUBLIC_SITE_URL;
-  const canonical = safeLocale === "en" ? siteUrl : `${siteUrl}/${safeLocale}`;
+  const localeUrl = (l: string) => (l === DEFAULT_LOCALE ? siteUrl : `${siteUrl}/${l}`);
+  const canonical = localeUrl(safeLocale);
   const ogLocale = localeToOgFormat(safeLocale);
   const alternateOgLocales = Object.entries(OG_LOCALE_MAP)
     .filter(([key]) => key !== safeLocale)
@@ -74,9 +77,9 @@ export async function generateMetadata({
     alternates: {
       canonical,
       languages: {
-        en: siteUrl,
-        pt: `${siteUrl}/pt`,
-        es: `${siteUrl}/es`,
+        en: localeUrl("en"),
+        pt: localeUrl("pt"),
+        es: localeUrl("es"),
       },
     },
     openGraph: {
@@ -144,16 +147,25 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const messages = await getMessages();
 
+  let defaultTheme: Theme = DEFAULT_THEME;
+  try {
+    const content = await container.useCases.getSiteContent.execute();
+    const stored = content.settings.defaultTheme;
+    if (stored === "light" || stored === "dark") defaultTheme = stored;
+  } catch {
+    /* fall back to DEFAULT_THEME when site content is unavailable */
+  }
+
   return (
     <html
       lang={locale}
-      data-theme="dark"
+      data-theme={defaultTheme}
       suppressHydrationWarning
       className={`${inter.variable} ${jetbrainsMono.variable} ${caveat.variable} ${instrumentSerif.variable}`}
     >
       <body>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <ThemeProvider>
+          <ThemeProvider initialTheme={defaultTheme}>
             <PersonaProvider aiEnabled={isAIEnabled}>
               <LoadingScreen />
               <PageViewTracker />

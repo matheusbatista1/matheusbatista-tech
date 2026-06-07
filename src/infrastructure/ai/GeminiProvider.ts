@@ -15,21 +15,33 @@ export class GeminiProvider implements IAIProvider {
     schema,
     model = DEFAULT_MODEL,
     maxTokens,
+    temperature,
+    topP,
   }: GenerateJSONOptions<T>): Promise<T> {
     const { object } = await generateObject({
       model: google(model),
       prompt,
       schema,
       ...(maxTokens ? { maxOutputTokens: maxTokens } : {}),
+      ...(temperature !== undefined ? { temperature } : {}),
+      ...(topP !== undefined ? { topP } : {}),
     });
     return object;
   }
 
-  streamText({ messages, system, model = DEFAULT_MODEL }: StreamTextOptions): StreamTextResult {
+  streamText({
+    messages,
+    system,
+    model = DEFAULT_MODEL,
+    temperature,
+    topP,
+  }: StreamTextOptions): StreamTextResult {
     const result = streamText({
       model: google(model),
       system,
       messages: messages.map((m) => ({ role: m.role, content: m.content })),
+      ...(temperature !== undefined ? { temperature } : {}),
+      ...(topP !== undefined ? { topP } : {}),
     });
     return {
       toDataStreamResponse: () => result.toDataStreamResponse(),

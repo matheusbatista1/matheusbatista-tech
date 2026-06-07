@@ -47,7 +47,7 @@ function SkillCard({ skill }: { skill: Skill }) {
       )}
       <div className="info">
         <div className="nm" title={skill.name}>
-          {abbreviation}
+          {skill.name}
         </div>
         <div className="cat">{skill.category}</div>
       </div>

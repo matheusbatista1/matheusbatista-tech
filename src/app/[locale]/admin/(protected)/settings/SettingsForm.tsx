@@ -27,15 +27,11 @@ interface SettingsFormProps {
 
 function toDefaults(initial: SettingsFormProps["initial"]): SettingsFormValues {
   const { content } = initial;
-  const defaultLang = (
-    ["en", "pt", "es"].includes(content.defaultLang) ? content.defaultLang : "pt"
-  ) as SettingsFormValues["defaultLang"];
   const defaultTheme = (
     ["dark", "light"].includes(content.defaultTheme) ? content.defaultTheme : "dark"
   ) as SettingsFormValues["defaultTheme"];
 
   return {
-    defaultLang,
     defaultTheme,
   };
 }
@@ -121,16 +117,6 @@ export function SettingsForm({ initial }: SettingsFormProps) {
 
       <form id="admin-settings-form" onSubmit={onSubmit} className="admin-settings-form" noValidate>
         <Card header={{ title: t("title") }} className="admin-settings-section">
-          <div className="admin-form-row">
-            <div className="label-row">
-              <span className="label-text">{t("defaultLang")}</span>
-            </div>
-            <Select {...register("defaultLang")}>
-              <option value="pt">Português</option>
-              <option value="en">English</option>
-              <option value="es">Español</option>
-            </Select>
-          </div>
           <div className="admin-form-row">
             <div className="label-row">
               <span className="label-text">{t("defaultTheme")}</span>

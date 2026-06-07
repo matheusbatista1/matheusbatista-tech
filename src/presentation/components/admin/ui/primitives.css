@@ -254,6 +254,9 @@
 .admin-select {
   -webkit-appearance: none;
   appearance: none;
+  /* Render the native option popup with a dark surface so the light text
+     stays readable (Windows defaults to a white popup otherwise). */
+  color-scheme: dark;
   background-image:
     linear-gradient(45deg, transparent 50%, currentColor 50%),
     linear-gradient(135deg, currentColor 50%, transparent 50%);
@@ -266,6 +269,11 @@
   background-repeat: no-repeat;
   padding-right: 28px;
   color: var(--admin-text, #e9edf3);
+}
+
+.admin-select option {
+  color: var(--admin-text, #e9edf3);
+  background: var(--admin-bg-2, #14171c);
 }
 
 .admin-field.has-error .admin-input,

@@ -2,22 +2,26 @@ import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import type { HeroContent } from "@/domain/entities/HeroContent";
 import type { SocialLink } from "@/domain/entities/SocialLink";
+import type { CVAsset } from "@/domain/entities/CVAsset";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
+import { getCvForLocale } from "@/presentation/lib/cv";
 import { FooterNav } from "./FooterNav";
 
 interface FooterProps {
   hero: HeroContent;
   socials: SocialLink[];
   locale: Locale;
+  cvs: CVAsset[];
 }
 
-export async function Footer({ hero, socials, locale }: FooterProps) {
+export async function Footer({ hero, socials, locale, cvs }: FooterProps) {
   const t = await getTranslations("footer");
   const tNav = await getTranslations("nav");
   const tPrivacy = await getTranslations("privacy");
 
   const subtitle = pickLocalized(hero.subtitle, locale);
+  const cv = getCvForLocale(cvs, locale);
 
   return (
     <footer className="footer">
@@ -52,6 +56,11 @@ export async function Footer({ hero, socials, locale }: FooterProps) {
               {s.name}
             </a>
           ))}
+          {cv && (
+            <a href={`/api/cv/${locale}`} download>
+              {t("cv")}
+            </a>
+          )}
           <Link href="/admin">Admin</Link>
         </div>
       </div>

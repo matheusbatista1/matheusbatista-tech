@@ -33,10 +33,12 @@ export function buildProjectDescriptionPrompt(input: ProjectDescriptionPromptInp
     : null;
 
   return [
-    `Write a short project description for ${name}, an engineering project owned by ${context?.name ?? "the portfolio author"}.`,
-    `Goal: 2 sentences per language. Plain, confident, low jargon. Match the portfolio tone.`,
-    `Do NOT invent features or numbers — only describe what the inputs imply.`,
-    `If a tagline is appropriate (one punchy line, ≤10 words, English), include it. Otherwise omit.`,
+    `Write a project description for ${name}, an engineering project by ${context?.name ?? "the portfolio author"}.`,
+    `Goal: 2 to 3 sentences per language, in en, pt and es.`,
+    `Confident and direct, led by impact and what the project actually does. Low jargon, human, specific. Match the portfolio tone.`,
+    `Do NOT invent features or numbers. Only describe what the inputs imply.`,
+    `NEVER use an em dash (—) or en dash (–). Use commas, periods, or parentheses instead.`,
+    `If a strong one line tagline fits (<=10 words, English), include it. Otherwise omit it.`,
     ``,
     `INPUTS (JSON):`,
     JSON.stringify(facts),

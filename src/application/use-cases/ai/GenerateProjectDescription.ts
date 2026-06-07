@@ -9,6 +9,7 @@ import {
   type ProjectDescriptionSchemaType,
 } from "@/application/ai/schemas/project-description";
 import { buildProjectDescriptionPrompt } from "@/application/ai/prompts/project-description";
+import { PROMPT_VERSION, sanitizeAIText } from "@/application/ai/prompts/voice";
 import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "project-description";
@@ -73,6 +74,7 @@ export class GenerateProjectDescription {
       persona: "admin",
       query: queryNormalized,
       content: fingerprint,
+      v: PROMPT_VERSION,
     });
 
     const started = performance.now();
@@ -103,11 +105,22 @@ export class GenerateProjectDescription {
     const prompt = buildProjectDescriptionPrompt({ name, tags, url, hint, context });
 
     try {
-      const result = await this.aiProvider.generateJSON({
+      const raw = await this.aiProvider.generateJSON({
         prompt,
         schema: ProjectDescriptionSchema,
         maxTokens: MAX_OUTPUT_TOKENS,
+        temperature: 0.85,
       });
+
+      const result: ProjectDescriptionSchemaType = {
+        ...raw,
+        description: {
+          en: sanitizeAIText(raw.description.en),
+          pt: sanitizeAIText(raw.description.pt),
+          es: sanitizeAIText(raw.description.es),
+        },
+        ...(raw.tagline ? { tagline: sanitizeAIText(raw.tagline) } : {}),
+      };
 
       await this.cacheRepo.save({
         hash,
