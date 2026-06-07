@@ -48,5 +48,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ loca
     console.warn("[api/cv] failed to log download", err);
   }
 
-  return NextResponse.redirect(asset.url, 302);
+  // Stream the file back with an attachment disposition so the browser
+  // downloads it instead of opening the PDF in a new tab. Redirecting to the
+  // Blob URL would lose the download hint (cross-origin), so we proxy it here.
+  const fileRes = await fetch(asset.url);
+  if (!fileRes.ok || !fileRes.body) {
+    return NextResponse.json({ error: "CV not found" }, { status: 404 });
+  }
+
+  const filename = asset.filename?.trim() || `cv-${rawLocale}.pdf`;
+  const asciiName = filename.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "");
+  const headers = new Headers({
+    "Content-Type": fileRes.headers.get("content-type") ?? "application/pdf",
+    "Content-Disposition": `attachment; filename="${asciiName}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
+    "Cache-Control": "private, no-store",
+  });
+  const contentLength = fileRes.headers.get("content-length");
+  if (contentLength) headers.set("Content-Length", contentLength);
+
+  return new NextResponse(fileRes.body, { status: 200, headers });
 }
