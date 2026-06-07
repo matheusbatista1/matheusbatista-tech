@@ -28,11 +28,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const [siteContent, socials, projects, skills] = await Promise.all([
+  const [siteContent, socials, projects, skills, cvs] = await Promise.all([
     container.useCases.getSiteContent.execute(),
     container.useCases.listSocialLinks.execute(),
     container.useCases.listProjects.execute(),
     container.useCases.listSkills.execute(),
+    container.useCases.listCVs.execute(),
   ]);
 
   return (
@@ -43,23 +44,24 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <Header />
       <PageReveal>
         <main>
-          <Hero hero={siteContent.hero} socials={socials} locale={locale} />
+          <Hero hero={siteContent.hero} socials={socials} locale={locale} cvs={cvs} />
           <About
             about={siteContent.about}
             socials={socials}
             locale={locale}
+            cvs={cvs}
             projectsCount={projects.length}
             companiesCount={COMPANIES_COUNT}
             technologiesCount={skills.length}
           />
           <Projects projects={projects} locale={locale} aiEnabled={isAIEnabled} />
           <Skills skills={skills} />
-          <Contact socials={socials} />
+          <Contact socials={socials} cvs={cvs} />
         </main>
-        <Footer hero={siteContent.hero} socials={socials} locale={locale} />
+        <Footer hero={siteContent.hero} socials={socials} locale={locale} cvs={cvs} />
         <RevealOnScroll />
       </PageReveal>
-      <FullscreenMenu socials={socials} />
+      <FullscreenMenu socials={socials} cvs={cvs} />
       {isAIEnabled && (
         <>
           <PersonaBar />

@@ -4,24 +4,28 @@ import { useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import type { HeroContent } from "@/domain/entities/HeroContent";
 import type { SocialLink } from "@/domain/entities/SocialLink";
+import type { CVAsset } from "@/domain/entities/CVAsset";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
-import { SocialIcon } from "@/presentation/components/icons/Icons";
+import { DownloadIcon, SocialIcon } from "@/presentation/components/icons/Icons";
+import { getCvForLocale } from "@/presentation/lib/cv";
 import { usePersona } from "@/presentation/providers/PersonaProvider";
 
 interface HeroProps {
   hero: HeroContent;
   socials: SocialLink[];
   locale: Locale;
+  cvs: CVAsset[];
 }
 
 const TILT_EASING = 0.1;
 const TILT_RANGE_X = 4;
 const TILT_RANGE_Y = 3;
 
-export function Hero({ hero, socials, locale }: HeroProps) {
+export function Hero({ hero, socials, locale, cvs }: HeroProps) {
   const t = useTranslations("hero");
   const tiltRef = useRef<HTMLHeadingElement>(null);
+  const cv = getCvForLocale(cvs, locale);
 
   useEffect(() => {
     const el = tiltRef.current;
@@ -112,6 +116,13 @@ export function Hero({ hero, socials, locale }: HeroProps) {
               </a>
             </li>
           ))}
+          {cv && (
+            <li>
+              <a href={`/api/cv/${locale}`} aria-label={t("downloadCv")} download>
+                <DownloadIcon />
+              </a>
+            </li>
+          )}
         </ul>
       </div>
     </section>

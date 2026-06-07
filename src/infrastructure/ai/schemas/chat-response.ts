@@ -42,7 +42,7 @@ export const AIBlockSchema = z.discriminatedUnion("type", [
 ]);
 
 export const ChatResponseSchema = z.object({
-  reply: z.string().max(300),
+  reply: z.string().max(700),
   blocks: z.array(AIBlockSchema).max(1),
 });
 

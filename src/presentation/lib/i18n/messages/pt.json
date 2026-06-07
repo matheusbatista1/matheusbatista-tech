@@ -441,6 +441,7 @@
     "projects": "projetos",
     "scroll": "ROLAR",
     "explore": "EXPLORE",
+    "downloadCv": "Baixar CV",
     "currentFocus": "FOCO ATUAL"
   },
   "projects": {
@@ -461,6 +462,7 @@
   "about": {
     "label": "SOBRE",
     "send": "Envie uma mensagem",
+    "downloadCv": "Baixar CV",
     "tailoredForYou": "personalizado para você",
     "role": "Cargo",
     "basedIn": "Localização",

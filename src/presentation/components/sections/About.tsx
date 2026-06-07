@@ -1,9 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import type { AboutContent } from "@/domain/entities/AboutContent";
 import type { SocialLink } from "@/domain/entities/SocialLink";
+import type { CVAsset } from "@/domain/entities/CVAsset";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
-import { MailIcon } from "@/presentation/components/icons/Icons";
+import { DownloadIcon, MailIcon } from "@/presentation/components/icons/Icons";
+import { getCvForLocale } from "@/presentation/lib/cv";
 import { AboutStats } from "./AboutStats";
 import { AboutBody } from "./AboutBody";
 
@@ -11,6 +13,7 @@ interface AboutProps {
   about: AboutContent;
   socials: SocialLink[];
   locale: Locale;
+  cvs: CVAsset[];
   projectsCount: number;
   companiesCount: number;
   technologiesCount: number;
@@ -20,11 +23,13 @@ export async function About({
   about,
   socials,
   locale,
+  cvs,
   projectsCount,
   companiesCount,
   technologiesCount,
 }: AboutProps) {
   const t = await getTranslations("about");
+  const cv = getCvForLocale(cvs, locale);
 
   const label = pickLocalized(about.label, locale) || t("label");
   const body = pickLocalized(about.body, locale);
@@ -98,9 +103,12 @@ export async function About({
                 <MailIcon />
                 {t("send")}
               </a>
-              {/* TODO(cv): once a CV asset is uploaded for this locale, add
-                  <a href={`/api/cv/${locale}`}> to enable tracked downloads
-                  via the /api/cv/[locale] route. */}
+              {cv && (
+                <a className="send-msg" href={`/api/cv/${locale}`} download>
+                  <DownloadIcon />
+                  {t("downloadCv")}
+                </a>
+              )}
             </div>
           </div>
         </div>

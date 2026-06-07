@@ -37,10 +37,11 @@ export function buildDraftReplyPrompt({
 
   return [
     `You are drafting an email reply on behalf of ${context.name}, a software engineer.`,
-    `Tone: "${tone}" — ${toneHint}.`,
-    `Return ONLY the reply body text, no subject line, in the same language as the original message (default ${langLabel}).`,
+    `Tone "${tone}": ${toneHint}.`,
+    `Confident, warm, and human. Return ONLY the reply body text, no subject line, in the same language as the original message (default ${langLabel}).`,
     `Sign with the first name only. Do not invent meetings, prices, or commitments.`,
     `If the incoming message asks for something specific, address it directly using ONLY the facts below.`,
+    `NEVER use an em dash (—) or en dash (–). Use commas, periods, or parentheses instead.`,
     ``,
     `AUTHOR FACTS (JSON):`,
     JSON.stringify({

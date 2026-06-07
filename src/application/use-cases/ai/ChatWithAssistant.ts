@@ -6,24 +6,17 @@ import type { IAIProvider } from "@/application/ports/IAIProvider";
 import type { IAICacheRepository } from "@/domain/repositories/IAICacheRepository";
 import { BuildPromptContext } from "./BuildPromptContext";
 import { computeContentFingerprint, hashCacheKey } from "./cache-key";
+import {
+  LANG_LABEL,
+  PERSONA_VOICE,
+  PROMPT_VERSION,
+  globalStyle,
+  sanitizeAIText,
+} from "@/application/ai/prompts/voice";
 import type { LogAIUsage } from "@/application/use-cases/analytics/LogAIUsage";
 
 const KIND = "chat";
 const TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
-
-const PERSONA_HINT: Record<PersonaId, string> = {
-  default: "balanced overview",
-  recruiter: "impact & soft skills",
-  techlead: "architecture & stack",
-  cto: "business value & scale",
-  designer: "craft & UX",
-};
-
-const LANG_LABEL: Record<Locale, string> = {
-  en: "English",
-  pt: "Brazilian Portuguese",
-  es: "Spanish",
-};
 
 const AIBlockSchema = z.discriminatedUnion("type", [
   z.object({
@@ -53,7 +46,7 @@ const AIBlockSchema = z.discriminatedUnion("type", [
 ]);
 
 const ChatResponseSchema = z.object({
-  reply: z.string().max(300),
+  reply: z.string().max(700),
   blocks: z.array(AIBlockSchema).max(1),
 });
 
@@ -102,6 +95,7 @@ export class ChatWithAssistant {
       locale,
       query: normalizedQuestion,
       content: fingerprint,
+      v: PROMPT_VERSION,
     });
 
     const started = performance.now();
@@ -124,30 +118,39 @@ export class ChatWithAssistant {
       return { response: cached.response as ChatResponse, cached: true };
     }
 
-    const personaHint = PERSONA_HINT[persona];
+    const personaVoice = PERSONA_VOICE[persona];
     const langName = LANG_LABEL[locale];
 
     const prompt = [
-      `You are the AI guide on the portfolio of ${context.name}, a software engineer.`,
-      `Answer using ONLY the data below.`,
-      `Visitor persona: "${persona}" — tailor emphasis (${personaHint}).`,
-      `WRITE THE "reply" IN ${langName}.`,
+      `You are the AI guide on ${context.name}'s portfolio, a software engineer. Answer visitor questions about him using ONLY the data below.`,
+      `Visitor: ${personaVoice.label}. ${personaVoice.focus}`,
+      ``,
+      globalStyle(locale),
+      `- Write the "reply" in ${langName}. Keep it tight and natural, up to about 80 words. Answer the question directly and with conviction.`,
       ``,
       `DATA (JSON):`,
       JSON.stringify(context),
       ``,
       `Question: ${normalizedQuestion}`,
       ``,
-      `Reply with COMPACT JSON only. "reply" under 30 words, AT MOST 1 block.`,
-      `Use project ids exactly as in DATA. Omit blocks entirely if none fit (empty array).`,
+      `Reply with JSON only. Use AT MOST 1 block, and omit blocks entirely when none fits (empty array).`,
+      `Use project ids exactly as in DATA.`,
       `block.type is one of: "skills-chart" | "skill-chips" | "project" | "projects" | "contact" | "stats" | "timeline" | "text".`,
     ].join("\n");
 
     try {
-      const response = await this.aiProvider.generateJSON({
+      const raw = await this.aiProvider.generateJSON({
         prompt,
         schema: ChatResponseSchema,
+        temperature: 0.8,
       });
+
+      const response: ChatResponse = {
+        reply: sanitizeAIText(raw.reply),
+        blocks: raw.blocks.map((b) =>
+          b.type === "text" ? { ...b, content: sanitizeAIText(b.content) } : b,
+        ),
+      };
 
       await this.cacheRepo.save({
         hash,

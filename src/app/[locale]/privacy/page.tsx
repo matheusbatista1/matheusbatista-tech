@@ -19,9 +19,10 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
   setRequestLocale(locale);
 
   const t = await getTranslations("privacy");
-  const [siteContent, socials] = await Promise.all([
+  const [siteContent, socials, cvs] = await Promise.all([
     container.useCases.getSiteContent.execute(),
     container.useCases.listSocialLinks.execute(),
+    container.useCases.listCVs.execute(),
   ]);
 
   const backLabel = locale === "pt" ? "Voltar" : locale === "es" ? "Volver" : "Back";
@@ -81,8 +82,8 @@ export default async function PrivacyPage({ params }: PrivacyPageProps) {
           </section>
         </div>
       </main>
-      <Footer hero={siteContent.hero} socials={socials} locale={locale} />
-      <FullscreenMenu socials={socials} />
+      <Footer hero={siteContent.hero} socials={socials} locale={locale} cvs={cvs} />
+      <FullscreenMenu socials={socials} cvs={cvs} />
     </>
   );
 }

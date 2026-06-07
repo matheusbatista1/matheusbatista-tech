@@ -4,18 +4,23 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { SocialLink } from "@/domain/entities/SocialLink";
+import type { CVAsset } from "@/domain/entities/CVAsset";
+import type { Locale } from "@/domain/value-objects/Locale";
 import {
   AlertCircleIcon,
   ArrowUpRightIcon,
   CheckIcon,
+  DownloadIcon,
   MailIcon,
 } from "@/presentation/components/icons/Icons";
+import { getCvForLocale } from "@/presentation/lib/cv";
 import { Typewriter } from "@/presentation/components/ui/Typewriter";
 
 interface ContactProps {
   socials: SocialLink[];
+  cvs: CVAsset[];
 }
 
 const contactSchema = z.object({
@@ -28,9 +33,11 @@ const contactSchema = z.object({
 type ContactFormValues = z.infer<typeof contactSchema>;
 type FormState = "form" | "ok" | "err";
 
-export function Contact({ socials }: ContactProps) {
+export function Contact({ socials, cvs }: ContactProps) {
   const t = useTranslations("contact");
   const tNav = useTranslations("nav");
+  const locale = useLocale() as Locale;
+  const cv = getCvForLocale(cvs, locale);
   const rawSuggestions = t.raw("subjectSuggestions");
   const subjectPhrases: string[] = Array.isArray(rawSuggestions)
     ? rawSuggestions.filter((p): p is string => typeof p === "string")
@@ -147,6 +154,18 @@ export function Contact({ socials }: ContactProps) {
                 </a>
               </div>
             ))}
+
+            {cv && (
+              <div className="contact-channel">
+                <span className="lbl">{t("resume")}</span>
+                <a className="val" href={`/api/cv/${locale}`} download>
+                  {t("downloadCv")}
+                </a>
+                <a className="ico" href={`/api/cv/${locale}`} aria-label={t("downloadCv")} download>
+                  <DownloadIcon />
+                </a>
+              </div>
+            )}
           </div>
 
           <form className="contact-form" onSubmit={handleSubmit(onSubmit)} noValidate>

@@ -6,12 +6,16 @@ export interface GenerateJSONOptions<T> {
   schema: z.ZodSchema<T>;
   model?: string;
   maxTokens?: number;
+  temperature?: number;
+  topP?: number;
 }
 
 export interface StreamTextOptions {
   messages: ChatMessage[];
   system?: string;
   model?: string;
+  temperature?: number;
+  topP?: number;
 }
 
 export interface StreamTextResult {
