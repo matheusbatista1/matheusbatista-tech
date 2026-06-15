@@ -48,6 +48,7 @@ const AIBlockSchema = z.discriminatedUnion("type", [
 const ChatResponseSchema = z.object({
   reply: z.string().max(700),
   blocks: z.array(AIBlockSchema).max(1),
+  suggestions: z.array(z.string().max(120)).max(4),
 });
 
 export interface ChatWithAssistantInput {
@@ -136,6 +137,7 @@ export class ChatWithAssistant {
       `Reply with JSON only. Use AT MOST 1 block, and omit blocks entirely when none fits (empty array).`,
       `Use project ids exactly as in DATA.`,
       `block.type is one of: "skills-chart" | "skill-chips" | "project" | "projects" | "contact" | "stats" | "timeline" | "text".`,
+      `Also return "suggestions": 3 to 4 short follow-up questions (max ~10 words each) the visitor would naturally ask next, in ${langName}. Write them the way a visitor refers to him (third person, e.g. "What are his strongest skills?"), make them flow from this answer, and never repeat the question just asked.`,
     ].join("\n");
 
     try {
@@ -150,6 +152,7 @@ export class ChatWithAssistant {
         blocks: raw.blocks.map((b) =>
           b.type === "text" ? { ...b, content: sanitizeAIText(b.content) } : b,
         ),
+        suggestions: raw.suggestions.map((s) => sanitizeAIText(s)).filter(Boolean),
       };
 
       await this.cacheRepo.save({

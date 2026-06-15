@@ -74,7 +74,12 @@ export async function POST(request: Request) {
       ip,
     });
     return NextResponse.json(
-      { reply: result.response.reply, blocks: result.response.blocks, cached: result.cached },
+      {
+        reply: result.response.reply,
+        blocks: result.response.blocks,
+        suggestions: result.response.suggestions,
+        cached: result.cached,
+      },
       { headers: { "X-AI-Cached": String(result.cached) } },
     );
   } catch (error) {

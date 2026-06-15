@@ -16,4 +16,5 @@ export type AIBlockType = AIBlock["type"];
 export interface ChatResponse {
   reply: string;
   blocks: AIBlock[];
+  suggestions: string[];
 }
