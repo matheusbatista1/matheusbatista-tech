@@ -44,6 +44,7 @@ export const AIBlockSchema = z.discriminatedUnion("type", [
 export const ChatResponseSchema = z.object({
   reply: z.string().max(700),
   blocks: z.array(AIBlockSchema).max(1),
+  suggestions: z.array(z.string().max(120)).max(4),
 });
 
 export type ChatResponseSchemaType = z.infer<typeof ChatResponseSchema>;

@@ -21,6 +21,7 @@ interface ChatMessage {
   role: "user" | "assistant";
   text: string;
   blocks: AIBlock[];
+  suggestions?: string[];
 }
 
 export function AIAssistant({ projects, skills, socials }: AIAssistantProps) {
@@ -99,7 +100,12 @@ export function AIAssistant({ projects, skills, socials }: AIAssistantProps) {
         const data = (await res.json()) as ChatResponse;
         setThread((prev) => [
           ...prev,
-          { role: "assistant", text: data.reply ?? "", blocks: data.blocks ?? [] },
+          {
+            role: "assistant",
+            text: data.reply ?? "",
+            blocks: data.blocks ?? [],
+            suggestions: data.suggestions ?? [],
+          },
         ]);
       } catch {
         setThread((prev) => [...prev, { role: "assistant", text: t("parseError"), blocks: [] }]);
@@ -109,6 +115,11 @@ export function AIAssistant({ projects, skills, socials }: AIAssistantProps) {
     },
     [busy, query, persona, locale, t],
   );
+
+  const lastMessage = thread[thread.length - 1];
+  const followUps =
+    !busy && lastMessage?.role === "assistant" ? (lastMessage.suggestions ?? []) : [];
+  const activeSuggestions = thread.length === 0 ? suggestions : followUps;
 
   return (
     <>
@@ -198,9 +209,9 @@ export function AIAssistant({ projects, skills, socials }: AIAssistantProps) {
           )}
         </div>
 
-        {thread.length === 0 && (
+        {activeSuggestions.length > 0 && (
           <div className="ai-suggestions">
-            {suggestions.map((s) => (
+            {activeSuggestions.map((s) => (
               <button type="button" key={s} onClick={() => ask(s)}>
                 {s}
               </button>
