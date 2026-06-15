@@ -2778,6 +2778,16 @@ a.workplace-badge .wb-pill,
   font-weight: 700;
   color: #fff;
 }
+.ai-chip .d.has-img {
+  overflow: hidden;
+  padding: 0;
+}
+.ai-chip .d img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
 
 .ai-proj-list {
   display: flex;

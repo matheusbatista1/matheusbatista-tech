@@ -5,7 +5,7 @@ import type { PersonaId } from "@/domain/entities/ai/Persona";
  * Versão dos prompts/estilo de geração. Entra na chave de cache de IA para
  * invalidar respostas antigas sempre que a voz ou as instruções mudarem.
  */
-export const PROMPT_VERSION = "3";
+export const PROMPT_VERSION = "4";
 
 export const LANG_LABEL: Record<Locale, string> = {
   en: "English",
