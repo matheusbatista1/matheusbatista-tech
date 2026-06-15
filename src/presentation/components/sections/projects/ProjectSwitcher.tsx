@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { Project, ProjectPill } from "@/domain/entities/Project";
+import type { Project } from "@/domain/entities/Project";
+import { formatPillLabel } from "./pill";
 
 interface ProjectSwitcherProps {
   projects: Project[];
@@ -9,14 +10,6 @@ interface ProjectSwitcherProps {
   onSelect: (index: number) => void;
   reasons?: Record<string, string>;
 }
-
-const PILL_LABELS: Record<ProjectPill, string> = {
-  FLAGSHIP: "FLAGSHIP",
-  PRODUCTION: "PRODUCTION",
-  INTEGRATION: "INTEGRATION",
-  CASE_STUDY: "CASE STUDY",
-  AI: "AI",
-};
 
 export function ProjectSwitcher({
   projects,
@@ -38,7 +31,7 @@ export function ProjectSwitcher({
               <span className="sw-n">{String(i + 1).padStart(2, "0")}</span>
               <span className="sw-name">{p.name}</span>
               <span className="sw-pill">
-                {reasons[p.id] ?? (p.pill ? PILL_LABELS[p.pill] : "PROJECT")}
+                {reasons[p.id] ?? (p.pill ? formatPillLabel(p.pill) : "PROJECT")}
               </span>
               <span className="sw-bar" aria-hidden="true" />
             </button>

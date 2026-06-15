@@ -1,26 +1,19 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import type { Project, ProjectPill } from "@/domain/entities/Project";
+import type { Project } from "@/domain/entities/Project";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
 import { AIMark, ArrowUpRightIcon } from "@/presentation/components/icons/Icons";
 import { usePersona } from "@/presentation/providers/PersonaProvider";
 import { WorkplaceBadge } from "./WorkplaceBadge";
+import { formatPillLabel } from "./pill";
 
 interface ProjectMetaProps {
   project: Project;
   locale: Locale;
   matchReason?: string;
 }
-
-const PILL_LABELS: Record<ProjectPill, string> = {
-  FLAGSHIP: "FLAGSHIP",
-  PRODUCTION: "PRODUCTION",
-  INTEGRATION: "INTEGRATION",
-  CASE_STUDY: "CASE STUDY",
-  AI: "AI",
-};
 
 export function ProjectMeta({ project, locale, matchReason }: ProjectMetaProps) {
   const t = useTranslations("projects");
@@ -31,7 +24,7 @@ export function ProjectMeta({ project, locale, matchReason }: ProjectMetaProps) 
     personaDescription && personaDescription !== description && personaDescription.length > 0,
   );
   const externalUrl = project.deployed ? (project.liveUrl ?? project.url) : null;
-  const pillLabel = project.pill ? PILL_LABELS[project.pill] : "PROJECT";
+  const pillLabel = project.pill ? formatPillLabel(project.pill) : "PROJECT";
 
   return (
     <div className="showcase-meta" key={project.id}>
