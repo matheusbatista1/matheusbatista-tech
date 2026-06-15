@@ -1,7 +1,13 @@
 import type { LocalizedText } from "../value-objects/LocalizedText";
 import type { ProjectImage } from "./ProjectImage";
 
-export type ProjectPill = "FLAGSHIP" | "PRODUCTION" | "INTEGRATION" | "CASE_STUDY" | "AI";
+export const SUGGESTED_PILLS = [
+  "FLAGSHIP",
+  "PRODUCTION",
+  "INTEGRATION",
+  "CASE_STUDY",
+  "AI",
+] as const;
 
 export interface ProjectImageLegacy {
   src: string;
@@ -15,7 +21,7 @@ export interface Project {
   url: string | null;
   liveUrl: string | null;
   description: LocalizedText;
-  pill: ProjectPill | null;
+  pill: string | null;
   tags: string[];
   images: ProjectImageLegacy[];
   coverImageUrl?: string | null;

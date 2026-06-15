@@ -5,6 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useTranslations } from "next-intl";
 
 import type { Project } from "@/domain/entities/Project";
+import { SUGGESTED_PILLS } from "@/domain/entities/Project";
 import type { ProjectImage } from "@/domain/entities/ProjectImage";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { AIButton } from "@/presentation/components/admin/ai/AIButton";
@@ -350,10 +351,20 @@ export const ProjectForm = forwardRef<ProjectFormHandle, ProjectFormProps>(funct
       <div className="admin-form-row">
         <div className="admin-form-row-label-col">
           <span className="label-text">Badge</span>
-          <div className="help">Small uppercase pill.</div>
+          <div className="help">Small uppercase pill. Pick a suggestion or type your own.</div>
         </div>
         <div className="admin-form-row-field">
-          <Input placeholder="FLAGSHIP" {...register("pill")} maxLength={40} />
+          <Input
+            placeholder="FLAGSHIP"
+            list="project-pill-suggestions"
+            {...register("pill")}
+            maxLength={40}
+          />
+          <datalist id="project-pill-suggestions">
+            {SUGGESTED_PILLS.map((value) => (
+              <option key={value} value={value} />
+            ))}
+          </datalist>
         </div>
       </div>
 
