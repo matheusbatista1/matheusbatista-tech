@@ -88,7 +88,6 @@ export async function createProjectAction(
 
   const input: ProjectInput = {
     ...parsed.data,
-    pill: parsed.data.pill as ProjectInput["pill"],
     slug,
     images: [],
     order,
@@ -134,7 +133,6 @@ export async function updateProjectAction(
 
   const input: ProjectInput = {
     ...parsed.data,
-    pill: parsed.data.pill as ProjectInput["pill"],
     slug,
     images: existing.images,
     order: existing.order,

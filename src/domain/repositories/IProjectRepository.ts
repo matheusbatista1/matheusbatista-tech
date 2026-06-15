@@ -1,4 +1,4 @@
-import type { Project, ProjectImageLegacy, ProjectPill } from "../entities/Project";
+import type { Project, ProjectImageLegacy } from "../entities/Project";
 import type { LocalizedText } from "../value-objects/LocalizedText";
 
 export interface ProjectInput {
@@ -7,7 +7,7 @@ export interface ProjectInput {
   url: string | null;
   liveUrl: string | null;
   description: LocalizedText;
-  pill: ProjectPill | null;
+  pill: string | null;
   tags: string[];
   images: ProjectImageLegacy[];
   employerName: string | null;

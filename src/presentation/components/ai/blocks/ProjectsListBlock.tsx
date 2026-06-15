@@ -5,6 +5,7 @@ import type { Project } from "@/domain/entities/Project";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { pickLocalized } from "@/domain/value-objects/LocalizedText";
 import { ArrowUpRightIcon } from "@/presentation/components/icons/Icons";
+import { formatPillLabel } from "@/presentation/components/sections/projects/pill";
 
 interface ProjectsListBlockProps {
   ids: string[];
@@ -35,7 +36,7 @@ export function ProjectsListBlock({ ids, projects, locale, onOpen }: ProjectsLis
             <div>
               <div className="ai-proj-top">
                 <span className="ai-proj-name">{p.name}</span>
-                {p.pill && <span className="ai-proj-pill">{p.pill}</span>}
+                {p.pill && <span className="ai-proj-pill">{formatPillLabel(p.pill)}</span>}
               </div>
               <p className="ai-proj-desc">{description}</p>
               <div className="ai-proj-tags">
