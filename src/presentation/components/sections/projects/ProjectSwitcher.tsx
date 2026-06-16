@@ -29,9 +29,11 @@ export function ProjectSwitcher({
           <li key={p.id} className={i === activeIndex ? "on" : ""}>
             <button type="button" onClick={() => onSelect(i)} aria-current={i === activeIndex}>
               <span className="sw-n">{String(i + 1).padStart(2, "0")}</span>
-              <span className="sw-name">{p.name}</span>
-              <span className="sw-pill">
-                {reasons[p.id] ?? (p.pill ? formatPillLabel(p.pill) : "PROJECT")}
+              <span className="sw-text">
+                <span className="sw-name">{p.name}</span>
+                <span className="sw-pill">
+                  {reasons[p.id] ?? (p.pill ? formatPillLabel(p.pill) : "PROJECT")}
+                </span>
               </span>
               <span className="sw-bar" aria-hidden="true" />
             </button>
