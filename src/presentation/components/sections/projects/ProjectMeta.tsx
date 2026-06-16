@@ -33,25 +33,23 @@ export function ProjectMeta({ project, locale, matchReason }: ProjectMetaProps) 
         {matchReason && <div className="meta-match">{matchReason}</div>}
       </div>
 
-      <div className="meta-head">
-        <h3 className="meta-name">{project.name}</h3>
+      <h3 className="meta-name">{project.name}</h3>
 
-        <WorkplaceBadge project={project} />
+      <WorkplaceBadge project={project} />
 
-        {showPersona ? (
-          <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
-            <span className="meta-persona-tag">
-              <AIMark size={11} />
-              {t("tailored")}
-            </span>
-            {personaDescription}
-          </p>
-        ) : (
-          <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
-            {description}
-          </p>
-        )}
-      </div>
+      {showPersona ? (
+        <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
+          <span className="meta-persona-tag">
+            <AIMark size={11} />
+            {t("tailored")}
+          </span>
+          {personaDescription}
+        </p>
+      ) : (
+        <p className={["meta-desc", busy ? "persona-loading" : ""].filter(Boolean).join(" ")}>
+          {description}
+        </p>
+      )}
 
       <div className="meta-tags">
         {project.tags.map((tag) => (

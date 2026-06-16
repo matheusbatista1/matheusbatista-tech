@@ -1448,23 +1448,17 @@ a {
   letter-spacing: 0.02em;
 }
 
-/* Fixed vertical footprint for title + badge + description so tags and CTA
-   stay put across projects. The description (flex child) absorbs the slack:
-   a 1-line title lets it start higher and grow; a 3-line title pushes its top
-   down. Only the description's TOP moves — its bottom stays anchored here. */
-.meta-head {
-  display: flex;
-  flex-direction: column;
-  min-height: clamp(360px, 26vw, 440px);
-}
-
 .meta-name {
   font-size: clamp(32px, 4.2vw, 56px);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.02;
-  margin: 4px 0 0;
+  margin: 4px 0 6px;
   color: var(--color-text);
+  /* Reserve room for up to 3 lines so 1-line vs 3-line titles keep
+     the description (and everything below it) at the same vertical
+     position across projects. */
+  min-height: calc(3lh);
 }
 
 .workplace-badge {
@@ -1528,14 +1522,12 @@ a.workplace-badge .wb-pill,
   font-size: 16px;
   line-height: 1.65;
   color: var(--color-text-mute);
-  /* Minimum 3-line gap below the title/badge; the top moves down as the title
-     grows but never closer than this. */
-  margin: calc(3lh) 0 0;
+  margin: 0;
   max-width: 460px;
-  /* Fill the slack down to the fixed bottom of .meta-head and scroll long
-     content internally, so the description's bottom (and tags+CTA) stay put. */
-  flex: 1 1 auto;
-  min-height: 0;
+  /* Fixed scrollable box: short descriptions don't push tags+CTA up, long
+     ones scroll internally. Keeps every project's vertical footprint the
+     same without truncating content. */
+  max-height: calc(8lh);
   overflow-y: auto;
   padding-right: 8px;
   /* Subtle scrollbar */
@@ -1669,7 +1661,7 @@ a.workplace-badge .wb-pill,
   text-align: left;
   cursor: pointer;
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: 12px;
   position: relative;
@@ -1687,17 +1679,29 @@ a.workplace-badge .wb-pill,
   font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  /* Show the full project name (wrap instead of truncating). */
+  overflow-wrap: anywhere;
 }
 .sw-list button .sw-pill {
+  /* Out of the grid flow so it never squeezes the name; only fades in on
+     hover/active at the top-right. */
+  position: absolute;
+  top: 14px;
+  right: 0;
+  max-width: 50%;
+  text-align: right;
   font-family: var(--font-mono);
   font-size: 9px;
   letter-spacing: 0.18em;
   color: var(--color-text-dim);
   opacity: 0;
   transition: opacity 220ms;
+  pointer-events: none;
+}
+/* Reserve room for the pill only when it's visible, so it never overlaps. */
+.sw-list li.on button .sw-name,
+.sw-list button:hover .sw-name {
+  padding-right: 96px;
 }
 .sw-list button .sw-bar {
   position: absolute;
