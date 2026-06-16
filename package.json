@@ -5,7 +5,7 @@
   "description": "Portfolio de Matheus Batista — Software Engineer. Next.js + TypeScript + Clean Architecture + Vercel AI SDK.",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "prisma generate && prisma migrate deploy && prisma db seed && next build",
+    "build": "prisma generate && prisma migrate deploy && next build",
     "start": "next start",
     "postinstall": "prisma generate",
     "lint": "eslint .",
