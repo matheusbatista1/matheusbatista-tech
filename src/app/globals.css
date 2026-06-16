@@ -1448,17 +1448,23 @@ a {
   letter-spacing: 0.02em;
 }
 
+/* Fixed vertical footprint for title + badge + description so tags and CTA
+   stay put across projects. The description (flex child) absorbs the slack:
+   a 1-line title lets it start higher and grow; a 3-line title pushes its top
+   down. Only the description's TOP moves — its bottom stays anchored here. */
+.meta-head {
+  display: flex;
+  flex-direction: column;
+  min-height: clamp(360px, 26vw, 440px);
+}
+
 .meta-name {
   font-size: clamp(32px, 4.2vw, 56px);
   font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.02;
-  margin: 4px 0 6px;
+  margin: 4px 0 0;
   color: var(--color-text);
-  /* Reserve room for up to 3 lines so 1-line vs 3-line titles keep
-     the description (and everything below it) at the same vertical
-     position across projects. */
-  min-height: calc(3lh);
 }
 
 .workplace-badge {
@@ -1522,12 +1528,14 @@ a.workplace-badge .wb-pill,
   font-size: 16px;
   line-height: 1.65;
   color: var(--color-text-mute);
-  margin: 0;
+  /* Minimum 3-line gap below the title/badge; the top moves down as the title
+     grows but never closer than this. */
+  margin: calc(3lh) 0 0;
   max-width: 460px;
-  /* Fixed scrollable box: short descriptions don't push tags+CTA up, long
-     ones scroll internally. Keeps every project's vertical footprint the
-     same without truncating content. */
-  max-height: calc(8lh);
+  /* Fill the slack down to the fixed bottom of .meta-head and scroll long
+     content internally, so the description's bottom (and tags+CTA) stay put. */
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 8px;
   /* Subtle scrollbar */
