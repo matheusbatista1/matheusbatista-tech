@@ -1,6 +1,6 @@
 # matheusbatistadev.com
 
-Portfolio pessoal de **Matheus Batista** — Software Engineer.
+Personal portfolio of **Matheus Batista** — Software Engineer.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -11,108 +11,143 @@ Portfolio pessoal de **Matheus Batista** — Software Engineer.
 
 ---
 
-## Sobre
+## About
 
-Site pessoal com seções de hero, about, projects, skills e contato, em **PT / EN / ES**. Conta com um assistente de IA conversacional, sistema de personas que adapta o conteúdo em tempo real ao tipo de visitante (recruiter, tech lead, CTO, designer), busca semântica de projetos e um painel admin para gerenciar todo o CMS.
+A personal site with hero, about, projects, skills, and contact sections, available in **PT / EN / ES**. It goes beyond a static portfolio with a set of AI-powered features:
 
-## Stack
+- A conversational AI assistant (opens with `Cmd/Ctrl + K`).
+- A **persona system** that adapts the content in real time to the type of visitor (recruiter, tech lead, CTO, designer).
+- Semantic search across projects.
+- An authenticated **admin panel** for managing the entire CMS.
 
-- **Next.js 15** (App Router, Turbopack)
-- **TypeScript 5** estrito
-- **Tailwind CSS v4** (config via `@theme`)
-- **Prisma 6** + **PostgreSQL** (Neon em prod, Docker dev)
-- **next-intl** para i18n
+The AI features run on the Vercel AI SDK with **Google Gemini 2.5 Flash** (free tier), gated behind Upstash-based rate limiting to keep usage in check.
+
+## Tech stack
+
+- **Next.js 15** (App Router, Turbopack) + **React 19**
+- **TypeScript 5** (strict)
+- **Tailwind CSS v4** (configured via `@theme`)
+- **Prisma 6** + **PostgreSQL** (Neon in production, Docker in development)
+- **next-intl** for i18n (PT / EN / ES)
 - **Vercel AI SDK** + **Google Gemini 2.5 Flash** (free tier)
-- **Upstash Redis** + **`@upstash/ratelimit`** (anti-abuso)
-- **Framer Motion** + vanilla rAF
+- **Upstash Redis** + **`@upstash/ratelimit`** (abuse protection)
+- **NextAuth v5 (Auth.js)** — Google OAuth + email allowlist for the admin
+- **Vercel Blob** for image and CV uploads
+- **Framer Motion** + vanilla `requestAnimationFrame`
 - **react-hook-form** + **zod**
 - **Husky** + **commitlint** + **lint-staged**
-- Deploy na **Vercel**
+- Deployed on **Vercel**
 
-## Arquitetura
+## Architecture
 
-Clean Architecture com 4 camadas estritas:
+The codebase follows Clean Architecture with four strict layers:
 
 ```
 src/
-├── domain/          Regras puras, zero deps externas
+├── domain/          Pure business rules, zero external deps
 ├── application/     Use cases + ports (interfaces)
 ├── infrastructure/  Prisma, Vercel AI SDK, Upstash, mappers
-└── presentation/    Next.js (app/, components/, hooks/, providers/)
+└── presentation/    UI — components, hooks, providers
 ```
 
-Dependências permitidas:
+Allowed dependency direction:
 
 ```
 domain  ←  application  ←  infrastructure
                        ←  presentation
-                             ↳  (api routes + container) → infrastructure
+                             ↳  (Next.js app/ routes + container) → infrastructure
 ```
 
-ESLint `boundaries` aplica essas regras. Detalhes em [CLAUDE.md](CLAUDE.md).
+> Next.js routes live in `src/app/**` and act as composition roots: they wire route handlers and pages to use cases via `infrastructure/container.ts`. The ESLint `boundaries` plugin enforces these rules. See [CLAUDE.md](CLAUDE.md) for the full conventions.
 
-## Setup local
+## Getting started
 
-### Pré-requisitos
+### Prerequisites
 
 - Node.js 20+
-- pnpm (ou npm/yarn)
-- Docker Desktop (para Postgres local)
+- pnpm (npm/yarn also work)
+- Docker Desktop (for local Postgres)
 
-### Passos
+### Steps
 
 ```bash
-# 1. Clone e instale
-git clone <repo>
+# 1. Clone and install
+git clone https://github.com/matheusbatista1/matheusbatista-tech.git
 cd matheusbatista-tech
 pnpm install
 
-# 2. Configure .env.local
+# 2. Configure your environment
 cp .env.example .env.local
-# Edite e adicione:
-#   GOOGLE_GENERATIVE_AI_API_KEY — pegue em https://aistudio.google.com
-#   UPSTASH_REDIS_REST_URL/TOKEN — opcional em dev (fallback noop)
+# Then fill in the values described in the table below.
 
-# 3. Sobe o Postgres local
+# 3. Start local Postgres
 docker compose up -d
 
-# 4. Migrations + seed
+# 4. Run migrations and seed the database
 pnpm db:migrate
 pnpm db:seed
 
-# 5. Dev server
+# 5. Start the dev server
 pnpm dev
 ```
 
-Abra http://localhost:3000.
+Open [http://localhost:3000](http://localhost:3000).
+
+### Environment variables
+
+See `.env.example` for the full, commented reference. Summary:
+
+| Variable                       | Required        | Where to get it                                                           |
+| ------------------------------ | --------------- | ------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_SITE_URL`         | Yes             | Your site URL (`http://localhost:3000` in dev)                            |
+| `DATABASE_URL`                 | Yes             | Local Docker Postgres, or [Neon](https://neon.tech) (free tier)           |
+| `DIRECT_URL`                   | Yes             | Non-pooled Postgres URL for migrations (equals `DATABASE_URL` in dev)     |
+| `GOOGLE_GENERATIVE_AI_API_KEY` | Yes (for AI)    | [aistudio.google.com](https://aistudio.google.com) (free)                 |
+| `UPSTASH_REDIS_REST_URL`       | Optional in dev | [upstash.com](https://upstash.com) (free; falls back to no-op)            |
+| `UPSTASH_REDIS_REST_TOKEN`     | Optional in dev | Same as above                                                             |
+| `AUTH_SECRET`                  | Yes (for admin) | Generate with `openssl rand -base64 32`                                   |
+| `AUTH_GOOGLE_ID`               | Yes (for admin) | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) |
+| `AUTH_GOOGLE_SECRET`           | Yes (for admin) | Same as above                                                             |
+| `AUTH_ALLOWED_EMAILS`          | Yes (for admin) | Comma-separated allowlist of admin emails                                 |
+| `BLOB_READ_WRITE_TOKEN`        | Yes in prod     | Vercel Dashboard → Storage → Blob                                         |
+| `ANALYTICS_SALT`               | Recommended     | Random string used to hash IPs in analytics logs                          |
+
+> In development, leaving the Upstash variables empty activates a no-op rate limiter that always allows requests.
 
 ## Scripts
 
-| Comando           | Descrição                    |
-| ----------------- | ---------------------------- |
-| `pnpm dev`        | Dev server (Turbopack)       |
-| `pnpm build`      | Build de produção            |
-| `pnpm start`      | Serve o build                |
-| `pnpm lint`       | ESLint                       |
-| `pnpm typecheck`  | TypeScript check             |
-| `pnpm format`     | Prettier write               |
-| `pnpm db:migrate` | Aplica migrations dev        |
-| `pnpm db:seed`    | Popula DB com dados iniciais |
-| `pnpm db:studio`  | UI do Prisma                 |
-| `pnpm db:reset`   | Dropa e recria (cuidado!)    |
+| Command                  | Description                                                                      |
+| ------------------------ | -------------------------------------------------------------------------------- |
+| `pnpm dev`               | Dev server (Turbopack)                                                           |
+| `pnpm build`             | Production build (runs `prisma generate && prisma migrate deploy && next build`) |
+| `pnpm start`             | Serve the production build                                                       |
+| `pnpm lint`              | Run ESLint                                                                       |
+| `pnpm lint:fix`          | ESLint with autofix                                                              |
+| `pnpm typecheck`         | `tsc --noEmit`                                                                   |
+| `pnpm format`            | Format with Prettier                                                             |
+| `pnpm format:check`      | Check formatting with Prettier                                                   |
+| `pnpm db:generate`       | Generate the Prisma client                                                       |
+| `pnpm db:migrate`        | Create and apply migrations (dev)                                                |
+| `pnpm db:migrate:deploy` | Apply migrations (production)                                                    |
+| `pnpm db:seed`           | Seed the database with initial data                                              |
+| `pnpm db:studio`         | Open Prisma Studio                                                               |
+| `pnpm db:reset`          | Drop and recreate the database (careful!)                                        |
 
-## Deploy
+## Deployment
 
-O projeto é otimizado para Vercel:
+The project is optimized for Vercel. In short:
 
-1. **Postgres:** crie um banco no [Neon](https://neon.tech) (free tier) → copie `DATABASE_URL`.
-2. **Upstash:** crie Redis em [upstash.com](https://upstash.com) (free) → copie URL + TOKEN.
-3. **Google AI:** API key em [aistudio.google.com](https://aistudio.google.com) (free).
-4. Importe o repo no [Vercel](https://vercel.com), adicione as env vars e faça deploy.
+1. **Postgres** — create a database on [Neon](https://neon.tech) (free tier) and copy `DATABASE_URL`, plus a non-pooled `DIRECT_URL` for migrations.
+2. **Upstash** — create a Redis instance on [upstash.com](https://upstash.com) (free) and copy the URL + token.
+3. **Google AI** — create an API key at [aistudio.google.com](https://aistudio.google.com) (free).
+4. **Auth & Blob** — set up Google OAuth credentials and a Vercel Blob store for the admin panel.
+5. Import the repo into [Vercel](https://vercel.com), add the environment variables, and deploy.
+
+See [DEPLOY.md](DEPLOY.md) for the full, step-by-step guide (Neon, Upstash, Google OAuth, DNS, and seeding production).
 
 ## Conventional Commits
 
-Mensagens de commit seguem [Conventional Commits](https://www.conventionalcommits.org) (commitlint enforced).
+Commit messages follow [Conventional Commits](https://www.conventionalcommits.org), enforced by commitlint.
 
 ```
 feat(hero): add 3D tilt effect
@@ -120,6 +155,10 @@ fix(ai): handle ZodError in chat use case
 chore: bump dependencies
 ```
 
-## Licença
+## Contact
+
+Matheus Batista — [matheus.sbatista@outlook.com](mailto:matheus.sbatista@outlook.com)
+
+## License
 
 [MIT](LICENSE) © Matheus Batista
