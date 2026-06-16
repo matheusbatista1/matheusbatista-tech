@@ -1679,8 +1679,11 @@ a.workplace-badge .wb-pill,
   font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  /* Show the full project name (wrap instead of truncating). */
-  overflow-wrap: anywhere;
+  /* Single line (keeps the grid stable); full-width now that the pill is out
+     of flow, so only genuinely long names get an ellipsis. */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .sw-list button .sw-pill {
   /* Out of the grid flow so it never squeezes the name; only fades in on
@@ -1697,6 +1700,9 @@ a.workplace-badge .wb-pill,
   opacity: 0;
   transition: opacity 220ms;
   pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* Reserve room for the pill only when it's visible, so it never overlaps. */
 .sw-list li.on button .sw-name,
