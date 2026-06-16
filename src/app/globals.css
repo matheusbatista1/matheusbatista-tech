@@ -1662,11 +1662,17 @@ a.workplace-badge .wb-pill,
   cursor: pointer;
   display: grid;
   grid-template-columns: auto 1fr;
-  align-items: center;
+  align-items: start;
   gap: 12px;
   position: relative;
   color: var(--color-text-mute);
   transition: color 220ms;
+}
+.sw-list button .sw-text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
 }
 .sw-list button .sw-n {
   font-family: var(--font-mono);
@@ -1674,25 +1680,23 @@ a.workplace-badge .wb-pill,
   color: var(--color-text-dim);
   letter-spacing: 0.06em;
   transition: color 220ms;
+  /* optical align with the name's first line */
+  margin-top: 2px;
 }
 .sw-list button .sw-name {
   font-size: 15px;
   font-weight: 500;
   letter-spacing: -0.01em;
-  /* Single line (keeps the grid stable); full-width now that the pill is out
-     of flow, so only genuinely long names get an ellipsis. */
+  /* Single line (keeps the grid stable); the pill sits on its own line below,
+     so the name uses the full width and only long names get an ellipsis. */
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .sw-list button .sw-pill {
-  /* Out of the grid flow so it never squeezes the name; only fades in on
-     hover/active at the top-right. */
-  position: absolute;
-  top: 14px;
-  right: 0;
-  max-width: 50%;
-  text-align: right;
+  /* On its own line under the name (reveals on hover/active); the empty line is
+     always reserved so the rows breathe and nothing shifts. */
   font-family: var(--font-mono);
   font-size: 9px;
   letter-spacing: 0.18em;
@@ -1700,14 +1704,10 @@ a.workplace-badge .wb-pill,
   opacity: 0;
   transition: opacity 220ms;
   pointer-events: none;
+  max-width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-/* Reserve room for the pill only when it's visible, so it never overlaps. */
-.sw-list li.on button .sw-name,
-.sw-list button:hover .sw-name {
-  padding-right: 96px;
 }
 .sw-list button .sw-bar {
   position: absolute;
