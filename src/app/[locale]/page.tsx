@@ -36,6 +36,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
     container.useCases.listCVs.execute(),
   ]);
 
+  // Guard against stray nameless rows so they never render as blank slots.
+  const visibleProjects = projects.filter((p) => p.name.trim().length > 0);
+
   return (
     <>
       <Ambient />
@@ -50,11 +53,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             socials={socials}
             locale={locale}
             cvs={cvs}
-            projectsCount={projects.length}
+            projectsCount={visibleProjects.length}
             companiesCount={COMPANIES_COUNT}
             technologiesCount={skills.length}
           />
-          <Projects projects={projects} locale={locale} aiEnabled={isAIEnabled} />
+          <Projects projects={visibleProjects} locale={locale} aiEnabled={isAIEnabled} />
           <Skills skills={skills} />
           <Contact socials={socials} cvs={cvs} />
         </main>
@@ -67,7 +70,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <PersonaBar />
           <PersonaGate />
           <PersonaLoader />
-          <AIAssistant projects={projects} skills={skills} socials={socials} />
+          <AIAssistant projects={visibleProjects} skills={skills} socials={socials} />
         </>
       )}
     </>

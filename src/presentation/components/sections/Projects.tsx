@@ -23,8 +23,8 @@ export interface RankedProject {
   reason: string;
 }
 
-const IN_VIEW_UPPER = 0.5;
-const IN_VIEW_LOWER = 0.3;
+const IN_VIEW_UPPER = 0.85;
+const IN_VIEW_LOWER = 0.15;
 
 export function Projects({ projects: allProjects, locale, aiEnabled = false }: ProjectsProps) {
   const t = useTranslations("projects");
@@ -99,18 +99,31 @@ export function Projects({ projects: allProjects, locale, aiEnabled = false }: P
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (e.key !== "ArrowRight" && e.key !== "ArrowLeft") return;
+      const goesPrev = e.key === "ArrowLeft" || e.key === "ArrowUp";
+      const goesNext = e.key === "ArrowRight" || e.key === "ArrowDown";
+      if (!goesPrev && !goesNext) return;
+
+      // Don't hijack arrows while the visitor is typing or using a control.
+      const el = document.activeElement as HTMLElement | null;
+      if (
+        el &&
+        (el.tagName === "INPUT" ||
+          el.tagName === "TEXTAREA" ||
+          el.tagName === "SELECT" ||
+          el.isContentEditable)
+      ) {
+        return;
+      }
+
       const rect = sectionRef.current?.getBoundingClientRect();
       if (!rect) return;
-      const inView =
-        rect.top < window.innerHeight * IN_VIEW_UPPER &&
-        rect.bottom > window.innerHeight * IN_VIEW_LOWER;
+      const h = window.innerHeight;
+      const inView = rect.top < h * IN_VIEW_UPPER && rect.bottom > h * IN_VIEW_LOWER;
       if (!inView) return;
-      if (e.key === "ArrowRight") {
-        goNext();
-      } else {
-        goPrev();
-      }
+
+      e.preventDefault();
+      if (goesNext) goNext();
+      else goPrev();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
