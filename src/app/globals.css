@@ -1788,7 +1788,9 @@ a.workplace-badge .wb-pill,
   border-top: 1px solid var(--line);
   padding: 20px 0;
   display: grid;
-  grid-template-columns: 100px 1fr auto;
+  /* minmax(0, 1fr) lets the value track shrink below its content's min width,
+     so a long email/URL never pushes the section wider than the viewport. */
+  grid-template-columns: 100px minmax(0, 1fr) auto;
   gap: 16px;
   align-items: center;
   font-size: 14px;
@@ -1806,6 +1808,8 @@ a.workplace-badge .wb-pill,
 .contact-channel .val {
   color: var(--color-text);
   transition: color 180ms;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 .contact-channel a.val:hover {
   color: var(--color-text-mute);
@@ -4578,6 +4582,10 @@ a.workplace-badge .wb-pill,
     flex-direction: column;
     gap: 12px;
     align-items: flex-start;
+  }
+  .contact-channel {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 12px;
   }
   .cf-row {
     grid-template-columns: 70px 1fr;
