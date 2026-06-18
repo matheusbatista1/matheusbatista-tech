@@ -1,6 +1,10 @@
 import type { CVDownload as PrismaCVDownload } from "@prisma/client";
 import type { CVDownload, NewCVDownload } from "@/domain/entities/CVDownload";
-import type { ICVDownloadRepository } from "@/domain/repositories/ICVDownloadRepository";
+import type {
+  CVDownloadListResult,
+  ICVDownloadRepository,
+  ListCVDownloadsOptions,
+} from "@/domain/repositories/ICVDownloadRepository";
 import type { Locale } from "@/domain/value-objects/Locale";
 import { prisma } from "../db/prisma";
 
@@ -12,6 +16,8 @@ function toCVDownload(row: PrismaCVDownload): CVDownload {
     ipHash: row.ipHash,
     userAgent: row.userAgent,
     referrer: row.referrer,
+    country: row.country,
+    city: row.city,
     createdAt: row.createdAt,
   };
 }
@@ -25,9 +31,29 @@ export class PrismaCVDownloadRepository implements ICVDownloadRepository {
         ipHash: input.ipHash,
         userAgent: input.userAgent,
         referrer: input.referrer,
+        country: input.country,
+        city: input.city,
       },
     });
     return toCVDownload(row);
+  }
+
+  async listPaged(opts: ListCVDownloadsOptions): Promise<CVDownloadListResult> {
+    const { limit = 50, offset = 0, locale, since } = opts;
+    const where = {
+      ...(locale ? { locale } : {}),
+      ...(since ? { createdAt: { gte: since } } : {}),
+    };
+    const [rows, total] = await Promise.all([
+      prisma.cVDownload.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      prisma.cVDownload.count({ where }),
+    ]);
+    return { entries: rows.map(toCVDownload), total };
   }
 
   async count(): Promise<number> {

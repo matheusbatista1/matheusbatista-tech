@@ -191,6 +191,14 @@
         "minAgo": "há {n}min",
         "hAgo": "há {n}h",
         "dAgo": "há {n}d"
+      },
+      "cvDownloads": {
+        "title": "Downloads de currículo",
+        "loading": "Carregando…",
+        "empty": "Nenhum download de currículo ainda.",
+        "cols": {
+          "lang": "Idioma"
+        }
       }
     },
     "inbox": {
@@ -485,7 +493,7 @@
   },
   "contact": {
     "heading": "Vamos construir algo memorável juntos.",
-    "lead": "Aberto a vagas sênior de backend & fullstack, freelances e colaborações. Mande uma mensagem e respondo em até 24 horas.",
+    "lead": "Aberto a vagas de backend & fullstack, freelances e colaborações. Mande uma mensagem e respondo em até 24 horas.",
     "email": "email",
     "name": "nome",
     "subject": "assunto",
@@ -494,7 +502,7 @@
     "subjectPh": "Sobre o que é?",
     "subjectSuggestions": [
       "Projeto freelance",
-      "Vaga sênior de backend",
+      "Vaga de backend",
       "Ideia de colaboração",
       "Pergunta rápida",
       "Só dando um oi"

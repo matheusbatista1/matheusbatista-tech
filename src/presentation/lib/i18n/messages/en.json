@@ -191,6 +191,14 @@
         "minAgo": "{n}min ago",
         "hAgo": "{n}h ago",
         "dAgo": "{n}d ago"
+      },
+      "cvDownloads": {
+        "title": "CV downloads",
+        "loading": "Loading…",
+        "empty": "No CV downloads yet.",
+        "cols": {
+          "lang": "Lang"
+        }
       }
     },
     "inbox": {
@@ -485,7 +493,7 @@
   },
   "contact": {
     "heading": "Let's build something memorable together.",
-    "lead": "Open to senior backend & fullstack roles, freelance work, and collaborations. Drop a line and I'll get back within 24 hours.",
+    "lead": "Open to backend & fullstack roles, freelance work, and collaborations. Drop a line and I'll get back within 24 hours.",
     "email": "email",
     "name": "name",
     "subject": "subject",
@@ -494,7 +502,7 @@
     "subjectPh": "What's it about?",
     "subjectSuggestions": [
       "Freelance project",
-      "Senior backend role",
+      "Backend role",
       "Collaboration idea",
       "Quick question",
       "Just saying hi"

@@ -131,7 +131,9 @@ function mapAIUsageToLogEntry(ev: AIUsageEvent): LogEntry {
     origin: "ai",
     source: "ai",
     level,
-    msg: `${ev.kind} (${ev.persona ?? "default"})`,
+    msg: ev.error
+      ? `${ev.kind} (${ev.persona ?? "default"}): ${ev.error}`
+      : `${ev.kind} (${ev.persona ?? "default"})`,
     durationMs: ev.durationMs ?? undefined,
     ip: ev.ip,
     meta: {
@@ -142,6 +144,7 @@ function mapAIUsageToLogEntry(ev: AIUsageEvent): LogEntry {
       tokensOut: ev.tokensOut,
       cached: ev.cached,
       status: ev.status,
+      error: ev.error,
     },
   };
 }

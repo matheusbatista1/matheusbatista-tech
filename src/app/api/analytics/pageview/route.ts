@@ -9,7 +9,7 @@ import { isLocale } from "@/domain/value-objects/Locale";
 export const runtime = "nodejs";
 
 const BOT_UA_REGEX =
-  /bot|crawl|spider|slurp|bingbot|googlebot|baidu|yandex|duckduck|headless|phantom|puppeteer|selenium|playwright|lighthouse|chrome-lighthouse|gtmetrix|pingdom|uptimerobot|prerender|chromedriver|webdriver|curl|wget|httpclient|axios|node-fetch|python-requests|libwww|okhttp|java\/\d/i;
+  /bot|crawl|spider|slurp|bingbot|googlebot|baidu|yandex|duckduck|headless|headlesschrome|phantom|puppeteer|selenium|playwright|lighthouse|chrome-lighthouse|gtmetrix|pingdom|uptimerobot|prerender|chromedriver|webdriver|curl|wget|httpclient|axios|node-fetch|python-requests|libwww|okhttp|java\/\d|electron|facebookexternalhit|whatsapp|telegrambot|discordbot|slackbot|twitterbot|linkedinbot|bytespider|gptbot|claudebot|ccbot|amazonbot|applebot|petalbot|semrush|ahrefs|mj12bot|dotbot|archive\.org/i;
 const DEFAULT_SALT = "matheusbatista-tech-analytics-salt";
 
 /**
@@ -136,7 +136,11 @@ export async function POST(request: Request) {
     (device.type as string | undefined) === "bot" ||
     (browser.name?.toLowerCase().includes("bot") ?? false);
   const staleIsBot = isStaleUserAgent(browser.name, browser.version);
-  const isBot = regexIsBot || parserIsBot || staleIsBot;
+  // A real browser always reports a screen size and language through the
+  // tracker; their absence means a non-browser client (direct API hit, headless
+  // automation) that still managed to POST here.
+  const noClientSignals = !language || !screenW || !screenH;
+  const isBot = regexIsBot || parserIsBot || staleIsBot || noClientSignals;
 
   let botName: string | null = null;
   let botVer: string | null = null;
@@ -144,8 +148,12 @@ export async function POST(request: Request) {
     const m = parseBotFromUA(userAgent);
     botName = m.name ?? browser.name ?? null;
     botVer = m.version ?? browser.version ?? null;
-    if (!regexIsBot && !parserIsBot && staleIsBot) {
-      botName = `stale-${browser.name?.toLowerCase().replace(/\s+/g, "-") ?? "ua"}`;
+    if (!regexIsBot && !parserIsBot) {
+      if (staleIsBot) {
+        botName = `stale-${browser.name?.toLowerCase().replace(/\s+/g, "-") ?? "ua"}`;
+      } else if (noClientSignals) {
+        botName = "no-client-signals";
+      }
     }
   }
 

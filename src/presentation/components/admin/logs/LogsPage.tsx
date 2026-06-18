@@ -403,6 +403,7 @@ function LogRow({
   const metaAction = typeof meta?.action === "string" ? meta.action : undefined;
   const metaSql = typeof meta?.sql === "string" ? meta.sql : undefined;
   const metaStack = typeof meta?.stack === "string" ? meta.stack : undefined;
+  const metaError = typeof meta?.error === "string" ? meta.error : undefined;
 
   return (
     <div className={`log-row ${entry.level}${open ? "open" : ""}`}>
@@ -522,6 +523,13 @@ function LogRow({
               </div>
             )}
           </div>
+
+          {metaError && (
+            <div className="ld-block">
+              <div className="ld-block-h err">Error</div>
+              <pre className="ld-code stack">{metaError}</pre>
+            </div>
+          )}
 
           {metaSql && (
             <div className="ld-block">

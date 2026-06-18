@@ -4,7 +4,8 @@ import { useEffect } from "react";
 import { useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 
-const BOT_UA_REGEX = /bot|crawl|spider|crawler|slurp|mediapartners|facebookexternalhit/i;
+const BOT_UA_REGEX =
+  /bot|crawl|spider|crawler|slurp|mediapartners|facebookexternalhit|headless|puppeteer|playwright|selenium|whatsapp|telegrambot|discordbot|slackbot|twitterbot|linkedinbot/i;
 
 export function PageViewTracker() {
   const locale = useLocale();
