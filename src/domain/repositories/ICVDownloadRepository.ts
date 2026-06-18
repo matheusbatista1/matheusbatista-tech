@@ -1,5 +1,17 @@
 import type { CVDownload, NewCVDownload } from "@/domain/entities/CVDownload";
 
+export interface ListCVDownloadsOptions {
+  limit?: number;
+  offset?: number;
+  locale?: string;
+  since?: Date;
+}
+
+export interface CVDownloadListResult {
+  entries: CVDownload[];
+  total: number;
+}
+
 export interface ICVDownloadRepository {
   create(input: NewCVDownload): Promise<CVDownload>;
   count(): Promise<number>;
@@ -9,4 +21,5 @@ export interface ICVDownloadRepository {
    * Retorna Map<"YYYY-MM-DD", count>. Dias sem eventos não aparecem no mapa.
    */
   countByDayRange(from: Date, to: Date): Promise<Map<string, number>>;
+  listPaged(opts: ListCVDownloadsOptions): Promise<CVDownloadListResult>;
 }
