@@ -145,6 +145,7 @@ export class SuggestProjectTags {
           cached: false,
           durationMs: Math.round(performance.now() - started),
           status: "error",
+          error: err instanceof Error ? `${err.name}: ${err.message}` : String(err),
         });
       } catch {
         /* best-effort */

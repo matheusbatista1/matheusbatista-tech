@@ -13,6 +13,7 @@ export interface AIUsageEvent {
   cached: boolean;
   durationMs: number | null;
   status: AIUsageStatus;
+  error: string | null;
   createdAt: Date;
 }
 

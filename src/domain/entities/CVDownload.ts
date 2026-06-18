@@ -7,6 +7,8 @@ export interface CVDownload {
   ipHash: string;
   userAgent: string | null;
   referrer: string | null;
+  country: string | null;
+  city: string | null;
   createdAt: Date;
 }
 

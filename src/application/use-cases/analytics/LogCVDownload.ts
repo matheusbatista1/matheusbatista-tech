@@ -7,6 +7,8 @@ export interface LogCVDownloadInput {
   ipHash: string;
   userAgent?: string | null;
   referrer?: string | null;
+  country?: string | null;
+  city?: string | null;
 }
 
 export class LogCVDownload {
@@ -20,6 +22,8 @@ export class LogCVDownload {
         ipHash: input.ipHash,
         userAgent: input.userAgent ?? null,
         referrer: input.referrer ?? null,
+        country: input.country ?? null,
+        city: input.city ?? null,
       });
     } catch (err) {
       console.warn("[LogCVDownload] falha ao registrar download", err);

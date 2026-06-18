@@ -178,6 +178,7 @@ model AIUsageLog {
   cached     Boolean  @default(false)
   durationMs Int?
   status     String // 'ok' | 'rate_limited' | 'error'
+  error      String? // motivo do erro quando status='error' (nome: mensagem)
   createdAt  DateTime @default(now())
 
   @@index([createdAt])
@@ -241,6 +242,8 @@ model CVDownload {
   ipHash    String
   userAgent String?
   referrer  String?
+  country   String? // ISO country code (Vercel geo header)
+  city      String?
   createdAt DateTime @default(now())
 
   @@index([createdAt])

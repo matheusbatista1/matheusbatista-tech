@@ -19,6 +19,7 @@ function toAIUsageEvent(row: PrismaAIUsageLog): AIUsageEvent {
     cached: row.cached,
     durationMs: row.durationMs,
     status: row.status as AIUsageStatus,
+    error: row.error,
     createdAt: row.createdAt,
   };
 }
@@ -47,6 +48,7 @@ export class PrismaAIUsageLogRepository implements IAIUsageLogRepository {
         cached: input.cached,
         durationMs: input.durationMs,
         status: input.status,
+        error: input.error,
       },
     });
     return toAIUsageEvent(row);

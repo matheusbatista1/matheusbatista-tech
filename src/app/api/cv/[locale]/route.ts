@@ -35,6 +35,16 @@ export async function GET(request: Request, { params }: { params: Promise<{ loca
   const ipHash = hashIp(rawIp);
   const userAgent = request.headers.get("user-agent");
   const referrer = request.headers.get("referer");
+  const country = request.headers.get("x-vercel-ip-country");
+  const cityRaw = request.headers.get("x-vercel-ip-city");
+  let city: string | null = null;
+  if (cityRaw) {
+    try {
+      city = decodeURIComponent(cityRaw);
+    } catch {
+      city = cityRaw;
+    }
+  }
 
   try {
     await container.useCases.logCVDownload.execute({
@@ -43,6 +53,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ loca
       ipHash,
       userAgent,
       referrer,
+      country: country ?? null,
+      city,
     });
   } catch (err) {
     console.warn("[api/cv] failed to log download", err);

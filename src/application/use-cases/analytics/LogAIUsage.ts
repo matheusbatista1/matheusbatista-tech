@@ -12,7 +12,10 @@ export interface LogAIUsageInput {
   cached?: boolean;
   durationMs?: number | null;
   status: AIUsageStatus;
+  error?: string | null;
 }
+
+const ERROR_MAX = 500;
 
 export class LogAIUsage {
   constructor(private readonly repo: IAIUsageLogRepository) {}
@@ -29,6 +32,7 @@ export class LogAIUsage {
         cached: input.cached ?? false,
         durationMs: input.durationMs ?? null,
         status: input.status,
+        error: input.error ? input.error.slice(0, ERROR_MAX) : null,
       });
     } catch (err) {
       console.warn("[LogAIUsage] falha ao registrar uso de IA", err);
