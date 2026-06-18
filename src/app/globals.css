@@ -99,6 +99,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* Lock horizontal panning on mobile: the page scrolls vertically only.
+     Page-level guard — elements with their own overflow-x:auto still scroll. */
+  overflow-x: hidden;
+}
+
+body {
+  position: relative;
+  width: 100%;
 }
 
 body {
