@@ -1,3 +1,5 @@
+<!-- ai-context-mode: personal -->
+
 # CLAUDE.md — Guia para colaboração com Claude neste projeto
 
 Este arquivo orienta o Claude (e qualquer agente de IA) a trabalhar consistentemente neste codebase. **Leia antes de qualquer mudança.**
