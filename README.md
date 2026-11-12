@@ -1,4 +1,4 @@
-# matheusbatistadev.com
+# matheusbatista.dev
 
 Personal portfolio of **Matheus Batista** — Software Engineer.
 
